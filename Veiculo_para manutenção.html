@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Frota e Manutenção</title>
+    <meta name="description" content="Sistema de gestão integrada de equipamentos, colaboradores e manutenção de frota">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* ===== DESIGN TOKENS ===== */
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --sidebar: #1e293b;
+            --sidebar-hover: #334155;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 8px;
+            margin-bottom: 36px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #818cf8;
+            line-height: 1.35;
+        }
+
+        .nav-label {
+            font-size: 0.63rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #475569;
+            letter-spacing: 0.08em;
+            padding: 0 8px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            color: #94a3b8;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 3px;
+        }
+
+        .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--white);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .nav-link i {
+            width: 18px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-footer button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .btn-bk {
+            background: #334155;
+            color: #94a3b8;
+        }
+
+        .btn-bk:hover {
+            background: #475569;
+            color: white;
+        }
+
+        .btn-im {
+            background: transparent;
+            color: #64748b;
+            border: 1px solid #334155 !important;
+        }
+
+        .btn-im:hover {
+            background: #334155;
+            color: #94a3b8;
+        }
+
+        /* ===== MAIN ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 32px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--sidebar);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h1 i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .page-header p {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* ===== KPI GRID ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .kpi-card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .kpi-ico {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .ico-indigo {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .ico-green {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .ico-yellow {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .ico-red {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .kpi-info .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .kpi-info .kpi-val {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.1;
+            margin-top: 3px;
+        }
+
+        /* ===== TABLE SECTION ===== */
+        .table-section {
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-toolbar {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: #fafafa;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tbl-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .srch {
+            position: relative;
+        }
+
+        .srch i {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            pointer-events: none;
+        }
+
+        .srch input {
+            padding: 7px 10px 7px 32px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.82rem;
+            outline: none;
+            transition: 0.2s;
+            width: 210px;
+            background: white;
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        .srch input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 13px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger-solid {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger-solid:hover {
+            background: #dc2626;
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-wa {
+            background: #25d366;
+            color: white;
+        }
+
+        .btn-wa:hover {
+            background: #1da851;
+        }
+
+        .btn-xl {
+            background: #217346;
+            color: white;
+        }
+
+        .btn-xl:hover {
+            background: #185c39;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        thead th {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 11px 14px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.84rem;
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:not(.detail-row):hover td {
+            background: #f8fafc;
+        }
+
+        /* Table inputs */
+        .ti {
+            width: 100%;
+            padding: 5px 8px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-family: inherit;
+            color: var(--text);
+            background: transparent;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .ti:hover {
+            border-color: var(--border);
+            background: white;
+        }
+
+        .ti:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .ti[readonly] {
+            color: var(--text-muted);
+            background: #f8fafc;
+            cursor: default;
+        }
+
+        .ti[readonly]:hover,
+        .ti[readonly]:focus {
+            border-color: transparent;
+            background: #f8fafc;
+            box-shadow: none;
+        }
+
+        .ts {
+            padding: 5px 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            outline: none;
+            cursor: pointer;
+            transition: 0.2s;
+            width: auto;
+        }
+
+        .ts:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .b-ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .b-warn {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .b-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .b-gray {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .b-pend {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .b-concl {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* ===== ROW HIGHLIGHTS ===== */
+        .row-vencido td {
+            background-color: #fef2f2 !important;
+        }
+
+        .row-proximo td {
+            background-color: #fffbeb !important;
+        }
+
+        .row-concluido td {
+            background-color: #f0fdf4 !important;
+        }
+
+        @keyframes pulse-danger {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.65;
+            }
+        }
+
+        .row-overdue td {
+            animation: pulse-danger 2s infinite;
+            background-color: #fef2f2 !important;
+        }
+
+        .row-overdue td:first-child {
+            border-left: 3px solid var(--danger);
+        }
+
+        /* ===== DETAIL ROW ===== */
+        .detail-row>td {
+            padding: 0 !important;
+            background: #f8fafc !important;
+            border-bottom: 2px solid var(--primary-light) !important;
+        }
+
+        .detail-inner {
+            padding: 18px 20px;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .service-checks {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .svc-chk {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: 0.2s;
+            background: white;
+            user-select: none;
+        }
+
+        .svc-chk input[type="checkbox"] {
+            accent-color: var(--primary);
+        }
+
+        .svc-chk:has(input:checked) {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .desc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .desc-group label {
+            display: block;
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .desc-group input {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-family: inherit;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .desc-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .hist-section {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .hist-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hist-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hist-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.79rem;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .hist-date {
+            font-weight: 700;
+            color: var(--primary);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .hist-desc {
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Toggle btn */
+        .btn-tog {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .btn-tog:hover,
+        .btn-tog.aberto {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Filter select */
+        .f-sel {
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+            background: white;
+            color: var(--text);
+            transition: 0.2s;
+        }
+
+        .f-sel:focus {
+            border-color: var(--primary);
+        }
+
+        /* Section */
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            z-index: 9999;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            animation: slideInToast 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @keyframes slideInToast {
+            from {
+                transform: translateX(110px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Desktop collapse */
+        body.sidebar-hidden .sidebar {
+            transform: translateX(-260px);
+        }
+
+        body.sidebar-hidden .main-content {
+            margin-left: 0;
+        }
+
+        .btn-sidebar-toggle {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px 6px;
+            font-size: 1.1rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .btn-sidebar-toggle:hover {
+            color: var(--white);
+        }
+
+        .btn-menu-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-muted);
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-menu-toggle:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        @media (max-width: 900px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(-260px);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .desc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-truck-moving"></i></div>
+            <div class="brand-text">GESTÃO DE FROTA<br>&amp; MANUTENÇÃO</div>
+            <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Recolher menu">
+                <i class="fas fa-angle-left"></i>
+            </button>
+        </div>
+
+        <span class="nav-label">Módulos</span>
+        <button class="nav-link active" onclick="showSection('equipamentos', this)">
+            <i class="fas fa-car"></i> Equipamentos
+        </button>
+        <button class="nav-link" onclick="showSection('colaboradores', this)">
+            <i class="fas fa-users"></i> Colaboradores
+        </button>
+        <button class="nav-link" onclick="showSection('manutencao', this)">
+            <i class="fas fa-tools"></i> Manutenção
+        </button>
+
+        <div class="sidebar-footer">
+            <button class="btn-bk" onclick="exportarBackup()">
+                <i class="fas fa-download"></i> Backup JSON
+            </button>
+            <button class="btn-im" onclick="document.getElementById('inputImport').click()">
+                <i class="fas fa-upload"></i> Importar Backup
+            </button>
+            <input type="file" id="inputImport" style="display:none" accept=".json" onchange="importarBackup(event)">
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+
+        <!-- ======== EQUIPAMENTOS ======== -->
+        <div id="section-equipamentos" class="section-content active">
+            <div class="page-header">
+                <h1><button class="btn-menu-toggle" onclick="toggleSidebar()" title="Menu"><i class="fas fa-bars"></i></button><i class="fas fa-car"></i>Equipamentos</h1>
+                <p>Cadastro e controle de veículos da frota</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-indigo"><i class="fas fa-car"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Total Frota</div>
+                        <div class="kpi-val" id="kp-eq-total">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-green"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Licenças Válidas</div>
+                        <div class="kpi-val" id="kp-eq-ok">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-yellow"><i class="fas fa-clock"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Vencendo (30d)</div>
+                        <div class="kpi-val" id="kp-eq-prox">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-red"><i class="fas fa-times-circle"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Licenças Vencidas</div>
+                        <div class="kpi-val" id="kp-eq-venc">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-toolbar">
+                    <div class="toolbar-left">
+                        <span class="tbl-title">Veículos Cadastrados</span>
+                        <div class="srch">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="buscaEquip" placeholder="Buscar frota ou placa..."
+                                oninput="filtrarTabela('corpoEquip', this.value)">
+                        </div>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn btn-xl" onclick="exportarExcel('equipamentos')"><i
+                                class="fas fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-primary" onclick="adicionarEquipamento()"><i class="fas fa-plus"></i>
+                            Novo</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Frota</th>
+                                <th>Placa</th>
+                                <th>Modelo</th>
+                                <th>Licenciamento</th>
+                                <th>Situação</th>
+                                <th style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoEquip"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== COLABORADORES ======== -->
+        <div id="section-colaboradores" class="section-content">
+            <div class="page-header">
+                <h1><button class="btn-menu-toggle" onclick="toggleSidebar()" title="Menu"><i class="fas fa-bars"></i></button><i class="fas fa-users"></i>Colaboradores</h1>
+                <p>Cadastro de motoristas e colaboradores</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-indigo"><i class="fas fa-user-friends"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Total Colaboradores</div>
+                        <div class="kpi-val" id="kp-co-total">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-green"><i class="fas fa-id-card"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">CNH Válidas</div>
+                        <div class="kpi-val" id="kp-co-ok">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-yellow"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">CNH Vencendo (30d)</div>
+                        <div class="kpi-val" id="kp-co-prox">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-red"><i class="fas fa-ban"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">CNH Vencidas</div>
+                        <div class="kpi-val" id="kp-co-venc">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-toolbar">
+                    <div class="toolbar-left">
+                        <span class="tbl-title">Colaboradores Cadastrados</span>
+                        <div class="srch">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="buscaColab" placeholder="Buscar por nome..."
+                                oninput="filtrarTabela('corpoColab', this.value)">
+                        </div>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn btn-xl" onclick="exportarExcel('colaboradores')"><i
+                                class="fas fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-primary" onclick="adicionarColaborador()"><i class="fas fa-plus"></i>
+                            Novo</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>CNH</th>
+                                <th>Vencimento CNH</th>
+                                <th>Telefone</th>
+                                <th>Situação CNH</th>
+                                <th>Integração</th>
+                                <th>Sit. Integração</th>
+                                <th style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoColab"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== MANUTENÇÃO ======== -->
+        <div id="section-manutencao" class="section-content">
+            <div class="page-header">
+                <h1><button class="btn-menu-toggle" onclick="toggleSidebar()" title="Menu"><i class="fas fa-bars"></i></button><i class="fas fa-tools"></i>Manutenção</h1>
+                <p>Controle de ordens de serviço e programação de manutenções</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-indigo"><i class="fas fa-clipboard-list"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Total OS</div>
+                        <div class="kpi-val" id="kp-mn-total">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-yellow"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Pendentes</div>
+                        <div class="kpi-val" id="kp-mn-pend">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-green"><i class="fas fa-check-double"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Concluídos</div>
+                        <div class="kpi-val" id="kp-mn-concl">0</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-ico ico-red"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-label">Com Atraso</div>
+                        <div class="kpi-val" id="kp-mn-atraso">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-toolbar">
+                    <div class="toolbar-left">
+                        <span class="tbl-title">Ordens de Serviço</span>
+                        <div class="srch">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="buscaManut" placeholder="Buscar frota..." oninput="filtrarManut()">
+                        </div>
+                        <select class="f-sel" id="filtroStatus" onchange="filtrarManut()">
+                            <option value="">Todos os Status</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Concluído">Concluído</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn btn-wa" onclick="enviarWhatsApp()"><i class="fab fa-whatsapp"></i>
+                            WhatsApp</button>
+                        <button class="btn btn-xl" onclick="exportarExcel('manutencao')"><i
+                                class="fas fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-outline" onclick="exportarPDF()"><i class="fas fa-file-pdf"></i>
+                            PDF</button>
+                        <button class="btn btn-primary" onclick="adicionarManutencao()"><i class="fas fa-plus"></i>
+                            Novo</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Frota</th>
+                                <th>Placa</th>
+                                <th>Modelo</th>
+                                <th>Data Programada</th>
+                                <th>Data Retorno</th>
+                                <th>Status</th>
+                                <th style="width:80px; white-space:nowrap;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoManut"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /* ===================================================
+           INIT
+        =================================================== */
+        window.onload = () => {
+            carregarEquipamentos();
+            carregarColaboradores();
+            carregarManutencao();
+        };
+
+        /* ===================================================
+           NAVEGAÇÃO
+        =================================================== */
+        function showSection(id, btn) {
+            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-' + id).classList.add('active');
+            btn.classList.add('active');
+            // No mobile, fecha sidebar ao navegar
+            if (window.innerWidth <= 900) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        function toggleSidebar() {
+            if (window.innerWidth > 900) {
+                // Desktop: colapsa empurrando para fora
+                document.body.classList.toggle('sidebar-hidden');
+                const icon = document.querySelector('.btn-sidebar-toggle i');
+                if (icon) {
+                    icon.className = document.body.classList.contains('sidebar-hidden')
+                        ? 'fas fa-angle-right'
+                        : 'fas fa-angle-left';
+                }
+            } else {
+                // Mobile: overlay deslizante
+                document.getElementById('sidebar').classList.toggle('open');
+            }
+        }
+
+        /* ===================================================
+           UTILITÁRIOS
+        =================================================== */
+        function hoje() { return new Date().toISOString().split('T')[0]; }
+
+        function diasParaVencer(ds) {
+            if (!ds) return null;
+            return Math.ceil((new Date(ds) - new Date(hoje())) / 86400000);
+        }
+
+        function svStatus(ds) {
+            const d = diasParaVencer(ds);
+            if (d === null) return 'sem-data';
+            if (d < 0) return 'vencido';
+            if (d <= 30) return 'proximo';
+            return 'ok';
+        }
+
+        function badgeSv(ds) {
+            const s = svStatus(ds);
+            if (s === 'vencido') return `<span class="badge b-danger"><i class="fas fa-times-circle"></i> Vencido</span>`;
+            if (s === 'proximo') return `<span class="badge b-warn"><i class="fas fa-exclamation-circle"></i> Vencendo</span>`;
+            if (s === 'ok') return `<span class="badge b-ok"><i class="fas fa-check-circle"></i> Válido</span>`;
+            return `<span class="badge b-gray">—</span>`;
+        }
+
+        function fmtData(s) {
+            if (!s) return '—';
+            return s.split('-').reverse().join('/');
+        }
+
+        function filtrarTabela(tbodyId, termo) {
+            const t = (termo || '').toLowerCase();
+            document.querySelectorAll(`#${tbodyId} tr`).forEach(tr => {
+                if (tr.classList.contains('detail-row')) return;
+                const show = !t || tr.innerText.toLowerCase().includes(t);
+                tr.style.display = show ? '' : 'none';
+            });
+        }
+
+        /* ===================================================
+           EQUIPAMENTOS
+        =================================================== */
+        function adicionarEquipamento(d = null) {
+            const tbody = document.getElementById('corpoEquip');
+            const tr = document.createElement('tr');
+            const s = svStatus(d?.licenc);
+            if (s === 'vencido') tr.classList.add('row-vencido');
+            else if (s === 'proximo') tr.classList.add('row-proximo');
+            tr.innerHTML = `
+        <td><input class="ti" type="text" placeholder="Frota" value="${d?.frota || ''}" onchange="salvarEquipamentos()"></td>
+        <td><input class="ti" type="text" placeholder="ABC-1234" value="${d?.placa || ''}" oninput="this.value=this.value.toUpperCase(); preencherLicenc(this)" onchange="salvarEquipamentos()"></td>
+        <td><input class="ti" type="text" placeholder="Modelo" value="${d?.modelo || ''}" onchange="salvarEquipamentos()"></td>
+        <td><input class="ti" type="date" value="${d?.licenc || ''}" onchange="onLicencChange(this)"></td>
+        <td>${badgeSv(d?.licenc)}</td>
+        <td><button class="btn btn-danger-solid btn-sm" onclick="excluirEquip(this)" title="Excluir"><i class="fas fa-trash-alt"></i></button></td>
+    `;
+            // oninput text fields
+            tr.querySelectorAll('.ti:not([type="date"])').forEach(i => i.addEventListener('input', salvarEquipamentos));
+            tbody.appendChild(tr);
+        }
+
+        function excluirEquip(btn) {
+            if (!confirm('Excluir este veículo?')) return;
+            btn.closest('tr').remove();
+            salvarEquipamentos();
+            showToast('Veículo removido.', 'danger');
+        }
+
+        function onLicencChange(input) {
+            const tr = input.closest('tr');
+            const s = svStatus(input.value);
+            tr.classList.remove('row-vencido', 'row-proximo');
+            if (s === 'vencido') tr.classList.add('row-vencido');
+            else if (s === 'proximo') tr.classList.add('row-proximo');
+            tr.cells[4].innerHTML = badgeSv(input.value);
+            salvarEquipamentos();
+        }
+
+        function preencherLicenc(input) {
+            const p = input.value.trim();
+            if (p.length < 7) return;
+            const f = p.slice(-1);
+            let data = "2026-";
+            if (['1', '2'].includes(f)) data += "07-31";
+            else if (['3', '4'].includes(f)) data += "08-31";
+            else if (['5', '6'].includes(f)) data += "09-30";
+            else if (['7', '8'].includes(f)) data += "10-31";
+            else if (f === '9') data += "11-30";
+            else data += "12-31";
+            const dateInput = input.closest('tr').querySelector('input[type="date"]');
+            dateInput.value = data;
+            onLicencChange(dateInput);
+        }
+
+        function salvarEquipamentos() {
+            const lista = [];
+            document.querySelectorAll('#corpoEquip tr').forEach(tr => {
+                const ins = tr.querySelectorAll('input');
+                if (ins.length < 4) return;
+                lista.push({ frota: ins[0].value, placa: ins[1].value, modelo: ins[2].value, licenc: ins[3].value });
+            });
+            localStorage.setItem('cadastro_veiculos_manutencao', JSON.stringify(lista));
+            atualizarKpisEquip(lista);
+        }
+
+        function carregarEquipamentos() {
+            const dados = JSON.parse(localStorage.getItem('cadastro_veiculos_manutencao') || '[]');
+            document.getElementById('corpoEquip').innerHTML = '';
+            if (dados.length > 0) dados.forEach(d => adicionarEquipamento(d));
+            else adicionarEquipamento();
+            atualizarKpisEquip(dados);
+        }
+
+        function atualizarKpisEquip(dados) {
+            const d = dados || JSON.parse(localStorage.getItem('cadastro_veiculos_manutencao') || '[]');
+            document.getElementById('kp-eq-total').innerText = d.length;
+            document.getElementById('kp-eq-ok').innerText = d.filter(x => svStatus(x.licenc) === 'ok').length;
+            document.getElementById('kp-eq-prox').innerText = d.filter(x => svStatus(x.licenc) === 'proximo').length;
+            document.getElementById('kp-eq-venc').innerText = d.filter(x => svStatus(x.licenc) === 'vencido').length;
+        }
+
+        /* ===================================================
+           COLABORADORES
+        =================================================== */
+        function adicionarColaborador(d = null) {
+            const tbody = document.getElementById('corpoColab');
+            const tr = document.createElement('tr');
+            const s = svStatus(d?.venc);
+            if (s === 'vencido') tr.classList.add('row-vencido');
+            else if (s === 'proximo') tr.classList.add('row-proximo');
+            tr.innerHTML = `
+        <td><input class="ti" type="text" placeholder="Nome completo" value="${d?.nome || ''}"></td>
+        <td><input class="ti" type="text" placeholder="000.000.000-00" value="${d?.cpf || ''}" oninput="mascaraCPF(this)" style="max-width:140px"></td>
+        <td><input class="ti" type="text" placeholder="Categoria" value="${d?.cnh || ''}" style="max-width:90px"></td>
+        <td><input class="ti" type="date" value="${d?.venc || ''}" onchange="onVencChange(this)"></td>
+        <td><input class="ti" type="text" placeholder="(00) 00000-0000" value="${d?.tel || ''}" oninput="mascaraTel(this)" style="max-width:145px"></td>
+        <td>${badgeSv(d?.venc)}</td>
+        <td><input class="ti" type="date" value="${d?.integ || ''}" onchange="onIntegChange(this)"></td>
+        <td>${badgeInteg(d?.integ)}</td>
+        <td><button class="btn btn-danger-solid btn-sm" onclick="excluirColab(this)" title="Excluir"><i class="fas fa-trash-alt"></i></button></td>
+    `;
+            tr.querySelectorAll('.ti:not([type="date"])').forEach(i => i.addEventListener('input', salvarColaboradores));
+            tbody.appendChild(tr);
+        }
+
+        function excluirColab(btn) {
+            if (!confirm('Excluir este colaborador?')) return;
+            btn.closest('tr').remove();
+            salvarColaboradores();
+            showToast('Colaborador removido.', 'danger');
+        }
+
+        function onVencChange(input) {
+            const tr = input.closest('tr');
+            const s = svStatus(input.value);
+            tr.classList.remove('row-vencido', 'row-proximo');
+            if (s === 'vencido') tr.classList.add('row-vencido');
+            else if (s === 'proximo') tr.classList.add('row-proximo');
+            tr.cells[5].innerHTML = badgeSv(input.value);
+            salvarColaboradores();
+        }
+
+        function svStatusInteg(ds) {
+            const d = diasParaVencer(ds);
+            if (d === null) return 'sem-data';
+            if (d < 0)  return 'vencido';
+            if (d <= 45) return 'proximo';
+            return 'ok';
+        }
+
+        function badgeInteg(ds) {
+            const s = svStatusInteg(ds);
+            if (s === 'vencido') return `<span class="badge b-danger"><i class="fas fa-times-circle"></i> Vencido</span>`;
+            if (s === 'proximo') return `<span class="badge b-warn"><i class="fas fa-exclamation-circle"></i> Atenção</span>`;
+            if (s === 'ok')      return `<span class="badge b-ok"><i class="fas fa-check-circle"></i> Válido</span>`;
+            return `<span class="badge b-gray">—</span>`;
+        }
+
+        function onIntegChange(input) {
+            const tr = input.closest('tr');
+            tr.cells[7].innerHTML = badgeInteg(input.value);
+            salvarColaboradores();
+        }
+
+        function mascaraCPF(i) {
+            let v = i.value.replace(/\D/g, '').substring(0, 11);
+            v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            i.value = v;
+        }
+        function mascaraTel(i) {
+            let v = i.value.replace(/\D/g, '').substring(0, 11);
+            v = v.replace(/^(\d{2})(\d)/g, '($1) $2').replace(/(\d)(\d{4})$/, '$1-$2');
+            i.value = v;
+        }
+
+        function salvarColaboradores() {
+            const lista = [];
+            document.querySelectorAll('#corpoColab tr').forEach(tr => {
+                const ins = tr.querySelectorAll('input');
+                if (ins.length < 4) return;
+                lista.push({
+                    nome: ins[0].value, cpf: ins[1].value,
+                    cnh: ins[2].value, venc: ins[3].value, tel: ins[4].value,
+                    integ: ins[5] ? ins[5].value : ''
+                });
+            });
+            localStorage.setItem('cadastro_colaboradores', JSON.stringify(lista));
+            atualizarKpisColab(lista);
+        }
+
+        function carregarColaboradores() {
+            const dados = JSON.parse(localStorage.getItem('cadastro_colaboradores') || '[]');
+            document.getElementById('corpoColab').innerHTML = '';
+            if (dados.length > 0) dados.forEach(d => adicionarColaborador(d));
+            else adicionarColaborador();
+            atualizarKpisColab(dados);
+        }
+
+        function atualizarKpisColab(dados) {
+            const d = dados || JSON.parse(localStorage.getItem('cadastro_colaboradores') || '[]');
+            document.getElementById('kp-co-total').innerText = d.length;
+            document.getElementById('kp-co-ok').innerText = d.filter(x => svStatus(x.venc) === 'ok').length;
+            document.getElementById('kp-co-prox').innerText = d.filter(x => svStatus(x.venc) === 'proximo').length;
+            document.getElementById('kp-co-venc').innerText = d.filter(x => svStatus(x.venc) === 'vencido').length;
+        }
+
+        /* ===================================================
+           MANUTENÇÃO
+        =================================================== */
+        function adicionarManutencao(d = null) {
+            const tbody = document.getElementById('corpoManut');
+            const tr = document.createElement('tr');
+            const detTr = document.createElement('tr');
+            detTr.className = 'detail-row';
+            detTr.style.display = 'none';
+
+            const veiculos = JSON.parse(localStorage.getItem('cadastro_veiculos_manutencao') || '[]');
+            let ops = '<option value="">Selecione a frota</option>';
+            veiculos.forEach(v => ops += `<option value="${v.frota}" ${d?.frota === v.frota ? 'selected' : ''}>${v.frota}</option>`);
+
+            const h = hoje();
+            const isOverdue = d?.status === 'Pendente' && d?.retorno && d?.retorno < h;
+            if (isOverdue) tr.classList.add('row-overdue');
+            else if (d?.status === 'Concluído') tr.classList.add('row-concluido');
+
+            const tipos = d?.tipo || [];
+            tr.innerHTML = `
+        <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn-tog" onclick="toggleManut(this)" title="Detalhes">+</button>
+                <select class="ts" onchange="buscarVeiculo(this)">${ops}</select>
+            </div>
+        </td>
+        <td><input class="ti" type="text" placeholder="Placa" value="${d?.placa || ''}" readonly></td>
+        <td><input class="ti" type="text" placeholder="Modelo" value="${d?.modelo || ''}" readonly></td>
+        <td><input class="ti" type="date" value="${d?.dataProg || ''}" onchange="salvarManutencao()"></td>
+        <td><input class="ti" type="date" value="${d?.retorno || ''}" onchange="salvarManutencao()"></td>
+        <td>
+            <select class="ts" onchange="salvarManutencao()">
+                <option value="Pendente" ${d?.status !== 'Concluído' ? 'selected' : ''}>⏳ Pendente</option>
+                <option value="Concluído" ${d?.status === 'Concluído' ? 'selected' : ''}>✅ Concluído</option>
+            </select>
+        </td>
+        <td style="white-space:nowrap;">
+            <button class="btn btn-danger-solid btn-sm" onclick="removerManut(this)" title="Excluir"><i class="fas fa-trash-alt"></i></button>
+        </td>
+    `;
+
+            detTr.innerHTML = `
+        <td colspan="7">
+            <div class="detail-inner">
+                <div class="detail-header">
+                    <button class="btn btn-primary btn-sm btn-lancar" onclick="prepararLancamento(this)">
+                        <i class="fas fa-plus-circle"></i> Lançar Registro
+                    </button>
+                </div>
+                <div class="secao-lancamento" style="display:none;">
+                    <div class="service-checks">
+                        <label class="svc-chk"><input type="checkbox" value="MANUTENÇÃO" ${tipos.includes('MANUTENÇÃO') ? 'checked' : ''}> <i class="fas fa-wrench"></i> Manutenção</label>
+                        <label class="svc-chk"><input type="checkbox" value="SINALIZAÇÃO" ${tipos.includes('SINALIZAÇÃO') ? 'checked' : ''}> <i class="fas fa-sign"></i> Sinalização</label>
+                        <label class="svc-chk"><input type="checkbox" value="SEGURANÇA" ${tipos.includes('SEGURANÇA') ? 'checked' : ''}> <i class="fas fa-shield-alt"></i> Segurança</label>
+                    </div>
+                    <div class="desc-grid">
+                        <div class="desc-group"><label><i class="fas fa-wrench"></i> Manutenção — Obs.</label><input type="text" class="desc-man" placeholder="Descreva o serviço..." value="${d?.descMan || ''}"></div>
+                        <div class="desc-group"><label><i class="fas fa-sign"></i> Sinalização — Obs.</label><input type="text" class="desc-sin" placeholder="Descreva o serviço..." value="${d?.descSin || ''}"></div>
+                        <div class="desc-group"><label><i class="fas fa-shield-alt"></i> Segurança — Obs.</label><input type="text" class="desc-seg" placeholder="Descreva o serviço..." value="${d?.descSeg || ''}"></div>
+                    </div>
+                    <button class="btn btn-success btn-sm" onclick="confirmarLancamento(this)"><i class="fas fa-check"></i> Confirmar e Salvar</button>
+                    <button class="btn btn-outline btn-sm" style="margin-left:6px;" onclick="cancelarLancamento(this)"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+                <div class="hist-section">
+                    <div class="hist-title"><i class="fas fa-history"></i> Histórico de Lançamentos</div>
+                    <div class="hist-veiculo"><em style="color:var(--text-muted);font-size:0.8rem;">Expanda para carregar o histórico.</em></div>
+                </div>
+            </div>
+        </td>
+    `;
+
+            tbody.appendChild(tr);
+            tbody.appendChild(detTr);
+        }
+
+        function toggleManut(btn) {
+            const mainRow = btn.closest('tr');
+            const detRow = mainRow.nextElementSibling;
+            const isOpen = detRow.style.display === 'table-row';
+            detRow.style.display = isOpen ? 'none' : 'table-row';
+            btn.innerText = isOpen ? '+' : '−';
+            btn.classList.toggle('aberto', !isOpen);
+            if (!isOpen) carregarHistorico(mainRow.querySelector('select'));
+        }
+
+        function buscarVeiculo(sel) {
+            const v = JSON.parse(localStorage.getItem('cadastro_veiculos_manutencao') || '[]').find(x => x.frota === sel.value);
+            const tr = sel.closest('tr');
+            tr.querySelector('input[placeholder="Placa"]').value = v ? v.placa : '';
+            tr.querySelector('input[placeholder="Modelo"]').value = v ? v.modelo : '';
+            salvarManutencao();
+        }
+
+        function carregarHistorico(sel) {
+            const frota = sel.value;
+            const div = sel.closest('tr').nextElementSibling.querySelector('.hist-veiculo');
+            if (!frota) { div.innerHTML = '<em style="color:var(--text-muted);font-size:0.8rem;">Selecione uma frota para ver o histórico.</em>'; return; }
+            const hist = JSON.parse(localStorage.getItem('cadastro_historico_manutencao') || '[]').filter(x => x.frota === frota);
+            if (hist.length === 0) {
+                div.innerHTML = '<em style="color:var(--text-muted);font-size:0.8rem;">Nenhum lançamento registrado para este veículo.</em>';
+                return;
+            }
+            const items = hist.sort((a, b) => b.timestamp - a.timestamp).map(h => {
+                const tipos = h.tipo?.length ? h.tipo.join(' / ') : 'N/I';
+                const desc = [h.descMan && `<b>MAN:</b> ${h.descMan}`, h.descSin && `<b>SIN:</b> ${h.descSin}`, h.descSeg && `<b>SEG:</b> ${h.descSeg}`].filter(Boolean).join(' &nbsp;|&nbsp; ') || 'Sem observações';
+                return `<li class="hist-item"><span class="hist-date">${fmtData(h.data)}</span><span class="hist-desc">[${tipos}] — ${desc}</span></li>`;
+            }).join('');
+            div.innerHTML = `<ul class="hist-list">${items}</ul>`;
+        }
+
+        function prepararLancamento(btn) {
+            btn.style.display = 'none';
+            btn.closest('.detail-inner').querySelector('.secao-lancamento').style.display = 'block';
+        }
+
+        function cancelarLancamento(btn) {
+            const sec = btn.closest('.secao-lancamento');
+            sec.style.display = 'none';
+            sec.closest('.detail-inner').querySelector('.btn-lancar').style.display = 'inline-flex';
+            sec.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+            sec.querySelectorAll('.desc-man, .desc-sin, .desc-seg').forEach(i => i.value = '');
+        }
+
+        function confirmarLancamento(btn) {
+            const detRow = btn.closest('tr.detail-row');
+            const mainRow = detRow.previousElementSibling;
+            const frota = mainRow.querySelector('select').value;
+            if (!frota) { alert('Selecione uma frota antes de lançar.'); return; }
+
+            const tipos = [...detRow.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+            const descMan = detRow.querySelector('.desc-man').value;
+            const descSin = detRow.querySelector('.desc-sin').value;
+            const descSeg = detRow.querySelector('.desc-seg').value;
+            const dataRet = mainRow.querySelector('td:nth-child(5) input').value;
+
+            // Salva no histórico separado
+            const historico = JSON.parse(localStorage.getItem('cadastro_historico_manutencao') || '[]');
+            historico.push({ frota, data: dataRet || hoje(), tipo: tipos, descMan, descSin, descSeg, timestamp: Date.now() });
+            localStorage.setItem('cadastro_historico_manutencao', JSON.stringify(historico));
+
+            // Limpa formulário e recolhe
+            const sec = btn.closest('.secao-lancamento');
+            if (sec) {
+                sec.style.display = 'none';
+                sec.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+                sec.querySelectorAll('.desc-man, .desc-sin, .desc-seg').forEach(i => i.value = '');
+                const btnLancar = sec.closest('.detail-inner').querySelector('.btn-lancar');
+                if (btnLancar) btnLancar.style.display = 'inline-flex';
+            }
+
+            detRow.style.display = 'none';
+            const tog = mainRow.querySelector('.btn-tog');
+            tog.innerText = '+'; tog.classList.remove('aberto');
+
+            salvarManutencao();
+            showToast('Registro lançado com sucesso!', 'success');
+        }
+
+        function removerManut(btn) {
+            if (!confirm('Excluir este registro de manutenção?')) return;
+            const r = btn.closest('tr');
+            const det = r.nextElementSibling;
+            if (det?.classList.contains('detail-row')) det.remove();
+            r.remove();
+            salvarManutencao();
+            showToast('Registro removido.', 'danger');
+        }
+
+        function salvarManutencao() {
+            const lista = [];
+            const h = hoje();
+            let atraso = 0;
+            document.querySelectorAll('#corpoManut tr:not(.detail-row)').forEach(tr => {
+                const sel = tr.querySelector('select:first-of-type');
+                if (!sel?.value) return;
+                const dataProg = tr.querySelector('td:nth-child(4) input')?.value || '';
+                const ret = tr.querySelector('td:nth-child(5) input')?.value || '';
+                const statusSel = tr.querySelector('td:nth-child(6) select');
+                const status = statusSel?.value || 'Pendente';
+                const isOverdue = status === 'Pendente' && ret && ret < h;
+                tr.classList.remove('row-overdue', 'row-concluido');
+                if (isOverdue) { tr.classList.add('row-overdue'); atraso++; }
+                else if (status === 'Concluído') tr.classList.add('row-concluido');
+                const det = tr.nextElementSibling;
+                lista.push({
+                    frota: sel.value,
+                    placa: tr.querySelector('input[placeholder="Placa"]')?.value || '',
+                    modelo: tr.querySelector('input[placeholder="Modelo"]')?.value || '',
+                    dataProg, retorno: ret, status,
+                    tipo: det ? [...det.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value) : [],
+                    descMan: det?.querySelector('.desc-man')?.value || '',
+                    descSin: det?.querySelector('.desc-sin')?.value || '',
+                    descSeg: det?.querySelector('.desc-seg')?.value || ''
+                });
+            });
+            localStorage.setItem('cadastro_manutencao_seguranca', JSON.stringify(lista));
+            atualizarKpisManut(lista, atraso);
+        }
+
+        function carregarManutencao() {
+            const dados = JSON.parse(localStorage.getItem('cadastro_manutencao_seguranca') || '[]');
+            document.getElementById('corpoManut').innerHTML = '';
+            if (dados.length > 0) dados.forEach(d => adicionarManutencao(d));
+            else adicionarManutencao();
+            atualizarKpisManut(dados);
+        }
+
+        function atualizarKpisManut(dados, atraso) {
+            const d = dados || JSON.parse(localStorage.getItem('cadastro_manutencao_seguranca') || '[]');
+            const h = hoje();
+            const at = atraso !== undefined ? atraso : d.filter(x => x.status === 'Pendente' && x.retorno && x.retorno < h).length;
+            document.getElementById('kp-mn-total').innerText = d.length;
+            document.getElementById('kp-mn-pend').innerText = d.filter(x => x.status === 'Pendente').length;
+            document.getElementById('kp-mn-concl').innerText = d.filter(x => x.status === 'Concluído').length;
+            document.getElementById('kp-mn-atraso').innerText = at;
+            // Compatibilidade com IDs legados
+            const e1 = document.getElementById('totalPend');
+            const e2 = document.getElementById('totalConcl');
+            if (e1) e1.innerText = d.filter(x => x.status === 'Pendente').length;
+            if (e2) e2.innerText = d.filter(x => x.status === 'Concluído').length;
+        }
+
+        function filtrarManut() {
+            const t = (document.getElementById('buscaManut').value || '').toLowerCase();
+            const sf = document.getElementById('filtroStatus').value;
+            document.querySelectorAll('#corpoManut tr:not(.detail-row)').forEach(tr => {
+                const txt = tr.innerText.toLowerCase();
+                const statusSel = tr.querySelector('td:nth-child(6) select');
+                const status = statusSel?.value || '';
+                const show = (!t || txt.includes(t)) && (!sf || status === sf);
+                tr.style.display = show ? '' : 'none';
+                const det = tr.nextElementSibling;
+                if (det?.classList.contains('detail-row')) {
+                    det.style.display = 'none';
+                    const tog = tr.querySelector('.btn-tog');
+                    if (tog) { tog.innerText = '+'; tog.classList.remove('aberto'); }
+                }
+            });
+        }
+
+        /* ===================================================
+           EXPORTAR EXCEL
+        =================================================== */
+        function exportarExcel(tipo) {
+            let dados = [], nome = '';
+            if (tipo === 'equipamentos') {
+                dados = JSON.parse(localStorage.getItem('cadastro_veiculos_manutencao') || '[]').map(d => ({
+                    'Frota': d.frota, 'Placa': d.placa, 'Modelo': d.modelo,
+                    'Licenciamento': fmtData(d.licenc),
+                    'Situação': { ok: 'Válido', proximo: 'Vencendo', vencido: 'Vencido', 'sem-data': 'S/D' }[svStatus(d.licenc)]
+                }));
+                nome = 'Equipamentos';
+            } else if (tipo === 'colaboradores') {
+                dados = JSON.parse(localStorage.getItem('cadastro_colaboradores') || '[]').map(d => ({
+                    'Nome': d.nome, 'CPF': d.cpf, 'CNH': d.cnh,
+                    'Vencimento CNH': fmtData(d.venc), 'Telefone': d.tel,
+                    'Situação CNH': { ok: 'Válido', proximo: 'Vencendo', vencido: 'Vencido', 'sem-data': 'S/D' }[svStatus(d.venc)],
+                    'Data Integração': fmtData(d.integ),
+                    'Sit. Integração': { ok: 'Válido', proximo: 'Atenção (45d)', vencido: 'Vencido', 'sem-data': 'S/D' }[svStatusInteg(d.integ)]
+                }));
+                nome = 'Colaboradores';
+            } else if (tipo === 'manutencao') {
+                dados = JSON.parse(localStorage.getItem('cadastro_manutencao_seguranca') || '[]').map(d => ({
+                    'Frota': d.frota, 'Placa': d.placa, 'Modelo': d.modelo,
+                    'Data Programada': fmtData(d.dataProg), 'Data Retorno': fmtData(d.retorno),
+                    'Status': d.status, 'Tipos de Serviço': (d.tipo || []).join(', '),
+                    'Obs. Manutenção': d.descMan || '', 'Obs. Sinalização': d.descSin || '', 'Obs. Segurança': d.descSeg || ''
+                }));
+                nome = 'Manutencao';
+            }
+            if (dados.length === 0) { alert('Não há dados para exportar.'); return; }
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, nome);
+            XLSX.writeFile(wb, `${nome}_${hoje()}.xlsx`);
+            showToast(`Excel "${nome}" exportado!`, 'success');
+        }
+
+        /* ===================================================
+           BACKUP
+        =================================================== */
+        function exportarBackup() {
+            const b = {
+                e: localStorage.getItem('cadastro_veiculos_manutencao'),
+                c: localStorage.getItem('cadastro_colaboradores'),
+                m: localStorage.getItem('cadastro_manutencao_seguranca'),
+                h: localStorage.getItem('cadastro_historico_manutencao')
+            };
+            const blob = new Blob([JSON.stringify(b, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `backup_frota_${hoje()}.json`;
+            a.click();
+            showToast('Backup exportado com sucesso!', 'success');
+        }
+
+        function importarBackup(e) {
+            const f = e.target.files[0]; if (!f) return;
+            if (!confirm('⚠️ Importar este backup irá SUBSTITUIR todos os dados atuais.\nDeseja continuar?')) {
+                e.target.value = ''; return;
+            }
+            const r = new FileReader();
+            r.onload = ev => {
+                const d = JSON.parse(ev.target.result);
+                if (d.e) localStorage.setItem('cadastro_veiculos_manutencao', d.e);
+                if (d.c) localStorage.setItem('cadastro_colaboradores', d.c);
+                if (d.m) localStorage.setItem('cadastro_manutencao_seguranca', d.m);
+                if (d.h) localStorage.setItem('cadastro_historico_manutencao', d.h);
+                location.reload();
+            };
+            r.readAsText(f);
+        }
+
+        /* ===================================================
+           PDF
+        =================================================== */
+        function exportarPDF() {
+            const d = JSON.parse(localStorage.getItem('cadastro_manutencao_seguranca') || '[]');
+            if (d.length === 0) { alert('Não há dados de manutenção para exportar.'); return; }
+            const h = hoje();
+            const totalP = d.filter(x => x.status === 'Pendente').length;
+            const totalC = d.filter(x => x.status === 'Concluído').length;
+            const totalA = d.filter(x => x.status === 'Pendente' && x.retorno && x.retorno < h).length;
+
+            const el = document.createElement('div');
+            el.style.cssText = 'padding:20px; font-family:Inter,Segoe UI,sans-serif; color:#334155; font-size:10px;';
+
+            let html = `
+        <table style="width:100%;border-bottom:3px solid #4f46e5;margin-bottom:18px;padding-bottom:12px;">
+            <tr>
+                <td>
+                    <div style="font-size:22px;font-weight:900;color:#1e293b;text-transform:uppercase;letter-spacing:-0.5px;">Relatório de Manutenção</div>
+                    <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:4px;">GESTÃO INTEGRADA DE FROTA — SISTEMA DE CONTROLE</div>
+                </td>
+                <td style="text-align:right;vertical-align:bottom;">
+                    <div style="font-size:9px;color:#94a3b8;margin-bottom:6px;">Emitido em: ${new Date().toLocaleString('pt-BR')}</div>
+                    <span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:4px;font-size:9px;font-weight:800;border:1px solid #fde68a;">⏳ PENDENTES: ${totalP}</span>
+                    <span style="background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:4px;font-size:9px;font-weight:800;border:1px solid #a7f3d0;margin-left:4px;">✅ CONCLUÍDOS: ${totalC}</span>
+                    ${totalA > 0 ? `<span style="background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:4px;font-size:9px;font-weight:800;border:1px solid #fca5a5;margin-left:4px;">⚠️ ATRASADOS: ${totalA}</span>` : ''}
+                </td>
+            </tr>
+        </table>
+        <table style="width:100%;border-collapse:collapse;font-size:9px;">
+            <thead>
+                <tr style="background:#1e293b;color:white;">
+                    <th style="padding:9px;text-align:left;border:1px solid #0f172a;">EQUIPAMENTO</th>
+                    <th style="padding:9px;text-align:left;border:1px solid #0f172a;">MODELO / PLACA</th>
+                    <th style="padding:9px;text-align:center;border:1px solid #0f172a;">PROGRAMADO</th>
+                    <th style="padding:9px;text-align:center;border:1px solid #0f172a;">RETORNO</th>
+                    <th style="padding:9px;text-align:center;border:1px solid #0f172a;">STATUS</th>
+                    <th style="padding:9px;text-align:left;border:1px solid #0f172a;">DETALHES</th>
+                </tr>
+            </thead><tbody>
+    `;
+            d.forEach((x, i) => {
+                const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
+                const isAt = x.status === 'Pendente' && x.retorno && x.retorno < h;
+                const sBg = x.status === 'Pendente' ? (isAt ? '#fee2e2' : '#fef3c7') : '#d1fae5';
+                const sC = x.status === 'Pendente' ? (isAt ? '#991b1b' : '#92400e') : '#065f46';
+                const servs = x.tipo?.length ? x.tipo.join(', ') : 'N/I';
+                const det = [x.descMan && `MAN: ${x.descMan}`, x.descSin && `SIN: ${x.descSin}`, x.descSeg && `SEG: ${x.descSeg}`].filter(Boolean).join(' | ');
+                html += `
+            <tr style="background:${bg};">
+                <td style="padding:7px 9px;border:1px solid #e2e8f0;font-weight:700;">${x.frota}</td>
+                <td style="padding:7px 9px;border:1px solid #e2e8f0;">${x.modelo || '—'}<br><span style="color:#94a3b8;font-size:8px;">${x.placa || '—'}</span></td>
+                <td style="padding:7px 9px;border:1px solid #e2e8f0;text-align:center;">${fmtData(x.dataProg)}</td>
+                <td style="padding:7px 9px;border:1px solid #e2e8f0;text-align:center;">${fmtData(x.retorno)}</td>
+                <td style="padding:7px 9px;border:1px solid #e2e8f0;text-align:center;">
+                    <span style="background:${sBg};color:${sC};padding:3px 8px;border-radius:12px;font-size:8px;font-weight:800;">${x.status.toUpperCase()}${isAt ? ' ⚠️' : ''}</span>
+                </td>
+                <td style="padding:7px 9px;border:1px solid #e2e8f0;"><b>${servs}</b>${det ? `<br><span style="color:#64748b;font-size:8px;">${det}</span>` : ''}</td>
+            </tr>
+        `;
+            });
+            html += `</tbody></table><div style="margin-top:24px;text-align:center;border-top:1px solid #e2e8f0;padding-top:10px;color:#94a3b8;font-size:8px;">Sistema de Gestão de Frota e Manutenção — Documento de uso interno</div>`;
+            el.innerHTML = html;
+
+            html2pdf().set({
+                margin: [10, 10, 10, 10],
+                filename: `Relatorio_Manutencao_${hoje()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            }).from(el).save();
+        }
+
+        /* ===================================================
+           WHATSAPP
+        =================================================== */
+        function enviarWhatsApp() {
+            const d = JSON.parse(localStorage.getItem('cadastro_manutencao_seguranca') || '[]').filter(x => x.status === 'Pendente');
+            if (d.length === 0) { alert('Não há pendências para enviar.'); return; }
+            const h = hoje();
+            let msg = `*🚛 RELATÓRIO DE PENDÊNCIAS DE FROTA*\n📅 ${new Date().toLocaleDateString('pt-BR')}\n${'─'.repeat(30)}\n\n`;
+            d.forEach((x, i) => {
+                const isAt = x.retorno && x.retorno < h;
+                msg += `${i + 1}. ${isAt ? '🔴' : '🟡'} *Frota: ${x.frota}*\n`;
+                if (x.placa) msg += `   🔖 Placa: ${x.placa}`;
+                if (x.modelo) msg += ` | Modelo: ${x.modelo}`;
+                msg += '\n';
+                if (x.dataProg) msg += `   📅 Programado: ${fmtData(x.dataProg)}\n`;
+                if (x.retorno) msg += `   🔄 Retorno: ${fmtData(x.retorno)}\n`;
+                if (x.tipo?.length) msg += `   🔧 Serviços: ${x.tipo.join(', ')}\n`;
+                if (isAt) msg += `   ⚠️ *EM ATRASO DE RETORNO*\n`;
+                msg += '\n';
+            });
+            msg += `${'─'.repeat(30)}\n_Total de pendências: ${d.length}_`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        /* ===================================================
+           TOAST
+        =================================================== */
+        function showToast(msg, tipo = 'success') {
+            document.querySelectorAll('.toast').forEach(t => t.remove());
+            const colors = { success: '#10b981', danger: '#ef4444', warning: '#f59e0b' };
+            const icons = { success: 'fa-check-circle', danger: 'fa-trash-alt', warning: 'fa-exclamation-triangle' };
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = colors[tipo] || colors.success;
+            toast.innerHTML = `<i class="fas ${icons[tipo] || icons.success}"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>

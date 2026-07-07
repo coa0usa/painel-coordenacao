@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiControl - Entrada Premium</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.5; }
+
+        /* Barra Superior */
+        header {
+            background: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.1rem; color: #334155; }
+        .brand span { text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .actions { display: flex; gap: 10px; }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .btn-primary { background: var(--primary); color: white; border: none; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: white; color: var(--text-main); }
+        .btn-secondary:hover { background: #f1f5f9; }
+
+        /* Container Principal */
+        main { padding: 2rem; max-width: 100%; margin: 0 auto; display: grid; gap: 2rem; }
+
+        /* Barra de Filtros Dinâmicos */
+        .filter-bar {
+            background: white;
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            align-items: end;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            background-color: #fff;
+        }
+
+        /* Indicadores em Cards (KPIs) */
+        .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+        .kpi-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .kpi-info h4 { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+        .kpi-info p { font-size: 1.25rem; font-weight: 700; color: #0f172a; white-space: nowrap; }
+        .kpi-icon { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-size: 1.1rem; flex-shrink: 0; }
+
+        /* Área de Painéis Gráficos - Modificado para ocupar a largura total */
+        .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        
+        .chart-card { background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); min-height: 380px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .chart-card h3 { font-size: 0.9rem; margin-bottom: 1.5rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+        /* Estrutura de Tabela com Cabeçalho Fixo */
+        .table-container { 
+            background: white; 
+            border-radius: 8px; 
+            border: 1px solid var(--border); 
+            overflow-x: auto; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+            max-height: 600px;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+        
+        th { 
+            background: #ffffff; 
+            padding: 14px 16px; 
+            font-weight: 500; 
+            color: var(--text-muted); 
+            border-bottom: 1px solid var(--border); 
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: #334155; white-space: nowrap; vertical-align: middle; }
+
+        /* Reduzir largura das colunas Frota e Frente */
+        #main-table th:nth-child(1), 
+        #main-table td:nth-child(1),
+        #main-table th:nth-child(2), 
+        #main-table td:nth-child(2) { width: 80px; padding-left: 8px; padding-right: 8px; }
+
+        tr:hover td { background-color: #f8fafc; }
+
+        /* Alertas de Desvio Operacional */
+        .cell-time-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .time-value { font-weight: 500; }
+        .time-deviation { color: var(--danger); font-weight: 600; }
+        .time-fast { color: var(--primary); font-weight: 600; }
+        .sub-bench { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+
+        .status-pill { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .status-cycle { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+        /* Estado Inicial Vazio */
+        #empty-state { text-align: center; padding: 100px 20px; color: var(--text-muted); }
+        #empty-state i { font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem; }
+
+        /* Cabeçalho exclusivo para impressão (Oculto na tela) */
+        .print-header { display: none; }
+
+        /* Otimizações e Regras exclusivas para Impressão de PDF em A4 Paisagem */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm 12mm;
+            }
+            .print-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid var(--primary);
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            .print-header .brand { font-size: 1.8rem; }
+            header, .filter-bar, .actions, #empty-state, .kpi-container, .charts-grid {
+                display: none !important;
+            }
+            body {
+                background: #fff !important;
+                color: #000 !important;
+                font-size: 8pt;
+            }
+            main {
+                padding: 0 !important;
+                gap: 1rem !important;
+            }
+            .table-container {
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                page-break-inside: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            table {
+                page-break-inside: auto;
+            }
+            th {
+                position: static !important;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Cabeçalho visível apenas no PDF -->
+<div class="print-header">
+    <div class="brand">
+        <i class="fas fa-truck-moving" style="color: var(--primary);"></i>
+        <span>CONTROLE DE CICLO CANAVIEIRO</span>
+    </div>
+    <div style="text-align: right;">
+        <small style="display: block; color: var(--text-muted); font-size: 0.7rem;">Controle de Atrasos de Ciclo</small>
+        <strong id="print-timestamp" style="font-size: 0.8rem;"></strong>
+    </div>
+</div>
+
+<header>
+    <div class="brand">
+        <i class="fas fa-bars"></i>
+        <div style="display: flex; flex-direction: column; line-height: 1.2;">
+            <span>ENTRADA</span>
+            <small id="last-update" style="font-size: 0.65rem; color: var(--text-muted); font-weight: 400;"></small>
+        </div>
+    </div>
+    <div class="actions">
+        <a href="painel_consolidado.html" class="btn btn-secondary" style="text-decoration: none; color: inherit;">
+            <i class="fas fa-chart-line"></i> Painel Consolidado
+        </a>
+        <button class="btn btn-secondary" onclick="generatePDF()">
+            <i class="fas fa-file-pdf"></i> Gerar PDF A4
+        </button>
+        <button class="btn btn-secondary" onclick="exportToExcel()">
+            <i class="fas fa-file-excel"></i> Exportar Filtro
+        </button>
+        <button class="btn btn-secondary" onclick="clearAllData()">
+            <i class="fas fa-trash"></i> Limpar Dados
+        </button>
+        <div class="btn btn-primary" style="position:relative; overflow:hidden;">
+            <i class="fas fa-file-import"></i> Importar Planilha
+            <input type="file" id="input-excel" accept=".csv, .xlsx" style="position:absolute; opacity:0; left:0; top:0; height:100%; width:100%; cursor:pointer;">
+        </div>
+    </div>
+</header>
+
+<main id="main-content" style="display:none;">
+    
+    <section class="filter-bar">
+        <div class="form-group">
+            <label>Localizar Frota</label>
+            <input type="text" id="search-equip" placeholder="Digite o prefixo..." oninput="applyFilters()">
+        </div>
+        <div class="form-group">
+            <label>Localizar Frente</label>
+            <select id="search-frente" onchange="applyFilters()">
+                <option value="ALL">Todas as Frentes</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Filtrar Horário (Data Chegada)</label>
+            <select id="filter-horario" onchange="applyFilters()">
+                <option value="ALL">Todos os Horários</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Filtrar Fazenda</label>
+            <select id="filter-fazenda" onchange="applyFilters()">
+                <option value="ALL">Todas as Fazendas</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="kpi-container">
+        <div class="kpi-card">
+            <div class="kpi-info">
+                <h4>Ciclo Médio Total</h4>
+                <p id="kpi-total">00h 00min</p>
+            </div>
+            <div class="kpi-icon" style="background: #f1f5f9; color: #475569;"><i class="fas fa-clock"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-info">
+                <h4>Média Tempo Ida</h4>
+                <p id="kpi-ida">00min</p>
+            </div>
+            <div class="kpi-icon" style="background: #e0f2fe; color: #0369a1;"><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-info">
+                <h4>Média Carregamento</h4>
+                <p id="kpi-carregamento">00min</p>
+            </div>
+            <div class="kpi-icon" style="background: #eafaf1; color: #2e7d32;"><i class="fas fa-hourglass-start"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-info">
+                <h4>Média Tempo Volta</h4>
+                <p id="kpi-volta">00min</p>
+            </div>
+            <div class="kpi-icon" style="background: #fef3c7; color: #d97706;"><i class="fas fa-arrow-left"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-info">
+                <h4>Média Indústria</h4>
+                <p id="kpi-ind">00min</p>
+            </div>
+            <div class="kpi-icon" style="background: #fee2e2; color: #b91c1c;"><i class="fas fa-industry"></i></div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-info">
+                <h4>Ciclos Completos</h4>
+                <p id="kpi-count">0</p>
+            </div>
+            <div class="kpi-icon" style="background: #fafafa; color: #1e293b;"><i class="fas fa-truck"></i></div>
+        </div>
+    </section>
+
+    <section class="charts-grid">
+        <div class="chart-card">
+            <h3>⏱️ Composição Cronológica do Ciclo por Equipamento (Top 20)</h3>
+            <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="table-container">
+        <table id="main-table">
+            <thead>
+                <tr>
+                    <th>Frota</th>
+                    <th>Frente</th>
+                    <th>Fazenda</th>
+                    <th>Data de Alocação</th>
+                    <th>Data Chegada <i class="fas fa-sort-alpha-down" style="margin-left: 5px; color: var(--primary);"></i></th>
+                    <th>Vel. Média Ida</th>
+                    <th>Vel. Média Volta</th>
+                    <th>Tempo Ida</th>
+                    <th>Tempo Carreg.</th>
+                    <th>Tempo Volta</th>
+                    <th>Tempo Ind.</th>
+                    <th>Tempo Total</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </section>
+</main>
+
+<div id="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <h2>Nenhum registro carregado</h2>
+    <p style="margin-top: 6px; font-size: 0.9rem;">Clique em "Importar Planilha" para carregar o arquivo exportado do seu system.</p>
+</div>
+
+<script>
+    Chart.register(ChartDataLabels);
+
+    let db = [];
+    let currentFilteredData = [];
+    let benchmarksFazenda = {};
+    let charts = {};
+
+    // Carregar dados automaticamente ao abrir a página
+    window.onload = function() {
+        loadFromLocalStorage();
+    };
+
+    document.getElementById('input-excel').addEventListener('change', handleUpload);
+
+    function saveToLocalStorage() {
+        const now = new Date().toLocaleString('pt-BR');
+        localStorage.setItem('logicontrol_db', JSON.stringify(db));
+        localStorage.setItem('logicontrol_bench', JSON.stringify(benchmarksFazenda));
+        localStorage.setItem('logicontrol_last_update', now);
+        document.getElementById('last-update').innerText = 'Última atualização: ' + now;
+    }
+
+    function loadFromLocalStorage() {
+        const savedDb = localStorage.getItem('logicontrol_db');
+        const savedBench = localStorage.getItem('logicontrol_bench');
+        const savedUpdate = localStorage.getItem('logicontrol_last_update');
+        
+        if (savedDb && savedBench) {
+            db = JSON.parse(savedDb);
+            benchmarksFazenda = JSON.parse(savedBench);
+
+            populateFilter('filter-horario', 'horario');
+            populateFilter('filter-fazenda', 'fazenda');
+            populateFilter('search-frente', 'frente');
+
+            if(savedUpdate) document.getElementById('last-update').innerText = 'Última atualização: ' + savedUpdate;
+
+            document.getElementById('empty-state').style.display = 'none';
+            document.getElementById('main-content').style.display = 'grid';
+            
+            applyFilters();
+        }
+    }
+
+    function clearAllData() {
+        if (confirm("Deseja apagar todos os dados do relatório?")) {
+            localStorage.removeItem('logicontrol_db');
+            localStorage.removeItem('logicontrol_bench');
+            localStorage.removeItem('logicontrol_last_update');
+            location.reload();
+        }
+    }
+
+    function handleUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        
+        reader.onload = function(evt) {
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, {type: 'array', cellDates: true});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            // Importar como matriz (header: 1) para localizar o cabeçalho real no arquivo
+            const json = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: ''});
+            processData(json);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function fuzzy(obj, keys) {
+        const entryKeys = Object.keys(obj);
+        const norm = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[º°]/g, "o").replace(/[ª]/g, "a").replace(/coluna/g, "col").trim();
+        
+        for (let k of keys) {
+            const target = norm(k);
+            const match = entryKeys.find(ek => {
+                const normalized = norm(ek);
+                if (normalized === target) return true;
+                // Ajuste para evitar match parcial indesejado, mas permitir "1 col Real" para "1 coluna Real"
+                if (target.length <= 3 && normalized !== target) return false; 
+                return normalized.includes(target);
+            });
+            if (match) {
+                // console.log(`[FUZZY] Procurando por "${k}" (normalizado: "${target}") -> Encontrado: "${match}" (valor: "${obj[match]}")`);
+                return obj[match];
+            }
+        }
+        return '';
+    }
+
+    function formatDate(val) {
+        if (!val || val === '-' || val === '') return '-';
+        if (val instanceof Date) {
+            const d = String(val.getDate()).padStart(2, '0');
+            const m = String(val.getMonth() + 1).padStart(2, '0');
+            const y = val.getFullYear();
+            const h = String(val.getHours()).padStart(2, '0');
+            const min = String(val.getMinutes()).padStart(2, '0');
+            return val.getHours() === 0 && val.getMinutes() === 0 ? `${d}/${m}/${y}` : `${d}/${m}/${y} ${h}:${min}`;
+        }
+        return String(val);
+    }
+
+    function timeToMin(val) {
+        if (val === undefined || val === null || val === '-' || val === '0' || val === '00:00:00' || val === '') return 0;
+        
+        // Se for número (Excel armazena tempo como fração de dia: 1 = 24h)
+        if (typeof val === 'number') {
+            // Se for menor que 1, tratamos como fração de dia do Excel. Caso contrário, assume-se minutos.
+            return val < 1 ? val * 1440 : val;
+        }
+
+        // Se for objeto Date (XLSX com cellDates: true)
+        if (val instanceof Date) {
+            return val.getHours() * 60 + val.getMinutes() + val.getSeconds() / 60;
+        }
+
+        const str = String(val).trim();
+        const p = str.split(':');
+        
+        if (p.length === 3) { // HH:MM:SS
+            return (parseInt(p[0], 10) * 60 + parseInt(p[1], 10) + parseInt(p[2], 10) / 60);
+        } else if (p.length === 2) { // HH:MM
+            return (parseInt(p[0], 10) * 60 + parseInt(p[1], 10));
+        }
+        
+        const num = parseFloat(str.replace(',', '.'));
+        return isNaN(num) ? 0 : num;
+    }
+
+    function formatMin(m) {
+        if (!m || m <= 0) return '-';
+        const h = Math.floor(m/60).toString().padStart(2, '0');
+        const min = Math.floor(m%60).toString().padStart(2, '0');
+        const s = Math.floor((m % 1) * 60).toString().padStart(2, '0');
+        return `${h}:${min}:${s}`;
+    }
+
+    function formatToHoursMinutes(minutesDecimal) {
+        const totalMinutos = Math.round(minutesDecimal);
+        if (totalMinutos <= 0) return "00min";
+        
+        const horas = Math.floor(totalMinutos / 60);
+        const minutos = totalMinutos % 60;
+        
+        if (horas > 0) {
+            return `${String(horas).padStart(2, '0')}h ${String(minutos).padStart(2, '0')}min`;
+        } else {
+            return `${String(minutos).padStart(2, '0')}min`;
+        }
+    }
+
+    function extrairFaixaHoraria(dataChegadaStr) {
+        if (!dataChegadaStr || dataChegadaStr === '-') return 'Sem Horário';
+        if (dataChegadaStr instanceof Date) return `${String(dataChegadaStr.getHours()).padStart(2, '0')}:00`;
+        if (String(dataChegadaStr).includes(' ')) {
+            const horaParte = String(dataChegadaStr).split(' ')[1];
+            if (horaParte && horaParte.includes(':')) {
+                return `${horaParte.split(':')[0].padStart(2, '0')}:00`;
+            }
+        } else if (String(dataChegadaStr).includes(':')) {
+            return `${String(dataChegadaStr).split(':')[0].padStart(2, '0')}:00`;
+        }
+        return 'Sem Horário';
+    }
+
+    function processData(rawRows) {
+        // 1. Localizar a linha que contém os cabeçalhos (procura por Equipamento ou Prefixo)
+        let headerIdx = rawRows.findIndex(r => 
+            Array.isArray(r) && r.some(cell => {
+                const c = String(cell || "").toLowerCase();
+                return c.includes('equipamento') || c.includes('prefixo');
+            })
+        );
+        
+        if (headerIdx === -1) headerIdx = 0;
+        
+        const headers = rawRows[headerIdx];
+        const dataRows = rawRows.slice(headerIdx + 1);
+        
+        // 2. Converter matriz para lista de objetos usando os cabeçalhos encontrados
+        const rows = dataRows.map(row => {
+            let obj = {};
+            headers.forEach((h, i) => { if (h !== undefined && h !== null) obj[h] = row[i]; });
+            // Mapeamento direto por índice de coluna conforme solicitado (E=4, H=7, L=11, O=14, S=18)
+            obj['_colE'] = row[4];  // Coluna E
+            obj['_colH'] = row[7];  // Coluna H
+            obj['_colL'] = row[11]; // Coluna L
+            obj['_colO'] = row[14]; // Coluna O
+            obj['_colS'] = row[18]; // Coluna S
+            return obj;
+        });
+
+        const unique = new Map();
+        let fenzas = {};
+
+        rows.forEach(r => {
+            const equip = fuzzy(r, ['Equipamento', 'Prefixo', 'Equip']);
+            if (!equip) return;
+
+            // Captura direta das colunas especificadas
+            const tIda = r['_colH'];
+            const tCarr = r['_colL'];
+            const tVta = r['_colO'];
+            const tInd = r['_colS'];
+            const alocRaw = r['_colE']; 
+            const distRaw = fuzzy(r, ['Velocidade Média Ida', 'Velocidade MÃ©dia Ida']); 
+            const vtaVelRaw = fuzzy(r, ['Velocidade Média Volta', 'Velocidade MÃ©dia Volta']); 
+            const llegadaRaw = fuzzy(r, ['Data de Chegada', 'Data Chegada', 'Chegada']) || '-';
+            
+            // console.log(`--- Linha ${rows.indexOf(r) + 1} ---`);
+            // console.log(`Equipamento: ${equip}`);
+            // console.log(`Data Alocação (raw): ${alocRaw}`);
+            // console.log(`Data Chegada (raw): ${llegadaRaw}`);
+            // console.log(`Tempo Ida (raw): ${tIda}`);
+            // console.log(`Tempo Carregamento (raw): ${tCarr}`);
+            // console.log(`Tempo Volta (raw): ${tVta}`);
+            // console.log(`Tempo Indústria (raw): ${tInd}`);
+            // console.log(`Distância (raw): ${distRaw}`);
+            // console.log(`Velocidade Volta (raw): ${vtaVelRaw}`);
+
+            const ida = timeToMin(tIda);
+            const carr = timeToMin(tCarr);
+            const vta = timeToMin(tVta);
+            const ind = timeToMin(tInd);
+
+            const total = ida + carr + vta + ind;
+
+            // Filtra linhas vazias: requer equipamento e pelo menos algum dado de tempo ou chegada
+            if (equip && (total > 0 || llegadaRaw !== '-')) {
+                const alocStr = formatDate(alocRaw);
+                const llegadaStr = formatDate(llegadaRaw);
+                const faixaHoraria = extrairFaixaHoraria(llegadaRaw);
+                const fazendaStr = String(fuzzy(r, ['fazenda']) || '-').trim();
+                const key = `${equip}_${alocStr}_${llegadaStr}_${tIda}`;
+                
+                if (!unique.has(key)) {
+                    const vIdaNum = parseFloat(String(distRaw).replace(',', '.')) || 0;
+                    const vVtaNum = parseFloat(String(vtaVelRaw).replace(',', '.')) || 0;
+
+                    const item = {
+                        equip, aloc: alocStr, ida, carr, vta, ind, total,
+                        frente: fuzzy(r, ['frente']) || '-',
+                        fazenda: fazendaStr,
+                        chegada: llegadaStr,
+                        horario: faixaHoraria,
+                        vIdaNum, vVtaNum,
+                        dist: distRaw || '0.0',
+                        vtaVel: vtaVelRaw || '0.0',
+                        tIda: formatMin(ida), tCarr: formatMin(carr), tVta: formatMin(vta), tInd: formatMin(ind)
+                    };
+                    unique.set(key, item);
+
+                    if(fazendaStr !== '-') {
+                        if(!fenzas[fazendaStr]) fenzas[fazendaStr] = { idas: [], voltas: [], vIdas: [], vVoltas: [] };
+                        fenzas[fazendaStr].idas.push(ida);
+                        fenzas[fazendaStr].voltas.push(vta);
+                        if(vIdaNum > 0) fenzas[fazendaStr].vIdas.push(vIdaNum);
+                        if(vVtaNum > 0) fenzas[fazendaStr].vVoltas.push(vVtaNum);
+                    }
+                }
+            }
+        });
+
+        db = Array.from(unique.values());
+        
+        benchmarksFazenda = {};
+        Object.keys(fenzas).forEach(fz => {
+            const arrIda = fenzas[fz].idas;
+            const arrVta = fenzas[fz].voltas;
+            const arrVelI = fenzas[fz].vIdas || [];
+            const arrVelV = fenzas[fz].vVoltas || [];
+            benchmarksFazenda[fz] = {
+                avgIda: arrIda.reduce((a,b)=>a+b,0) / arrIda.length,
+                avgVta: arrVta.reduce((a,b)=>a+b,0) / arrVta.length,
+                avgVelIda: arrVelI.length ? arrVelI.reduce((a,b)=>a+b,0) / arrVelI.length : 0,
+                avgVelVta: arrVelV.length ? arrVelV.reduce((a,b)=>a+b,0) / arrVelV.length : 0
+            };
+        });
+        
+        populateFilter('filter-horario', 'horario');
+        populateFilter('filter-fazenda', 'fazenda');
+        populateFilter('search-frente', 'frente');
+
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('main-content').style.display = 'grid';
+        
+        saveToLocalStorage();
+        applyFilters();
+    }
+
+    function populateFilter(id, key) {
+        const select = document.getElementById(id);
+        const options = [...new Set(db.map(d => d[key]))].sort();
+        
+        let labelText = 'Selecionar';
+        if (id === 'filter-horario') labelText = 'Todos os Horários';
+        else if (id === 'filter-fazenda') labelText = 'Todas as Fazendas';
+        else if (id === 'search-frente') labelText = 'Todas as Frentes';
+
+        select.innerHTML = `<option value="ALL">${labelText}</option>`;
+        
+        options.forEach(opt => {
+            if(opt && opt !== '-' && opt !== 'Sem Horário') {
+                select.innerHTML += `<option value="${opt}">${opt}</option>`;
+            }
+        });
+    }
+
+    function applyFilters() {
+        const search = document.getElementById('search-equip').value.toLowerCase();
+        const searchFrente = document.getElementById('search-frente').value.toLowerCase();
+        const horario = document.getElementById('filter-horario').value;
+        const fazenda = document.getElementById('filter-fazenda').value;
+
+        currentFilteredData = db.filter(d => {
+            return (search === '' || String(d.equip).toLowerCase().includes(search)) &&
+                   (searchFrente === 'all' || String(d.frente).toLowerCase().includes(searchFrente)) &&
+                   (horario === 'ALL' || String(d.horario) === horario) &&
+                   (fazenda === 'ALL' || String(d.fazenda) === fazenda);
+        });
+
+        currentFilteredData.sort((a, b) => String(a.chegada).localeCompare(String(b.chegada)));
+
+        renderMetrics(currentFilteredData);
+        renderTable(currentFilteredData);
+    }
+
+    function renderMetrics(data) {
+        const valid = data.filter(d => d.total > 0);
+        const avg = (key) => valid.length ? (valid.reduce((a,b) => a + b[key], 0) / valid.length) : 0;
+
+        document.getElementById('kpi-total').innerText = formatToHoursMinutes(avg('total'));
+        document.getElementById('kpi-ida').innerText = formatToHoursMinutes(avg('ida'));
+        document.getElementById('kpi-carregamento').innerText = formatToHoursMinutes(avg('carr'));
+        document.getElementById('kpi-volta').innerText = formatToHoursMinutes(avg('vta'));
+        document.getElementById('kpi-ind').innerText = formatToHoursMinutes(avg('ind'));
+        document.getElementById('kpi-count').innerText = data.length;
+
+        updateCharts(valid);
+    }
+
+    function updateCharts(data) {
+        // Alterado de slice(0, 10) para slice(0, 20) para exibir mais equipamentos
+        const topData = data.slice(0, 20); 
+        
+        if(charts.main) charts.main.destroy();
+
+        // Gráfico de Barras Expandido (Top 20)
+        charts.main = new Chart(document.getElementById('mainChart'), {
+            type: 'bar',
+            data: {
+                labels: topData.map(d => d.equip),
+                datasets: [
+                    { label: 'Tempo Ida', data: topData.map(d => d.ida), backgroundColor: '#38bdf8' },
+                    { label: 'Carregamento', data: topData.map(d => d.carr), backgroundColor: '#4ade80' },
+                    { label: 'Tempo Volta', data: topData.map(d => d.vta), backgroundColor: '#fbbf24' },
+                    { label: 'Indústria', data: topData.map(d => d.ind), backgroundColor: '#f87171' }
+                ]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { position: 'bottom' },
+                    datalabels: {
+                        color: '#1e293b',
+                        font: { weight: 'bold', size: 9 }, // Fonte levemente reduzida para não encavalar dados
+                        formatter: (val) => val > 5 ? Math.round(val) + 'm' : '',
+                        anchor: 'center',
+                        align: 'center'
+                    }
+                },
+                scales: { x: { stacked: true }, y: { stacked: true } } 
+            }
+        });
+    }
+
+    function createTimeCellHTML(currentMin, avgMin) {
+        if(!currentMin || currentMin <= 0) return `<td>-</td>`;
+        
+        const timeStr = formatMin(currentMin);
+        if(!avgMin || avgMin <= 0) {
+            return `<td><div class="cell-time-container"><span class="time-value">${timeStr}</span></div></td>`;
+        }
+
+        const avgStr = formatMin(avgMin);
+        const isDelayed = currentMin > (avgMin + 10); 
+        const isFast = currentMin < (avgMin - 10);
+
+        let icon = '';
+        let colorClass = '';
+
+        if (isDelayed) {
+            icon = '<i class="fas fa-exclamation-triangle" style="font-size:0.75rem; margin-right:2px;"></i> ';
+            colorClass = 'time-deviation';
+        } else if (isFast) {
+            icon = '<i class="fas fa-gauge-high" style="font-size:0.75rem; margin-right:2px;"></i> ';
+            colorClass = 'time-fast';
+        }
+        
+        return `
+            <td>
+                <div class="cell-time-container">
+                    <span class="time-value ${colorClass}">${icon}${timeStr}</span>
+                    <span class="sub-bench">Fz Média: ${avgStr.substring(0,5)}</span>
+                </div>
+            </td>
+        `;
+    }
+
+    function createVelCellHTML(currentVel, avgVel) {
+        if(!currentVel || currentVel <= 0) return `<td>-</td>`;
+        
+        const velStr = currentVel.toFixed(1);
+        if(!avgVel || avgVel <= 0) {
+            return `<td><div class="cell-time-container"><span class="time-value">${velStr}</span></div></td>`;
+        }
+
+        const avgStr = avgVel.toFixed(1);
+        const isSlow = currentVel < (avgVel - 3); 
+        const isHigh = currentVel > (avgVel + 3); 
+
+        let icon = '';
+        let colorClass = '';
+
+        if (isSlow) {
+            icon = '<i class="fas fa-exclamation-triangle" style="font-size:0.75rem; margin-right:2px;"></i> ';
+            colorClass = 'time-deviation';
+        } else if (isHigh) {
+            icon = '<i class="fas fa-gauge-high" style="font-size:0.75rem; margin-right:2px;"></i> ';
+            colorClass = 'time-fast';
+        }
+        
+        return `
+            <td>
+                <div class="cell-time-container">
+                    <span class="time-value ${colorClass}">${icon}${velStr}</span>
+                    <span class="sub-bench">Fz Média: ${avgStr}</span>
+                </div>
+            </td>
+        `;
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        data.forEach(d => {
+            const tr = document.createElement('tr');
+            const bench = benchmarksFazenda[d.fazenda] || { avgIda: 0, avgVta: 0, avgVelIda: 0, avgVelVta: 0 };
+
+            let rowHTML = `
+                <td style="font-weight:700">${d.equip}</td>
+                <td>${d.frente}</td>
+                <td>${d.fazenda}</td>
+                <td>${d.aloc}</td>
+                <td>${d.chegada}</td>
+            `;
+
+            rowHTML += createVelCellHTML(d.vIdaNum, bench.avgVelIda);
+            rowHTML += createVelCellHTML(d.vVtaNum, bench.avgVelVta);
+
+            rowHTML += createTimeCellHTML(d.ida, bench.avgIda);
+            rowHTML += `<td><div class="cell-time-container"><span class="time-value">${d.tCarr}</span></div></td>`;
+            rowHTML += createTimeCellHTML(d.vta, bench.avgVta);
+            
+            rowHTML += `
+                <td><div class="cell-time-container"><span class="time-value">${d.tInd}</span></div></td>
+                <td><span class="status-pill status-cycle">${formatMin(d.total)}</span></td>
+            `;
+
+            tr.innerHTML = rowHTML;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function generatePDF() {
+        const now = new Date().toLocaleString('pt-BR');
+        document.getElementById('print-timestamp').innerText = "Impresso em: " + now;
+        window.print();
+    }
+
+    function exportToExcel() {
+        if(currentFilteredData.length === 0) return alert('Nenhum dado na tela para exportar.');
+        const wb = XLSX.utils.book_new();
+        
+        const exportable = currentFilteredData.map(d => ({
+            "Frota": d.equip,
+            "Frente": d.frente,
+            "Fazenda": d.fazenda,
+            "Data Alocação": d.aloc,
+            "Data Chegada": d.chegada,
+            "Velocidade Média Ida": d.dist,
+            "Velocidade Média Volta": d.vtaVel,
+            "Tempo Ida": d.tIda,
+            "Tempo Carreg.": d.tCarr,
+            "Tempo Volta": d.tVta,
+            "Tempo Ind.": d.tInd,
+            "Tempo Total Ciclo": formatMin(d.total)
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportable);
+        XLSX.utils.book_append_sheet(wb, ws, "Ciclos Filtrados");
+        XLSX.writeFile(wb, "LogiControl_Relatorio_Filtrado.xlsx");
+    }
+</script>
+
+</body>
+</html>

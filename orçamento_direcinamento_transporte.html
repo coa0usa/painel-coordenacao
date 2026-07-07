@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Transporte — Safra 25/26</title>
+    <meta name="description" content="Controle de orçamento e realizado de transporte de colaboradores">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* ===== TOKENS ===== */
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --orcamento: #4f46e5;
+            --realizado: #0ea5e9;
+            --diferenca: #10b981;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --sidebar: #1e293b;
+            --sidebar-hover: #334155;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--text);
+            display: flex; min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px; background: var(--sidebar); color: var(--white);
+            display: flex; flex-direction: column; padding: 24px 16px;
+            position: fixed; height: 100vh; z-index: 100; overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-brand {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0 8px; margin-bottom: 32px;
+        }
+        .brand-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-size: 1rem; color: white; flex-shrink: 0;
+        }
+        .brand-text { font-size: 0.72rem; font-weight: 800; color: #818cf8; line-height: 1.4; flex: 1; }
+        .btn-sidebar-toggle {
+            background: transparent; border: none; color: #64748b;
+            cursor: pointer; padding: 4px 6px; font-size: 1rem;
+            display: flex; align-items: center; line-height: 1; transition: 0.2s;
+        }
+        .btn-sidebar-toggle:hover { color: white; }
+
+        .nav-label {
+            font-size: 0.63rem; font-weight: 700; text-transform: uppercase;
+            color: #475569; letter-spacing: 0.08em; padding: 0 8px;
+            margin-bottom: 6px; display: block;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+            color: #94a3b8; border-radius: 8px; font-size: 0.875rem;
+            font-weight: 500; cursor: pointer; transition: all 0.2s;
+            border: none; background: none; width: 100%; text-align: left;
+            margin-bottom: 3px;
+        }
+        .nav-link:hover { background: var(--sidebar-hover); color: white; }
+        .nav-link.active { background: var(--primary); color: white; }
+        .nav-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+
+        .sidebar-footer {
+            margin-top: auto; padding-top: 16px; border-top: 1px solid #334155;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .sidebar-footer button {
+            display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+            border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; border: none; transition: 0.2s; width: 100%;
+            font-family: inherit;
+        }
+        .btn-bk { background: #334155; color: #94a3b8; }
+        .btn-bk:hover { background: #475569; color: white; }
+        .btn-im { background: transparent; color: #64748b; border: 1px solid #334155 !important; }
+        .btn-im:hover { background: #334155; color: #94a3b8; }
+        .btn-pdf-nav { background: #1e3a5f; color: #93c5fd; }
+        .btn-pdf-nav:hover { background: #1d4ed8; color: white; }
+
+        /* ===== MAIN ===== */
+        .main-content {
+            flex: 1; margin-left: 260px; padding: 28px 32px;
+            min-height: 100vh; transition: margin-left 0.3s ease;
+        }
+        body.sidebar-hidden .sidebar { transform: translateX(-260px); }
+        body.sidebar-hidden .main-content { margin-left: 0; }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 {
+            font-size: 1.5rem; font-weight: 800; color: var(--sidebar);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .page-header h1 i { color: var(--primary); font-size: 1.3rem; }
+        .page-header p { font-size: 0.84rem; color: var(--text-muted); margin-top: 5px; }
+        .btn-menu-toggle {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+            background: white; cursor: pointer; font-size: 0.95rem; color: var(--text-muted);
+            transition: 0.2s; flex-shrink: 0;
+        }
+        .btn-menu-toggle:hover { background: #f1f5f9; color: var(--text); }
+
+        /* ===== SECTION ===== */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* ===== KPI GRID ===== */
+        .kpi-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 16px; margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: var(--card); border-radius: 12px; padding: 18px 20px;
+            border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            display: flex; align-items: center; gap: 14px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .kpi-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .kpi-ico {
+            width: 46px; height: 46px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.15rem; flex-shrink: 0;
+        }
+        .ico-indigo { background: var(--primary-light); color: var(--primary); }
+        .ico-blue { background: #e0f2fe; color: #0284c7; }
+        .ico-green { background: var(--success-light); color: var(--success); }
+        .ico-yellow { background: var(--warning-light); color: var(--warning); }
+        .ico-red { background: var(--danger-light); color: var(--danger); }
+        .kpi-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .kpi-val { font-size: 1.3rem; font-weight: 800; color: var(--text); line-height: 1.2; margin-top: 3px; }
+        .kpi-val.neg { color: var(--danger); }
+        .kpi-val.pos { color: var(--success); }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--card); border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            overflow: hidden; margin-bottom: 24px;
+        }
+        .card-header {
+            padding: 14px 20px; border-bottom: 1px solid var(--border);
+            background: #fafafa; display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: 10px;
+        }
+        .card-title {
+            font-size: 0.9rem; font-weight: 700; color: var(--text);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .card-title i { color: var(--primary); }
+        .card-body { padding: 0; }
+        .card-footer { padding: 12px 20px; background: #fafafa; border-top: 1px solid var(--border); }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 13px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 600; cursor: pointer; border: 1px solid transparent;
+            transition: all 0.2s; font-family: inherit; white-space: nowrap;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { background: white; border-color: var(--border); color: var(--text); }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-xl { background: #217346; color: white; }
+        .btn-xl:hover { background: #185c39; }
+        .btn-pdf { background: #b91c1c; color: white; }
+        .btn-pdf:hover { background: #991b1b; }
+        .btn-sm { padding: 5px 10px; font-size: 0.74rem; border-radius: 6px; }
+        .btn-del { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .btn-del:hover { background: var(--danger); color: white; }
+
+        /* ===== TABLE ===== */
+        .table-wrap { overflow-x: auto; max-height: 650px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        thead th {
+            background: #f1f5f9; color: var(--text-muted); font-size: 0.68rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+            padding: 10px 8px; text-align: center; white-space: nowrap;
+            border-bottom: 2px solid var(--border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        thead th:first-child, thead th:nth-child(2) { text-align: center; padding-left: 8px; }
+        tbody td {
+            padding: 6px 8px; border-bottom: 1px solid var(--border);
+            font-size: 0.82rem; color: var(--text); text-align: center;
+            vertical-align: middle;
+        }
+        tbody td:first-child { text-align: center; padding-left: 8px; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f8fafc; }
+        tfoot td {
+            padding: 9px 8px; font-size: 0.8rem; font-weight: 700;
+            color: var(--text); background: #f8fafc;
+            border-top: 2px solid var(--border); text-align: center;
+        }
+        tfoot td:first-child { text-align: center; padding-right: 12px; padding-left: 14px; }
+
+        /* table inputs */
+        .ti {
+            width: 100%; padding: 5px 6px; border: 1px solid transparent;
+            border-radius: 6px; font-size: 0.8rem; font-family: inherit;
+            color: var(--text); background: transparent; outline: none;
+            transition: 0.2s; text-align: center;
+        }
+        .ti:hover { border-color: var(--border); background: white; }
+        .ti:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 2px rgba(79,70,229,0.1); }
+        .ti.wide { width: 100%; text-align: center; }
+        .ts {
+            padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 0.8rem; font-family: inherit; color: var(--text);
+            background: white; outline: none; cursor: pointer; transition: 0.2s;
+            width: 110px;
+        }
+        .ts:focus { border-color: var(--primary); }
+        .total-linha, .total-linha-realizado {
+            font-weight: 700; color: var(--primary); white-space: nowrap;
+        }
+        .total-col, .total-col-realizado {
+            font-weight: 700; white-space: nowrap;
+        }
+        td#grand-total, td#grand-total-realizado { font-weight: 800; }
+        .hide-reserva .col-reserva { display: none !important; }
+
+        /* Diferença table */
+        .diff-pos { color: var(--success) !important; font-weight: 700; }
+        .diff-neg { color: var(--danger) !important; font-weight: 700; }
+
+        /* ===== SEARCH ===== */
+        .srch { position: relative; }
+        .srch i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.75rem; pointer-events: none; }
+        .srch input {
+            padding: 7px 10px 7px 30px; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.8rem; outline: none; transition: 0.2s; width: 190px;
+            background: white; font-family: inherit; color: var(--text);
+        }
+        .srch input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+        /* ===== CHART ===== */
+        .chart-container { padding: 20px; position: relative; height: 380px; }
+        .chart-type-btns { display: flex; gap: 6px; }
+        .chart-type-btn {
+            padding: 5px 12px; border-radius: 6px; font-size: 0.75rem;
+            font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+            background: white; color: var(--text-muted); transition: 0.2s;
+            font-family: inherit;
+        }
+        .chart-type-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* ===== FORECAST TABLE ===== */
+        .just-input {
+            width: 180px; padding: 5px 8px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 0.8rem; font-family: inherit;
+            outline: none; transition: 0.2s; text-align: left; background: #fafafa;
+        }
+        .just-input:focus { border-color: var(--primary); background: white; }
+
+        /* ===== PROPRIEDADES BADGE ===== */
+        .prop-badge {
+            display: inline-flex; align-items: center; padding: 2px 10px;
+            border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .prop-sirilo { background: #dbeafe; color: #1d4ed8; }
+        .prop-itamaraty { background: #dcfce7; color: #15803d; }
+        .prop-other { background: #f1f5f9; color: #475569; }
+        #tabelaResumoSirilo thead th, #tabelaRelatorioSiriloProcesso thead th { cursor: pointer; user-select: none; transition: background-color 0.2s; }
+        #tabelaResumoSirilo thead th:hover, #tabelaRelatorioSiriloProcesso thead th:hover { background: #e2e8f0; }
+
+        /* ===== AUTOSAVE ===== */
+        .autosave-badge {
+            font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+            border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;
+        }
+        .autosave-ok { background: var(--success-light); color: var(--success); }
+        .autosave-saving { background: var(--warning-light); color: var(--warning); }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px; color: white;
+            padding: 12px 20px; border-radius: 10px; font-size: 0.84rem; font-weight: 600;
+            font-family: 'Inter', sans-serif; z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        @keyframes slideIn { from { transform: translateX(110px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* ===== PDF HIDDEN ===== */
+        @media print { .pdf-hidden { display: none !important; } }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        @media (max-width: 900px) {
+            .main-content { margin-left: 0; }
+            .sidebar { transform: translateX(-260px); }
+            .sidebar.open { transform: translateX(0); }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fas fa-bus"></i></div>
+        <div class="brand-text">TRANSPORTE<br>SAFRA 25/26</div>
+        <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Recolher menu">
+            <i class="fas fa-angle-left"></i>
+        </button>
+    </div>
+
+    <span class="nav-label">Módulos</span>
+    <button class="nav-link active" onclick="showSection('orcamento', this)">
+        <i class="fas fa-calendar-alt"></i> Orçamento
+    </button>
+    <button class="nav-link" onclick="showSection('realizado', this)">
+        <i class="fas fa-check-circle"></i> Realizado
+    </button>
+    <button class="nav-link" onclick="showSection('analise', this)">
+        <i class="fas fa-chart-bar"></i> Análise
+    </button>
+    <button class="nav-link" onclick="showSection('forecast', this)">
+        <i class="fas fa-search-dollar"></i> Forecast
+    </button>
+    
+    <span class="nav-label" style="color: var(--warning); margin-top: 12px;">SIRILO</span>
+    <button class="nav-link" onclick="showSection('apont-sirilo', this)">
+        <i class="fas fa-route"></i> Apont. Sirilo
+    </button>
+    <button class="nav-link" onclick="showSection('cadastro-sirilo', this)">
+        <i class="fas fa-list-alt"></i> Cadastro Sirilo
+    </button>
+    <button class="nav-link" onclick="showSection('relatorio-sirilo', this)">
+        <i class="fas fa-file-invoice-dollar"></i> Relatório Sirilo
+    </button>
+
+    <div class="sidebar-footer">
+        <button class="btn-bk" onclick="exportarBackup()">
+            <i class="fas fa-download"></i> Backup JSON
+        </button>
+        <button class="btn-im" onclick="document.getElementById('inputImport').click()">
+            <i class="fas fa-upload"></i> Importar Backup
+        </button>
+        <button class="btn-pdf-nav" onclick="exportarPDF()">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </button>
+        <input type="file" id="inputImport" style="display:none" accept=".json" onchange="importarBackup(event)">
+    </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main-content" id="relatorio-container">
+
+    <!-- ======== KPIs GLOBAIS (sempre visíveis) ======== -->
+    <div class="page-header">
+        <h1>
+            <button class="btn-menu-toggle" onclick="toggleSidebar()" title="Menu"><i class="fas fa-bars"></i></button>
+            <i class="fas fa-bus"></i> Controle de Transporte
+        </h1>
+        <p>Safra 25/26 — Orçamento vs Realizado por propriedade</p>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-ico ico-indigo"><i class="fas fa-wallet"></i></div>
+            <div>
+                <div class="kpi-label">Orçamento Inicial</div>
+                <div class="kpi-val" id="kpi-orcamento">R$ 0,00</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-ico ico-blue"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="kpi-label">Realizado Acumulado</div>
+                <div class="kpi-val" id="kpi-realizado">R$ 0,00</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-ico ico-yellow"><i class="fas fa-binoculars"></i></div>
+            <div>
+                <div class="kpi-label">Forecast (Reavisado)</div>
+                <div class="kpi-val" id="kpi-reavisado">R$ 0,00</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-ico ico-green"><i class="fas fa-balance-scale"></i></div>
+            <div>
+                <div class="kpi-label">Variação Final</div>
+                <div class="kpi-val" id="kpi-variacao">R$ 0,00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== ORÇAMENTO ======== -->
+    <div id="section-orcamento" class="section-content active">
+        <div class="card">
+            <div class="card-header">
+                <div class="toolbar-left">
+                    <span class="card-title"><i class="fas fa-calendar-alt"></i> Orçamento Planejado</span>
+                    <div class="srch">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="buscaOrc" placeholder="Filtrar linhas..." oninput="filtrarTabela('corpoTabela', this.value)">
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <span class="autosave-badge autosave-ok" id="badge-save"><i class="fas fa-cloud-upload-alt"></i> Salvo</span>
+                    <button class="btn btn-xl" onclick="exportarExcel('orcamento')"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-wrap">
+                    <table id="tabelaDados">
+                        <thead>
+                            <tr>
+                                <th style="min-width:110px;">Propriedade</th>
+                                <th style="min-width:130px;">Descrição</th>
+                                <th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th>
+                                <th>Out</th><th>Nov</th><th>Dez</th><th>Jan</th><th>Fev</th><th>Mar</th>
+                                <th style="min-width:100px;">Total</th>
+                                <th class="pdf-hidden" style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabela" oninput="onInput()" onkeydown="navegarTeclado(event)">
+                            <tr>
+                                <td><select class="ts" onchange="onInput()">
+                                    <option value="">Selecione</option>
+                                    <option value="SIRILO">SIRILO</option>
+                                    <option value="ITAMARATY">ITAMARATY</option>
+                                </select></td>
+                                <td><input type="text" class="ti wide" placeholder="Descrição" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-0" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-1" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-2" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-3" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-4" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-5" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-6" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-7" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-8" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-9" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-10" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-11" onfocus="this.select()"></td>
+                                <td class="total-linha">R$ 0,00</td>
+                                <td class="pdf-hidden"><button class="btn btn-del btn-sm" onclick="removerLinha(this)"><i class="fas fa-trash-alt"></i></button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="rodapeTabela">
+                            <tr>
+                                <td colspan="2">TOTAL GERAL:</td>
+                                <td class="total-col">R$ 0</td><td class="total-col">R$ 0</td><td class="total-col">R$ 0</td>
+                                <td class="total-col">R$ 0</td><td class="total-col">R$ 0</td><td class="total-col">R$ 0</td>
+                                <td class="total-col">R$ 0</td><td class="total-col">R$ 0</td><td class="total-col">R$ 0</td>
+                                <td class="total-col">R$ 0</td><td class="total-col">R$ 0</td><td class="total-col">R$ 0</td>
+                                <td id="grand-total">R$ 0,00</td>
+                                <td class="pdf-hidden"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer pdf-hidden">
+                <button class="btn btn-primary" onclick="adicionarLinha('corpoTabela')"><i class="fas fa-plus"></i> Adicionar Linha</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== REALIZADO ======== -->
+    <div id="section-realizado" class="section-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="toolbar-left">
+                    <span class="card-title"><i class="fas fa-check-circle"></i> Realizado</span>
+                    <div class="srch">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="buscaReal" placeholder="Filtrar linhas..." oninput="filtrarTabela('corpoTabelaRealizado', this.value)">
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-xl" onclick="exportarExcel('realizado')"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-wrap">
+                    <table id="tabelaDadosRealizado">
+                        <thead>
+                            <tr>
+                                <th style="min-width:110px;">Propriedade</th>
+                                <th style="min-width:130px;">Descrição</th>
+                                <th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th>
+                                <th>Out</th><th>Nov</th><th>Dez</th><th>Jan</th><th>Fev</th><th>Mar</th>
+                                <th style="min-width:100px;">Total</th>
+                                <th class="pdf-hidden" style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaRealizado" oninput="onInput()" onkeydown="navegarTeclado(event)">
+                            <tr>
+                                <td><select class="ts" onchange="onInput()">
+                                    <option value="">Selecione</option>
+                                    <option value="SIRILO">SIRILO</option>
+                                    <option value="ITAMARATY">ITAMARATY</option>
+                                </select></td>
+                                <td><input type="text" class="ti wide" placeholder="Descrição" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-0" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-1" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-2" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-3" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-4" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-5" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-6" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-7" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-8" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-9" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-10" onfocus="this.select()"></td>
+                                <td><input type="text" class="ti mes-11" onfocus="this.select()"></td>
+                                <td class="total-linha-realizado">R$ 0,00</td>
+                                <td class="pdf-hidden"><button class="btn btn-del btn-sm" onclick="removerLinha(this)"><i class="fas fa-trash-alt"></i></button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="rodapeTabelaRealizado">
+                            <tr>
+                                <td colspan="2">TOTAL GERAL:</td>
+                                <td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td>
+                                <td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td>
+                                <td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td>
+                                <td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td><td class="total-col-realizado">R$ 0</td>
+                                <td id="grand-total-realizado">R$ 0,00</td>
+                                <td class="pdf-hidden"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer pdf-hidden">
+                <button class="btn btn-primary" onclick="adicionarLinha('corpoTabelaRealizado')"><i class="fas fa-plus"></i> Adicionar Linha</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== ANÁLISE ======== -->
+    <div id="section-analise" class="section-content">
+
+        <!-- Diferença -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="fas fa-exchange-alt"></i> Diferença — Orçamento vs Realizado</span>
+            </div>
+            <div class="card-body">
+                <div class="table-wrap">
+                    <table id="tabelaDiferenca">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Resumo</th>
+                                <th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th>
+                                <th>Out</th><th>Nov</th><th>Dez</th><th>Jan</th><th>Fev</th><th>Mar</th>
+                                <th>Total</th><th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2" style="text-align:right;font-weight:700;">Saldo (Economia):</td>
+                                <td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td>
+                                <td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td>
+                                <td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td>
+                                <td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td><td class="diff-col">R$ 0</td>
+                                <td id="diff-grand-total" style="font-weight:800;">R$ 0,00</td>
+                                <td id="diff-grand-perc" style="font-weight:800;">0%</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align:right;font-weight:700;">Desvio (%):</td>
+                                <td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td>
+                                <td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td>
+                                <td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td>
+                                <td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td><td class="diff-perc-col">0%</td>
+                                <td style="color:#94a3b8;">—</td><td style="color:#94a3b8;">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="fas fa-chart-bar"></i> Evolução Mensal</span>
+                <div class="chart-type-btns pdf-hidden">
+                    <button class="chart-type-btn active" onclick="mudarTipoGrafico('bar', this)">Barras</button>
+                    <button class="chart-type-btn" onclick="mudarTipoGrafico('line', this)">Linhas</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="graficoComparativo"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== FORECAST ======== -->
+    <div id="section-forecast" class="section-content">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="fas fa-search-dollar"></i> Forecast por Propriedade</span>
+                <button class="btn btn-xl" onclick="exportarExcel('forecast')"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
+            <div class="card-body">
+                <div class="table-wrap">
+                    <table id="tabelaForecastPropriedade">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;min-width:120px;">Propriedade</th>
+                                <th>Orçado Total</th>
+                                <th>Realizado Acum.</th>
+                                <th>Forecast (Reavisado)</th>
+                                <th>Variação</th>
+                                <th>% Desvio</th>
+                                <th style="min-width:200px;">Justificativa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaForecast">
+                            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px;">Preencha as tabelas de Orçamento e Realizado para gerar o forecast.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== APONT. SIRILO ======== -->
+    <div id="section-apont-sirilo" class="section-content">
+        <!-- Resumo de Custos - Sirilo -->
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <div class="toolbar-left">
+                    <span class="card-title"><i class="fas fa-calculator"></i> Resumo de Custos — Sirilo</span>
+                </div>
+                <div class="toolbar-right">
+                    <span class="autosave-badge autosave-ok" id="badge-save-resumo-sirilo"><i class="fas fa-cloud-upload-alt"></i> Salvo</span>
+                    <button class="btn btn-xl" onclick="exportarExcel('resumo-sirilo')"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-wrap">
+                    <table id="tabelaResumoSirilo">
+                        <thead>
+                            <tr>
+                                <th onclick="ordenarResumoSirilo('frota')">FRT</th>
+                                <th onclick="ordenarResumoSirilo('cidade')" style="min-width:130px;">Cidade</th>
+                                <th onclick="ordenarResumoSirilo('processo')" style="min-width:130px;">Processo</th>
+                                <th onclick="ordenarResumoSirilo('centroCusto')" style="min-width:125px;">Centro de Custo</th>
+                                <th onclick="ordenarResumoSirilo('frente')" style="min-width:130px;">Frente</th>
+                                <th onclick="ordenarResumoSirilo('custoFixo')" style="min-width:125px;">Custo Fixo (Diário)</th>
+                                <th onclick="ordenarResumoSirilo('dias')">Dias Trab.</th>
+                                <th onclick="ordenarResumoSirilo('totalFixo')" style="min-width:120px;">Total Fixo</th>
+                                <th onclick="ordenarResumoSirilo('kmFranquia')" style="min-width:125px;">Km (franquia)</th>
+                                <th onclick="ordenarResumoSirilo('kmTotal')" style="min-width:90px;">Total KM</th>
+                                <th onclick="ordenarResumoSirilo('kmExcedente')" style="min-width:115px;">Km Excedente</th>
+                                <th onclick="ordenarResumoSirilo('custoVarKm')" style="min-width:125px;">Valor Km Exced.</th>
+                                <th onclick="ordenarResumoSirilo('custoVariavel')" style="min-width:120px;">Custo Variável</th>
+                                <th onclick="ordenarResumoSirilo('custoTotal')" style="min-width:125px;">Custo Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaResumoSirilo">
+                            <tr><td colspan="14" style="text-align:center;color:var(--text-muted);padding:24px;">Preencha a tabela de Apontamentos para gerar o resumo.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apontamentos Sirilo -->
+        <div class="card">
+            <div class="card-header">
+                <div class="toolbar-left">
+                    <span class="card-title"><i class="fas fa-route"></i> Apontamentos Sirilo</span>
+                    <div class="srch">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="buscaApontSirilo" placeholder="Filtrar linhas..." oninput="filtrarTabela('corpoTabelaApontSirilo', this.value)">
+                    </div>
+                    <select id="filtroMesApont" onchange="filtrarMesSirilo(this.value)" class="ti" style="width: 150px; margin-left: 10px; background: white; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; font-family: inherit; outline: none; transition: 0.2s;">
+                        <option value="">Todos os Meses</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <span class="autosave-badge autosave-ok" id="badge-save-apont"><i class="fas fa-cloud-upload-alt"></i> Salvo</span>
+                    <button class="btn btn-xl" onclick="exportarExcel('apont-sirilo')"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom: 10px; text-align: right;">
+                    <button id="btnToggleReserva" class="btn btn-sm btn-secondary" onclick="toggleReserva()"><i class="fas fa-plus"></i> Exibir Reserva</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="tabelaDadosApontSirilo" class="hide-reserva">
+                        <thead>
+                            <tr>
+                                <th style="min-width:110px;">DATA</th>
+                                <th style="width:30px; min-width:30px; max-width:30px; padding: 0;">FRT</th>
+                                <th style="min-width:100px;">PLACA</th>
+                                <th style="min-width:130px;">CIDADE</th>
+                                <th style="min-width:130px;">PROCESSO</th>
+                                <th style="min-width:130px;">FRENTE</th>
+                                <th style="min-width:100px;">KM INICIAL</th>
+                                <th style="min-width:100px;">KM FINAL</th>
+                                <th class="col-reserva" style="min-width:90px;">RES. INICIAL</th>
+                                <th class="col-reserva" style="min-width:90px;">RES. FINAL</th>
+                                <th style="min-width:100px;">TOTAL KM</th>
+                                <th class="pdf-hidden" style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaApontSirilo" oninput="onInputApontSirilo()" onchange="onInputApontSirilo()" onkeydown="navegarTecladoApontSirilo(event)">
+                            <tr>
+                                <td><input type="date" class="ti wide" onchange="verificarEPreencherKmInicial(this.closest('tr'))"></td>
+                                <td style="padding: 0 2px;"><input type="text" class="ti frota-input" list="lista-frotas" oninput="preencherDadosFrota(this)" maxlength="1" style="padding: 5px 0;"></td>
+                                <td><input type="text" class="ti placa-input" style="text-transform: uppercase;" maxlength="9" onchange="verificarEPreencherKmInicial(this.closest('tr'))"></td>
+                                <td><select class="ti wide cidade-select"><option value="">Selecione</option></select></td>
+                                <td><select class="ti wide processo-select" onchange="processoMudou(this)"><option value="">Selecione</option></select></td>
+                                <td><select class="ti wide frente-select"><option value="">Selecione</option></select></td>
+                                <td><input type="number" class="ti km-inicial" oninput="calcularKMs(this)" onfocus="verificarEPreencherKmInicial(this.closest('tr'))"></td>
+                                <td><input type="number" class="ti km-final" oninput="calcularKMs(this)"></td>
+                                <td class="col-reserva"><input type="number" class="ti res-inicial" placeholder="Inicial" oninput="calcularKMs(this)"></td>
+                                <td class="col-reserva"><input type="number" class="ti res-final" placeholder="Final" oninput="calcularKMs(this)"></td>
+                                <td class="total-km" style="font-weight:700;">0</td>
+                                <td class="pdf-hidden"><button class="btn btn-del btn-sm" onclick="removerLinha(this); onInputApontSirilo()"><i class="fas fa-trash-alt"></i> Excluir</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer pdf-hidden">
+                <button class="btn btn-primary" onclick="adicionarLinhaApontSirilo()"><i class="fas fa-plus"></i> Adicionar Linha</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== CADASTRO SIRILO ======== -->
+    <div id="section-cadastro-sirilo" class="section-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="toolbar-left">
+                    <span class="card-title"><i class="fas fa-list-alt"></i> Cadastro de Frotas Sirilo</span>
+                </div>
+                <div class="toolbar-right">
+                    <span class="autosave-badge autosave-ok" id="badge-save-cadastro"><i class="fas fa-cloud-upload-alt"></i> Salvo</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="padding: 20px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="novoCadFrota" class="ti" style="width:55px; background: white;" placeholder="Frota" maxlength="1">
+                    <input type="text" id="novoCadCid1" class="ti" style="width:120px; background: white;" placeholder="Cidade 1">
+                    <input type="text" id="novoCadCid2" class="ti" style="width:120px; background: white;" placeholder="Cidade 2 (Opc.)">
+                    <input type="text" id="novoCadProc1" class="ti" style="width:120px; background: white;" placeholder="Processo 1">
+                    <input type="text" id="novoCadProc2" class="ti" style="width:120px; background: white;" placeholder="Processo 2 (Opc.)">
+                    <input type="text" id="novoCadFrente1" class="ti" style="width:120px; background: white;" placeholder="Frente 1">
+                    <input type="text" id="novoCadFrente2" class="ti" style="width:120px; background: white;" placeholder="Frente 2 (Opc.)">
+                    <button class="btn btn-success" onclick="inserirNovoCadastroSirilo()"><i class="fas fa-check"></i> Cadastrar</button>
+                    <button class="btn btn-secondary" onclick="limparFormularioCadastro()"><i class="fas fa-eraser"></i> Limpar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="tabelaDadosCadastroSirilo">
+                        <thead>
+                            <tr>
+                                <th style="width:30px; min-width:30px; max-width:30px; padding: 0;">FRT</th>
+                                <th style="min-width:120px;">CIDADE 1</th>
+                                <th style="min-width:120px;">CIDADE 2</th>
+                                <th style="min-width:120px;">PROCESSO 1</th>
+                                <th style="min-width:120px;">PROCESSO 2</th>
+                                <th style="min-width:120px;">FRENTE 1</th>
+                                <th style="min-width:120px;">FRENTE 2</th>
+                                <th class="pdf-hidden" style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaCadastroSirilo" oninput="onInputCadastroSirilo()">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== CADASTRO CENTRO DE CUSTO SIRILO ======== -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header">
+                <div class="toolbar-left">
+                    <span class="card-title"><i class="fas fa-wallet"></i> Cadastro de Centro de Custo Sirilo</span>
+                </div>
+                <div class="toolbar-right">
+                    <span class="autosave-badge autosave-ok" id="badge-save-cc-sirilo"><i class="fas fa-cloud-upload-alt"></i> Salvo</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="padding: 20px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="novoCadCCProcesso" class="ti" style="width:250px; background: white;" placeholder="Processo">
+                    <input type="text" id="novoCadCCValor" class="ti" style="width:250px; background: white;" placeholder="Centro de Custo">
+                    <button class="btn btn-success" onclick="inserirNovoCCSirilo()"><i class="fas fa-check"></i> Cadastrar</button>
+                    <button class="btn btn-secondary" onclick="limparFormularioCC()"><i class="fas fa-eraser"></i> Limpar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="tabelaDadosCCSirilo">
+                        <thead>
+                            <tr>
+                                <th>PROCESSO</th>
+                                <th>CENTRO DE CUSTO</th>
+                                <th class="pdf-hidden" style="width:70px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaCCSirilo" oninput="onInputCCSirilo()">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== RELATÓRIO SIRILO (AGRUPADO POR PROCESSO) ======== -->
+    <div id="section-relatorio-sirilo" class="section-content">
+        <div class="card-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: white; padding: 16px 24px; border-radius: 12px; border: 1px solid var(--border);">
+            <div class="toolbar-left" style="display: flex; align-items: center; gap: 15px;">
+                <span class="card-title" style="font-size: 1.1rem; font-weight: 700; color: var(--sidebar);"><i class="fas fa-file-invoice-dollar"></i> Relatório Sirilo — Por Processo</span>
+                <div class="srch">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="buscaRelatorioSirilo" placeholder="Filtrar processos..." oninput="atualizarRelatorioSirilo()">
+                </div>
+                <select id="filtroMesRelatorio" onchange="filtrarMesSirilo(this.value)" class="ti" style="width: 150px; background: white; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; font-family: inherit; outline: none; transition: 0.2s;">
+                    <option value="">Todos os Meses</option>
+                </select>
+            </div>
+            <div class="toolbar-right" style="display: flex; gap: 8px;">
+                <button class="btn btn-xl" onclick="exportarExcel('relatorio-sirilo-processo')"><i class="fas fa-file-excel"></i> Excel</button>
+                <button class="btn btn-pdf" onclick="exportarPDFSirilo()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </div>
+
+        <div id="container-relatorios-processo"></div>
+    </div>
+
+    <datalist id="lista-frotas"></datalist>
+
+</main>
+
+<style>
+    th[onclick] { cursor: pointer; transition: background 0.2s; }
+    th[onclick]:hover { background: rgba(0,0,0,0.05); }
+</style>
+
+<script>
+/* ===================================================
+   INIT
+=================================================== */
+window.onload = () => {
+    inicializarGrafico();
+    carregarDados();
+};
+
+let meuGrafico;
+let justificativas = {};
+let saveTimeout;
+const MESES = ['Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar'];
+const moeda = { style: 'currency', currency: 'BRL' };
+
+/* ===================================================
+   NAVEGAÇÃO
+=================================================== */
+function showSection(id, btn) {
+    document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + id).classList.add('active');
+    btn.classList.add('active');
+    if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+    if (id === 'analise' || id === 'forecast') atualizarTotais();
+    if (id === 'apont-sirilo') atualizarResumoSirilo();
+    if (id === 'relatorio-sirilo') {
+        atualizarResumoSirilo();
+        atualizarRelatorioSirilo();
+    }
+
+    // Ocultar os cards de KPI nos menus Apont. Sirilo, Cadastro Sirilo e Relatório Sirilo
+    const kpiGrid = document.querySelector('.kpi-grid');
+    if (kpiGrid) {
+        if (id === 'apont-sirilo' || id === 'cadastro-sirilo' || id === 'relatorio-sirilo') {
+            kpiGrid.style.display = 'none';
+        } else {
+            kpiGrid.style.display = '';
+        }
+    }
+}
+
+function toggleSidebar() {
+    if (window.innerWidth > 900) {
+        document.body.classList.toggle('sidebar-hidden');
+        const icon = document.querySelector('.btn-sidebar-toggle i');
+        if (icon) icon.className = document.body.classList.contains('sidebar-hidden') ? 'fas fa-angle-right' : 'fas fa-angle-left';
+    } else {
+        document.getElementById('sidebar').classList.toggle('open');
+    }
+}
+
+/* ===================================================
+   PARSE / FORMAT
+=================================================== */
+function parseValor(v) {
+    if (!v) return 0;
+    let s = v.toString().replace('R$','').trim();
+    if (s.includes(',')) s = s.replace(/\./g,'').replace(',','.');
+    return parseFloat(s) || 0;
+}
+
+function fmt(n) { return n.toLocaleString('pt-BR', moeda); }
+function fmtPct(n) { return n.toFixed(2).replace('.',',') + '%'; }
+
+function filtrarTabela(tbodyId, termo) {
+    const t = (termo || '').toLowerCase();
+    document.querySelectorAll(`#${tbodyId} tr`).forEach(tr => {
+        const show = !t || tr.innerText.toLowerCase().includes(t);
+        tr.style.display = show ? '' : 'none';
+    });
+}
+
+function removerLinha(btn) {
+    const tr = btn.closest('tr');
+    tr.remove();
+}
+
+function toggleReserva() {
+    const table = document.getElementById('tabelaDadosApontSirilo');
+    const btn = document.getElementById('btnToggleReserva');
+    if (table.classList.contains('hide-reserva')) {
+        table.classList.remove('hide-reserva');
+        btn.innerHTML = '<i class="fas fa-minus"></i> Recolher Reserva';
+    } else {
+        table.classList.add('hide-reserva');
+        btn.innerHTML = '<i class="fas fa-plus"></i> Exibir Reserva';
+    }
+}
+
+/* ===================================================
+   TECLADO
+=================================================== */
+function navegarTeclado(event) {
+    if (event.key !== 'Enter') return;
+    const el = event.target;
+    const m = el.className.match(/mes-(\d+)/);
+    if (m) {
+        event.preventDefault();
+        const next = el.closest('tr').querySelector('.mes-' + (parseInt(m[1]) + 1));
+        if (next) { next.focus(); next.select(); }
+    }
+}
+
+function navegarTecladoApontSirilo(event) {
+    if (event.key === 'Tab' && !event.shiftKey) {
+        const el = event.target;
+        const isReservaVisible = !document.getElementById('tabelaDadosApontSirilo').classList.contains('hide-reserva');
+        const triggerClass = isReservaVisible ? 'res-final' : 'km-final';
+        
+        if (el.classList.contains(triggerClass)) {
+            const tr = el.closest('tr');
+            const tbody = tr.closest('tbody');
+            if (tr === tbody.lastElementChild) {
+                event.preventDefault();
+                adicionarLinhaApontSirilo();
+                const newRow = tbody.lastElementChild;
+                const firstInput = newRow.querySelector('input');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }
+        }
+    }
+}
+
+/* ===================================================
+   LINHAS
+=================================================== */
+function adicionarLinha(targetId, dados = null) {
+    const tbody = document.getElementById(targetId);
+    const tr = document.createElement('tr');
+    const vals = dados ? dados.meses : Array(12).fill('');
+    const prop = dados ? dados.propriedade : '';
+    const desc = dados ? dados.descricao : '';
+    const isReal = targetId === 'corpoTabelaRealizado';
+
+    tr.innerHTML = `
+        <td><select class="ts" onchange="onInput()">
+            <option value="">Selecione</option>
+            <option value="SIRILO" ${prop==='SIRILO'?'selected':''}>SIRILO</option>
+            <option value="ITAMARATY" ${prop==='ITAMARATY'?'selected':''}>ITAMARATY</option>
+        </select></td>
+        <td><input type="text" class="ti wide" value="${desc}" placeholder="Descrição" onfocus="this.select()" oninput="onInput()"></td>
+        ${vals.map((v,i)=>`<td><input type="text" class="ti mes-${i}" value="${v}" onfocus="this.select()" oninput="onInput()"></td>`).join('')}
+        <td class="${isReal?'total-linha-realizado':'total-linha'}">R$ 0,00</td>
+        <td class="pdf-hidden"><button class="btn btn-del btn-sm" onclick="removerLinha(this)"><i class="fas fa-trash-alt"></i> Excluir</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function removerLinha(btn) {
+    if (!confirm('Remover esta linha?')) return;
+    btn.closest('tr').remove();
+    atualizarTotais();
+    showToast('Linha removida.', 'danger');
+}
+
+function adicionarLinhaApontSirilo(d = null) {
+    const tbody = document.getElementById('corpoTabelaApontSirilo');
+    
+    let defaultDate = '';
+    let defaultPlaca = '';
+    
+    if (d) {
+        if (d.data) defaultDate = d.data;
+        if (d.placa) defaultPlaca = d.placa;
+    } else {
+        const lastRow = tbody.lastElementChild;
+        if (lastRow) {
+            const lastDateInput = lastRow.querySelector('input[type="date"]');
+            if (lastDateInput && lastDateInput.value) {
+                const dateObj = new Date(lastDateInput.value + 'T12:00:00');
+                dateObj.setDate(dateObj.getDate() + 1);
+                defaultDate = dateObj.toISOString().split('T')[0];
+            }
+            const lastPlacaInput = lastRow.querySelector('.placa-input');
+            if (lastPlacaInput) {
+                defaultPlaca = lastPlacaInput.value;
+            }
+        }
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="date" class="ti wide" value="${defaultDate}" onchange="verificarEPreencherKmInicial(this.closest('tr'))"></td>
+        <td style="padding: 0 2px;"><input type="text" class="ti frota-input" list="lista-frotas" value="${d ? d.frota : ''}" oninput="preencherDadosFrota(this)" maxlength="1" style="padding: 5px 0;"></td>
+        <td><input type="text" class="ti placa-input" style="text-transform: uppercase;" maxlength="9" value="${defaultPlaca}" onchange="verificarEPreencherKmInicial(this.closest('tr'))"></td>
+        <td>
+            <select class="ti wide cidade-select">
+                <option value="${d && d.cidade ? d.cidade : ''}">${d && d.cidade ? d.cidade : 'Selecione'}</option>
+            </select>
+        </td>
+        <td>
+            <select class="ti wide processo-select" onchange="processoMudou(this)">
+                <option value="${d && d.processo ? d.processo : ''}">${d && d.processo ? d.processo : 'Selecione'}</option>
+            </select>
+        </td>
+        <td>
+            <select class="ti wide frente-select">
+                <option value="${d && d.frente ? d.frente : ''}">${d && d.frente ? d.frente : 'Selecione'}</option>
+            </select>
+        </td>
+        <td><input type="number" class="ti km-inicial" value="${d ? d.kmIni : ''}" oninput="calcularKMs(this)" onfocus="verificarEPreencherKmInicial(this.closest('tr'))"></td>
+        <td><input type="number" class="ti km-final" value="${d ? d.kmFin : ''}" oninput="calcularKMs(this)"></td>
+        <td class="col-reserva"><input type="number" class="ti res-inicial" value="${d && d.resIni ? d.resIni : ''}" placeholder="Inicial" oninput="calcularKMs(this)"></td>
+        <td class="col-reserva"><input type="number" class="ti res-final" value="${d && d.resFin ? d.resFin : (d && d.kmRes && d.kmRes !== '0' ? d.kmRes : '')}" placeholder="Final" oninput="calcularKMs(this)"></td>
+        <td class="total-km" style="font-weight:700;">${d ? d.totalKm : '0'}</td>
+        <td class="pdf-hidden"><button class="btn btn-del btn-sm" onclick="removerLinha(this); onInputApontSirilo()"><i class="fas fa-trash-alt"></i> Excluir</button></td>
+    `;
+    tbody.appendChild(tr);
+    if (!d) {
+        verificarEPreencherKmInicial(tr);
+    }
+    // Tenta atualizar opções da cidade se a frota já vier preenchida e houver cadastro.
+    if(d && d.frota) preencherDadosFrota(tr.querySelector('.frota-input'), true);
+}
+
+function processoMudou(select) {
+    const tr = select.closest('tr');
+    const frotaInput = tr.querySelector('.frota-input');
+    const frotaSelecionada = frotaInput ? frotaInput.value : '';
+    if (!frotaSelecionada) {
+        onInputApontSirilo();
+        return;
+    }
+
+    const saved = localStorage.getItem('dadosCadastroSirilo');
+    if (saved) {
+        try {
+            const cadastros = JSON.parse(saved);
+            if (Array.isArray(cadastros)) {
+                const config = cadastros.find(c => c.frota === frotaSelecionada);
+                if (config) {
+                    const frenteSelect = tr.querySelector('.frente-select');
+                    const procVal = select.value;
+                    const p1 = config.processo1 || config.processo || '';
+                    const p2 = config.processo2 || '';
+                    const f1 = config.frente1 || config.frente || '';
+                    const f2 = config.frente2 || '';
+
+                    if (procVal && procVal === p1) {
+                        if (f1) frenteSelect.value = f1;
+                    } else if (procVal && procVal === p2) {
+                        if (f2) frenteSelect.value = f2;
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Erro ao ler dados no processoMudou', e);
+        }
+    }
+    onInputApontSirilo();
+}
+
+function preencherDadosFrota(input, keepSavedValues = false) {
+    const tr = input.closest('tr');
+    const frotaSelecionada = input.value;
+    const saved = localStorage.getItem('dadosCadastroSirilo');
+    if(saved) {
+        try {
+            const cadastros = JSON.parse(saved);
+            if (Array.isArray(cadastros)) {
+                const config = cadastros.find(c => c.frota === frotaSelecionada);
+                if(config) {
+                    const cidadeSelect = tr.querySelector('.cidade-select');
+                    const valAtual = cidadeSelect.value;
+                    cidadeSelect.innerHTML = '<option value="">Selecione</option>';
+                    if(config.cidade1) cidadeSelect.innerHTML += `<option value="${config.cidade1}">${config.cidade1}</option>`;
+                    if(config.cidade2) cidadeSelect.innerHTML += `<option value="${config.cidade2}">${config.cidade2}</option>`;
+                    
+                    // Processo
+                    const procSelect = tr.querySelector('.processo-select');
+                    const valProc = procSelect.value;
+                    procSelect.innerHTML = '<option value="">Selecione</option>';
+                    const p1 = config.processo1 || config.processo || '';
+                    const p2 = config.processo2 || '';
+                    if(p1) procSelect.innerHTML += `<option value="${p1}">${p1}</option>`;
+                    if(p2) procSelect.innerHTML += `<option value="${p2}">${p2}</option>`;
+
+                    // Frente
+                    const frenteSelect = tr.querySelector('.frente-select');
+                    const valFrente = frenteSelect.value;
+                    frenteSelect.innerHTML = '<option value="">Selecione</option>';
+                    const f1 = config.frente1 || config.frente || '';
+                    const f2 = config.frente2 || '';
+                    if(f1) frenteSelect.innerHTML += `<option value="${f1}">${f1}</option>`;
+                    if(f2) frenteSelect.innerHTML += `<option value="${f2}">${f2}</option>`;
+
+                    if(keepSavedValues) {
+                        if(valAtual && valAtual !== 'Selecione') {
+                            const opts = Array.from(cidadeSelect.options).map(o => o.value);
+                            if(!opts.includes(valAtual)) cidadeSelect.innerHTML += `<option value="${valAtual}">${valAtual}</option>`;
+                            cidadeSelect.value = valAtual;
+                        } else {
+                            cidadeSelect.value = '';
+                        }
+                        if(valProc && valProc !== 'Selecione') {
+                            const opts = Array.from(procSelect.options).map(o => o.value);
+                            if(!opts.includes(valProc)) procSelect.innerHTML += `<option value="${valProc}">${valProc}</option>`;
+                            procSelect.value = valProc;
+                        } else {
+                            procSelect.value = '';
+                        }
+                        if(valFrente && valFrente !== 'Selecione') {
+                            const opts = Array.from(frenteSelect.options).map(o => o.value);
+                            if(!opts.includes(valFrente)) frenteSelect.innerHTML += `<option value="${valFrente}">${valFrente}</option>`;
+                            frenteSelect.value = valFrente;
+                        } else {
+                            frenteSelect.value = '';
+                        }
+                    } else {
+                        cidadeSelect.value = '';
+                        procSelect.value = '';
+                        frenteSelect.value = '';
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Erro ao ler cadastros no preencherDadosFrota', e);
+        }
+    }
+    if(!keepSavedValues) onInputApontSirilo();
+}
+
+function calcularKMs(input) {
+    const tr = input.closest('tr');
+    const ini = parseFloat(tr.querySelector('.km-inicial').value) || 0;
+    const fin = parseFloat(tr.querySelector('.km-final').value) || 0;
+    
+    const resIni = parseFloat(tr.querySelector('.res-inicial').value) || 0;
+    const resFin = parseFloat(tr.querySelector('.res-final').value) || 0;
+    
+    let diffReserva = resFin - resIni;
+    if (resFin === 0 && resIni === 0) diffReserva = 0;
+    
+    const total = (fin - ini) + diffReserva;
+    tr.querySelector('.total-km').innerText = total > 0 ? total : 0;
+    onInputApontSirilo();
+}
+
+function buscarKmFinalAnterior(tr) {
+    const dateInput = tr.querySelector('input[type="date"]');
+    const placaInput = tr.querySelector('.placa-input');
+    if (!dateInput || !placaInput) return null;
+
+    const data = dateInput.value;
+    const placa = placaInput.value.trim().toUpperCase();
+    if (!data || !placa) return null;
+
+    let candidateDate = null;
+    let candidateKm = null;
+
+    // 1. Buscar nas linhas atuais do DOM (para pegar alterações recentes não salvas)
+    const rows = Array.from(document.getElementById('corpoTabelaApontSirilo').querySelectorAll('tr'));
+    for (const r of rows) {
+        if (r === tr) continue;
+        const rDate = r.querySelector('input[type="date"]')?.value;
+        const rPlaca = r.querySelector('.placa-input')?.value?.trim()?.toUpperCase();
+        if (rDate && rPlaca === placa && rDate < data) {
+            const rKmFinal = r.querySelector('.km-final')?.value;
+            if (rKmFinal) {
+                if (!candidateDate || rDate > candidateDate) {
+                    candidateDate = rDate;
+                    candidateKm = rKmFinal;
+                }
+            }
+        }
+    }
+
+    // 2. Buscar nos dados salvos no localStorage (fallback)
+    const saved = localStorage.getItem('dadosApontSiriloTransporte');
+    if (saved) {
+        try {
+            const apontamentos = JSON.parse(saved);
+            if (Array.isArray(apontamentos)) {
+                apontamentos.forEach(ap => {
+                    const apDate = ap.data;
+                    const apPlaca = ap.placa ? ap.placa.trim().toUpperCase() : '';
+                    if (apDate && apPlaca === placa && apDate < data && ap.kmFin) {
+                        if (!candidateDate || apDate > candidateDate) {
+                            candidateDate = apDate;
+                            candidateKm = ap.kmFin;
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('Erro ao buscar KM anterior no localStorage', e);
+        }
+    }
+
+    return candidateKm;
+}
+
+function verificarEPreencherKmInicial(tr) {
+    const kmIniInput = tr.querySelector('.km-inicial');
+    if (kmIniInput && kmIniInput.value === '') {
+        const kmAnterior = buscarKmFinalAnterior(tr);
+        if (kmAnterior !== null && kmAnterior !== '') {
+            kmIniInput.value = kmAnterior;
+            calcularKMs(kmIniInput);
+        }
+    }
+}
+
+let saveTimeoutApont;
+function onInputApontSirilo() {
+    atualizarResumoSirilo();
+    atualizarRelatorioSirilo();
+    atualizarFiltrosDeMes();
+    aplicarFiltroMesTabelaApontamentos();
+    const badge = document.getElementById('badge-save-apont');
+    if (badge) { badge.className = 'autosave-badge autosave-saving'; badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> Salvando...'; }
+    clearTimeout(saveTimeoutApont);
+    saveTimeoutApont = setTimeout(() => {
+        salvarDadosApontSirilo();
+        sincronizarRealizadoSirilo();
+        if (badge) { badge.className = 'autosave-badge autosave-ok'; badge.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Salvo'; }
+    }, 800);
+}
+
+let saveTimeoutResumoSirilo;
+function salvarResumoConfig(input) {
+    const tr = input.closest('tr');
+    const key = tr.dataset.key;
+    const centroCusto = tr.querySelector('.centro-custo').value;
+    const custoFixo = parseFloat(tr.querySelector('.custo-fixo').value) || 0;
+    const custoVarKm = parseFloat(tr.querySelector('.custo-var-km').value) || 0;
+    
+    // Obter dias, franquia e km total
+    const dias = parseFloat(tr.querySelector('.dias-trabalhados').innerText) || 0;
+    const totalFixo = dias * custoFixo;
+    
+    const kmFranquia = parseFloat(tr.querySelector('.km-franquia-val').innerText) || 0;
+    const totalKm = parseFloat(tr.querySelector('.total-km-val').innerText) || 0;
+    
+    const kmExcedente = totalKm > kmFranquia ? totalKm - kmFranquia : 0;
+    
+    // Atualizar km excedente na tela
+    const kmExcedEl = tr.querySelector('.km-excedente');
+    if (kmExcedEl) {
+        kmExcedEl.innerText = kmExcedente;
+        kmExcedEl.style.color = kmExcedente > 0 ? 'var(--danger)' : 'inherit';
+    }
+    
+    const custoVariavel = kmExcedente * custoVarKm;
+    const custoTotal = totalFixo + custoVariavel;
+    
+    // Atualizar os elementos de totais
+    tr.querySelector('.total-fixo-resumo').innerText = fmt(totalFixo);
+    tr.querySelector('.custo-variavel-resumo').innerText = fmt(custoVariavel);
+    tr.querySelector('.custo-total-resumo').innerText = fmt(custoTotal);
+
+    // Salvar no localStorage
+    let configSirilo = {};
+    const savedConfig = localStorage.getItem('resumoSiriloConfig');
+    if (savedConfig) {
+        try {
+            configSirilo = JSON.parse(savedConfig);
+        } catch (e) {}
+    }
+    configSirilo[key] = { centroCusto, custoFixo, custoVarKm };
+    localStorage.setItem('resumoSiriloConfig', JSON.stringify(configSirilo));
+
+    // Mostrar badge de salvando no resumo
+    const badge = document.getElementById('badge-save-resumo-sirilo');
+    if (badge) {
+        badge.className = 'autosave-badge autosave-saving';
+        badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> Salvando...';
+    }
+    clearTimeout(saveTimeoutResumoSirilo);
+    saveTimeoutResumoSirilo = setTimeout(() => {
+        sincronizarRealizadoSirilo();
+        const badgeOk = document.getElementById('badge-save-resumo-sirilo');
+        if (badgeOk) {
+            badgeOk.className = 'autosave-badge autosave-ok';
+            badgeOk.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Salvo';
+        }
+    }, 800);
+}
+
+function atualizarResumoSirilo() {
+    const tbodyResumo = document.getElementById('corpoTabelaResumoSirilo');
+    if (!tbodyResumo) return;
+
+    // 1. Obter dados dos apontamentos da UI
+    const apontamentos = [];
+    const tbodyApont = document.getElementById('corpoTabelaApontSirilo');
+    if (tbodyApont) {
+        tbodyApont.querySelectorAll('tr').forEach(tr => {
+            const dateInput = tr.querySelector('input[type="date"]');
+            const dateVal = dateInput ? dateInput.value : '';
+            const frotaInput = tr.querySelector('.frota-input');
+            const frotaVal = frotaInput ? frotaInput.value.trim() : '';
+            const selectCidade = tr.querySelector('.cidade-select');
+            const cidadeVal = selectCidade ? selectCidade.value : '';
+            const selectProcesso = tr.querySelector('.processo-select');
+            const processoVal = selectProcesso ? selectProcesso.value : '';
+            const selectFrente = tr.querySelector('.frente-select');
+            const frenteVal = selectFrente ? selectFrente.value : '';
+            
+            const totalKmEl = tr.querySelector('.total-km');
+            const totalKmVal = totalKmEl ? parseFloat(totalKmEl.innerText) || 0 : 0;
+            
+            if (frotaVal) {
+                if (window.filtroMesSiriloAtivo && dateVal) {
+                    const ref = obterMesReferenciaFormatado(dateVal);
+                    if (!ref || ref.value !== window.filtroMesSiriloAtivo) {
+                        return; // Pular se não corresponder ao mês selecionado
+                    }
+                }
+                apontamentos.push({
+                    data: dateVal,
+                    frota: frotaVal,
+                    cidade: cidadeVal,
+                    processo: processoVal,
+                    frente: frenteVal,
+                    totalKm: totalKmVal
+                });
+            }
+        });
+    }
+
+    // 2. Obter datas únicas por frota e agrupar por Frota + Cidade + Processo + Frente
+    const datasPorFrota = {};
+    const grupos = {};
+    
+    apontamentos.forEach(ap => {
+        // Datas únicas por frota física
+        if (ap.data && ap.frota) {
+            if (!datasPorFrota[ap.frota]) datasPorFrota[ap.frota] = new Set();
+            datasPorFrota[ap.frota].add(ap.data);
+        }
+        
+        // Agrupamento da linha do resumo
+        const key = `${ap.frota}|${ap.cidade}|${ap.processo}|${ap.frente}`;
+        if (!grupos[key]) {
+            grupos[key] = {
+                frota: ap.frota,
+                cidade: ap.cidade,
+                processo: ap.processo,
+                frente: ap.frente,
+                datas: new Set(),
+                km: 0
+            };
+        }
+        if (ap.data) {
+            grupos[key].datas.add(ap.data);
+        }
+        grupos[key].km += ap.totalKm;
+    });
+
+    // Calcular a soma total de dias digitados nos grupos de cada frota
+    const somaDiasGruposPorFrota = {};
+    Object.keys(grupos).forEach(key => {
+        const g = grupos[key];
+        if (!somaDiasGruposPorFrota[g.frota]) somaDiasGruposPorFrota[g.frota] = 0;
+        somaDiasGruposPorFrota[g.frota] += g.datas.size;
+    });
+
+    // 3. Carregar configurações salvas (Centro de Custo, Custo Fixo e Custo Var)
+    let configSirilo = {};
+    const savedConfig = localStorage.getItem('resumoSiriloConfig');
+    if (savedConfig) {
+        try {
+            configSirilo = JSON.parse(savedConfig);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // 4. Renderizar a tabela
+    tbodyResumo.innerHTML = '';
+    const keys = Object.keys(grupos);
+    if (keys.length === 0) {
+        tbodyResumo.innerHTML = `<tr><td colspan="14" style="text-align:center;color:var(--text-muted);padding:24px;">Preencha a tabela de Apontamentos para gerar o resumo.</td></tr>`;
+        window.lastListaGruposSirilo = [];
+        return;
+    }
+
+    // Gerar lista de objetos para poder ordenar
+    const listaGrupos = keys.map(key => {
+        const g = grupos[key];
+        const conf = configSirilo[key] || { centroCusto: '', custoFixo: 0, custoVarKm: 0 };
+        let centroCustoFinal = conf.centroCusto || '';
+        if (!centroCustoFinal && g.processo) {
+            centroCustoFinal = buscarCentroCustoPorProcesso(g.processo);
+        }
+        const diasGrupo = g.datas.size;
+        const diasFrota = datasPorFrota[g.frota] ? datasPorFrota[g.frota].size : 0;
+        const somaDiasGrupos = somaDiasGruposPorFrota[g.frota] || 0;
+        const diasFrotaCalculo = Math.min(diasFrota, 30);
+        
+        let diasExibidos = 0;
+        if (somaDiasGrupos > 0) {
+            diasExibidos = Number((diasFrotaCalculo * (diasGrupo / somaDiasGrupos)).toFixed(2));
+        }
+        
+        const totalFixo = diasExibidos * (parseFloat(conf.custoFixo) || 0);
+        
+        let kmFranquia = 0;
+        if (somaDiasGrupos > 0) {
+            const franquiaTotalFrota = (7000 / 30) * diasFrotaCalculo;
+            kmFranquia = Math.round(franquiaTotalFrota * (diasGrupo / somaDiasGrupos));
+        }
+        
+        const kmExcedente = g.km > kmFranquia ? g.km - kmFranquia : 0;
+        const custoVariavel = kmExcedente * (parseFloat(conf.custoVarKm) || 0);
+        const custoTotal = totalFixo + custoVariavel;
+
+        return {
+            key,
+            frota: g.frota,
+            cidade: g.cidade,
+            processo: g.processo,
+            centroCusto: centroCustoFinal,
+            frente: g.frente,
+            custoFixo: parseFloat(conf.custoFixo) || 0,
+            dias: diasExibidos,
+            totalFixo: totalFixo,
+            kmFranquia: kmFranquia,
+            kmTotal: g.km,
+            kmExcedente: kmExcedente,
+            custoVarKm: parseFloat(conf.custoVarKm) || 0,
+            custoVariavel: custoVariavel,
+            custoTotal: custoTotal
+        };
+    });
+
+    window.lastListaGruposSirilo = listaGrupos;
+
+    // Ordenar a lista conforme a coluna ativa
+    if (sortResumoSirilo.col) {
+        listaGrupos.sort((a, b) => {
+            let valA = a[sortResumoSirilo.col];
+            let valB = b[sortResumoSirilo.col];
+
+            if (valA === undefined || valA === null) valA = '';
+            if (valB === undefined || valB === null) valB = '';
+
+            // Case-insensitive strings
+            if (typeof valA === 'string') valA = valA.toLowerCase();
+            if (typeof valB === 'string') valB = valB.toLowerCase();
+
+            if (valA < valB) return sortResumoSirilo.asc ? -1 : 1;
+            if (valA > valB) return sortResumoSirilo.asc ? 1 : -1;
+            return 0;
+        });
+    }
+
+    // Atualizar as setinhas nos cabeçalhos
+    const headers = document.querySelectorAll('#tabelaResumoSirilo thead th');
+    const mappingCols = {
+        frota: 0,
+        cidade: 1,
+        processo: 2,
+        centroCusto: 3,
+        frente: 4,
+        custoFixo: 5,
+        dias: 6,
+        totalFixo: 7,
+        kmFranquia: 8,
+        kmTotal: 9,
+        kmExcedente: 10,
+        custoVarKm: 11,
+        custoVariavel: 12,
+        custoTotal: 13
+    };
+    headers.forEach(th => {
+        th.innerHTML = th.innerHTML.replace(/ [▲▼]/g, '');
+    });
+    const activeColIndex = mappingCols[sortResumoSirilo.col];
+    if (activeColIndex !== undefined && headers[activeColIndex]) {
+        headers[activeColIndex].innerHTML += sortResumoSirilo.asc ? ' ▲' : ' ▼';
+    }
+
+    // Renderizar
+    listaGrupos.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.dataset.key = item.key;
+        tr.innerHTML = `
+            <td style="font-weight: 700; color: var(--primary);">${item.frota}</td>
+            <td>${item.cidade || '—'}</td>
+            <td>${item.processo || '—'}</td>
+            <td><input type="text" class="ti centro-custo" value="${item.centroCusto || ''}" placeholder="C. Custo" style="width:100px; text-align:center;" oninput="salvarResumoConfig(this)"></td>
+            <td>${item.frente || '—'}</td>
+            <td><input type="number" class="ti custo-fixo" value="${item.custoFixo || 0}" step="0.01" style="width:110px; text-align:center;" oninput="salvarResumoConfig(this)"></td>
+            <td class="dias-trabalhados">${item.dias}</td>
+            <td class="total-fixo-resumo" style="font-weight: 700;">${fmt(item.totalFixo)}</td>
+            <td class="km-franquia-val" style="font-weight: 700;">${item.kmFranquia}</td>
+            <td class="total-km-val" style="font-weight: 700;">${item.kmTotal}</td>
+            <td class="km-excedente" style="font-weight: 700; color: ${item.kmExcedente > 0 ? 'var(--danger)' : 'inherit'};">${item.kmExcedente}</td>
+            <td><input type="number" class="ti custo-var-km" value="${item.custoVarKm || 0}" step="0.01" style="width:100px; text-align:center;" oninput="salvarResumoConfig(this)"></td>
+            <td class="custo-variavel-resumo" style="font-weight: 700;">${fmt(item.custoVariavel)}</td>
+            <td class="custo-total-resumo" style="font-weight: 800; color: var(--primary);">${fmt(item.custoTotal)}</td>
+        `;
+        tbodyResumo.appendChild(tr);
+    });
+}
+
+let sortResumoSirilo = { col: 'frota', asc: true };
+function ordenarResumoSirilo(col) {
+    if (sortResumoSirilo.col === col) {
+        sortResumoSirilo.asc = !sortResumoSirilo.asc;
+    } else {
+        sortResumoSirilo.col = col;
+        sortResumoSirilo.asc = true;
+    }
+    atualizarResumoSirilo();
+}
+
+function atualizarRelatorioSirilo() {
+    const container = document.getElementById('container-relatorios-processo');
+    if (!container) return;
+
+    const frotasGrupos = window.lastListaGruposSirilo || [];
+    const filtro = (document.getElementById('buscaRelatorioSirilo')?.value || '').toLowerCase();
+
+    // 1. Agrupar os dados por Processo
+    const processos = {};
+    frotasGrupos.forEach(item => {
+        const proc = item.processo || 'Sem Processo';
+        
+        // Se houver filtro, ignorar processos que não correspondem ao filtro
+        if (filtro && !proc.toLowerCase().includes(filtro)) {
+            return;
+        }
+
+        if (!processos[proc]) {
+            processos[proc] = {
+                nome: proc,
+                centroCusto: item.centroCusto || '',
+                itens: []
+            };
+        }
+        
+        processos[proc].itens.push(item);
+        if (item.centroCusto && !processos[proc].centroCusto) {
+            processos[proc].centroCusto = item.centroCusto;
+        }
+    });
+
+    const listaProcessos = Object.values(processos);
+
+    // Limpar o container
+    container.innerHTML = '';
+
+    if (listaProcessos.length === 0) {
+        container.innerHTML = `
+            <div class="card" style="padding: 24px; text-align: center; color: var(--text-muted);">
+                Preencha a tabela de Apontamentos ou ajuste o filtro para gerar os relatórios.
+            </div>
+        `;
+        return;
+    }
+
+    // Totais gerais acumuladores
+    let totalGeralKm = 0;
+    let totalGeralFixo = 0;
+    let totalGeralVariavel = 0;
+    let totalGeralTotal = 0;
+
+    const resumoGeralItens = [];
+
+    // 2. Renderizar um card para cada Processo
+    listaProcessos.forEach(proc => {
+        let subKm = 0;
+        let subFixo = 0;
+        let subVariavel = 0;
+        let subTotal = 0;
+
+        proc.itens.forEach(item => {
+            subKm += item.kmTotal;
+            subFixo += item.totalFixo;
+            subVariavel += item.custoVariavel;
+            subTotal += item.custoTotal;
+        });
+
+        totalGeralKm += subKm;
+        totalGeralFixo += subFixo;
+        totalGeralVariavel += subVariavel;
+        totalGeralTotal += subTotal;
+
+        resumoGeralItens.push({
+            processo: proc.nome,
+            centroCusto: proc.centroCusto,
+            kmTotal: subKm,
+            totalFixo: subFixo,
+            custoVariavel: subVariavel,
+            custoTotal: subTotal
+        });
+
+        const cardHtml = `
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header" style="background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 12px 24px;">
+                    <span class="card-title" style="font-size: 0.95rem; font-weight: 700; color: var(--primary);">
+                        <i class="fas fa-tasks"></i> PROCESSO: ${proc.nome.toUpperCase()} 
+                        <span style="font-weight: 400; color: var(--text-muted); margin-left: 10px;">
+                            — Centro de Custo: ${proc.centroCusto || '—'}
+                        </span>
+                    </span>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>CIDADE</th>
+                                    <th>FRENTE</th>
+                                    <th style="text-align: center;">TOTAL KM</th>
+                                    <th style="text-align: center;">TOTAL FIXO</th>
+                                    <th style="text-align: center;">VALOR KM EXCED.</th>
+                                    <th style="text-align: center;">CUSTO VARIÁVEL</th>
+                                    <th style="text-align: center;">CUSTO TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${proc.itens.map(item => `
+                                    <tr>
+                                        <td>${item.cidade || '—'}</td>
+                                        <td>${item.frente || '—'}</td>
+                                        <td style="font-weight: 700; text-align: center;">${item.kmTotal}</td>
+                                        <td style="font-weight: 700; text-align: center;">${fmt(item.totalFixo)}</td>
+                                        <td style="text-align: center;">${fmt(item.custoVarKm)}</td>
+                                        <td style="font-weight: 700; text-align: center;">${fmt(item.custoVariavel)}</td>
+                                        <td style="font-weight: 800; text-align: center; color: var(--primary);">${fmt(item.custoTotal)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr style="font-weight: 800; background: var(--primary-light); color: var(--primary);">
+                                    <td colspan="2">SUBTOTAL DO PROCESSO</td>
+                                    <td style="text-align: center;">${subKm}</td>
+                                    <td style="text-align: center;">${fmt(subFixo)}</td>
+                                    <td style="text-align: center;">—</td>
+                                    <td style="text-align: center;">${fmt(subVariavel)}</td>
+                                    <td style="text-align: center;">${fmt(subTotal)}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const divCard = document.createElement('div');
+        divCard.innerHTML = cardHtml;
+        container.appendChild(divCard.firstElementChild);
+    });
+
+    // 3. Renderizar o card do Total Geral
+    const totalGeralHtml = `
+        <div class="card" style="margin-top: 32px; border: 2px solid var(--primary);">
+            <div class="card-header" style="background: var(--primary); color: white; display: flex; align-items: center; padding: 14px 24px;">
+                <span class="card-title" style="color: white; font-weight: 800; font-size: 1.05rem;">
+                    <i class="fas fa-calculator"></i> RESUMO GERAL DOS PROCESSOS
+                </span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-wrap">
+                    <table id="tabelaRelatorioSiriloProcesso">
+                        <thead>
+                            <tr style="background: #f1f5f9;">
+                                <th>PROCESSO</th>
+                                <th>CENTRO DE CUSTO</th>
+                                <th style="text-align: center;">TOTAL KM</th>
+                                <th style="text-align: center;">TOTAL FIXO</th>
+                                <th style="text-align: center;">CUSTO VARIÁVEL</th>
+                                <th style="text-align: center;">CUSTO TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaRelatorioSirilo">
+                            ${resumoGeralItens.map(item => `
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--primary);">${item.processo}</td>
+                                    <td style="text-align: center;">${item.centroCusto || '—'}</td>
+                                    <td style="font-weight: 700; text-align: center;">${item.kmTotal}</td>
+                                    <td style="font-weight: 700; text-align: center;">${fmt(item.totalFixo)}</td>
+                                    <td style="font-weight: 700; text-align: center;">${fmt(item.custoVariavel)}</td>
+                                    <td style="font-weight: 800; text-align: center; color: var(--primary);">${fmt(item.custoTotal)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 900; background: var(--primary-light); color: var(--primary); border-top: 2px solid var(--primary);">
+                                <td colspan="2">TOTAL GERAL CONSOLIDADO</td>
+                                <td style="text-align: center;">${totalGeralKm}</td>
+                                <td style="text-align: center;">${fmt(totalGeralFixo)}</td>
+                                <td style="text-align: center;">${fmt(totalGeralVariavel)}</td>
+                                <td style="text-align: center; font-size: 1.05rem;">${fmt(totalGeralTotal)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const divTotal = document.createElement('div');
+    divTotal.innerHTML = totalGeralHtml;
+    container.appendChild(divTotal.firstElementChild);
+}
+
+/* ===================================================
+   CADASTRO CENTRO DE CUSTO SIRILO
+=================================================== */
+function adicionarLinhaCCSirilo(d = null) {
+    const tbody = document.getElementById('corpoTabelaCCSirilo');
+    if (!tbody) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" class="ti wide cc-processo" value="${d ? d.processo : ''}" placeholder="Processo" oninput="onInputCCSirilo()"></td>
+        <td><input type="text" class="ti wide cc-valor" value="${d ? d.centroCusto : ''}" placeholder="Centro de Custo" oninput="onInputCCSirilo()"></td>
+        <td class="pdf-hidden" style="white-space: nowrap;">
+            <button class="btn btn-primary btn-sm" style="margin-right:4px;" onclick="editarLinhaCCSirilo(this)" title="Editar"><i class="fas fa-edit"></i> Editar</button>
+            <button class="btn btn-del btn-sm" onclick="removerLinhaCC(this); onInputCCSirilo()" title="Remover"><i class="fas fa-trash-alt"></i> Excluir</button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function removerLinhaCC(btn) {
+    if (!confirm('Remover este cadastro de Centro de Custo?')) return;
+    btn.closest('tr').remove();
+    onInputCCSirilo();
+    showToast('Centro de Custo removido.', 'danger');
+}
+
+function editarLinhaCCSirilo(btn) {
+    const tr = btn.closest('tr');
+    const procInput = tr.querySelector('.cc-processo');
+    const ccInput = tr.querySelector('.cc-valor');
+    
+    document.getElementById('novoCadCCProcesso').value = procInput ? procInput.value : '';
+    document.getElementById('novoCadCCValor').value = ccInput ? ccInput.value : '';
+
+    tr.remove();
+    onInputCCSirilo();
+    showToast('Modifique os dados no formulário e clique em Cadastrar!', 'warning');
+    document.getElementById('novoCadCCProcesso').focus();
+}
+
+function inserirNovoCCSirilo() {
+    const processo = document.getElementById('novoCadCCProcesso').value.trim();
+    const centroCusto = document.getElementById('novoCadCCValor').value.trim();
+    if(!processo) { showToast('Informe o Processo!', 'warning'); return; }
+    if(!centroCusto) { showToast('Informe o Centro de Custo!', 'warning'); return; }
+    
+    adicionarLinhaCCSirilo({
+        processo: processo,
+        centroCusto: centroCusto
+    });
+    
+    document.getElementById('novoCadCCProcesso').value = '';
+    document.getElementById('novoCadCCValor').value = '';
+    
+    onInputCCSirilo();
+    showToast('Centro de Custo cadastrado com sucesso!', 'success');
+}
+
+function limparFormularioCC() {
+    document.getElementById('novoCadCCProcesso').value = '';
+    document.getElementById('novoCadCCValor').value = '';
+}
+
+let saveTimeoutCCSirilo;
+function onInputCCSirilo() {
+    const badge = document.getElementById('badge-save-cc-sirilo');
+    if (badge) { badge.className = 'autosave-badge autosave-saving'; badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> Salvando...'; }
+    clearTimeout(saveTimeoutCCSirilo);
+    saveTimeoutCCSirilo = setTimeout(() => {
+        salvarDadosCCSirilo();
+        atualizarResumoSirilo();
+        atualizarRelatorioSirilo();
+        sincronizarRealizadoSirilo();
+        if (badge) { badge.className = 'autosave-badge autosave-ok'; badge.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Salvo'; }
+    }, 800);
+}
+
+function salvarDadosCCSirilo() {
+    const linhas = [];
+    const tbody = document.getElementById('corpoTabelaCCSirilo');
+    if (!tbody) return;
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const procInput = tr.querySelector('.cc-processo');
+        const ccInput = tr.querySelector('.cc-valor');
+        if (procInput && procInput.value.trim()) {
+            linhas.push({
+                processo: procInput.value.trim(),
+                centroCusto: ccInput ? ccInput.value.trim() : ''
+            });
+        }
+    });
+    localStorage.setItem('dadosCCSirilo', JSON.stringify(linhas));
+}
+
+function buscarCentroCustoPorProcesso(processo) {
+    if (!processo) return '';
+    const saved = localStorage.getItem('dadosCCSirilo');
+    if (saved) {
+        try {
+            const cadastros = JSON.parse(saved);
+            if (Array.isArray(cadastros)) {
+                const config = cadastros.find(c => c.processo.trim().toUpperCase() === processo.trim().toUpperCase());
+                if (config) return config.centroCusto;
+            }
+        } catch (e) {
+            console.error('Erro ao buscar centro de custo por processo', e);
+        }
+    }
+    return '';
+}
+
+/* ===================================================
+   FILTRO DE MÊS SIRILO
+=================================================== */
+const NOMES_MESES_COMPLETOS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+window.filtroMesSiriloAtivo = '';
+
+function obterMesReferenciaFormatado(dataString) {
+    if (!dataString) return null;
+    const parts = dataString.split('-');
+    if (parts.length !== 3) return null;
+    const ano = parseInt(parts[0]);
+    const mes = parseInt(parts[1]); // 1 a 12
+    const dia = parseInt(parts[2]);
+
+    let mesRef = mes;
+    let anoRef = ano;
+
+    if (dia >= 21) {
+        mesRef = mes + 1;
+        if (mesRef > 12) {
+            mesRef = 1;
+            anoRef = ano + 1;
+        }
+    }
+    const mesStr = mesRef.toString().padStart(2, '0');
+    return {
+        value: `${anoRef}-${mesStr}`,
+        label: `${NOMES_MESES_COMPLETOS[mesRef - 1]}/${anoRef}`
+    };
+}
+
+function filtrarMesSirilo(valor) {
+    window.filtroMesSiriloAtivo = valor;
+    
+    // Sincronizar os seletores de mês
+    const selectApont = document.getElementById('filtroMesApont');
+    const selectRelatorio = document.getElementById('filtroMesRelatorio');
+    if (selectApont) selectApont.value = valor;
+    if (selectRelatorio) selectRelatorio.value = valor;
+
+    // Aplicar filtros e atualizar telas
+    aplicarFiltroMesTabelaApontamentos();
+    atualizarResumoSirilo();
+    atualizarRelatorioSirilo();
+}
+
+function aplicarFiltroMesTabelaApontamentos() {
+    const valorAtivo = window.filtroMesSiriloAtivo || '';
+    const tbodyApont = document.getElementById('corpoTabelaApontSirilo');
+    if (!tbodyApont) return;
+
+    tbodyApont.querySelectorAll('tr').forEach(tr => {
+        const dateInput = tr.querySelector('input[type="date"]');
+        if (!dateInput) return;
+        
+        const dateVal = dateInput.value;
+        if (!dateVal) {
+            tr.style.display = ''; // Permitir visualizar e digitar novas linhas sem data
+            return;
+        }
+
+        if (!valorAtivo) {
+            tr.style.display = ''; // Mostrar todos se não houver filtro
+            return;
+        }
+
+        const ref = obterMesReferenciaFormatado(dateVal);
+        if (ref && ref.value === valorAtivo) {
+            tr.style.display = '';
+        } else {
+            tr.style.display = 'none';
+        }
+    });
+}
+
+function atualizarFiltrosDeMes() {
+    const dates = [];
+    const tbodyApont = document.getElementById('corpoTabelaApontSirilo');
+    if (tbodyApont) {
+        tbodyApont.querySelectorAll('tr').forEach(tr => {
+            const dateInput = tr.querySelector('input[type="date"]');
+            if (dateInput && dateInput.value) {
+                dates.push(dateInput.value);
+            }
+        });
+    }
+
+    const uniqueMonths = {};
+    dates.forEach(d => {
+        const ref = obterMesReferenciaFormatado(d);
+        if (ref) {
+            uniqueMonths[ref.value] = ref.label;
+        }
+    });
+
+    const sortedKeys = Object.keys(uniqueMonths).sort();
+
+    const selectApont = document.getElementById('filtroMesApont');
+    const selectRelatorio = document.getElementById('filtroMesRelatorio');
+
+    const valorAtivo = window.filtroMesSiriloAtivo || '';
+
+    [selectApont, selectRelatorio].forEach(select => {
+        if (!select) return;
+        // Salvar a seleção atual para não perder a seleção ao reconstruir as opções
+        const currentSelection = select.value;
+        select.innerHTML = '<option value="">Todos os Meses</option>';
+        sortedKeys.forEach(key => {
+            const label = uniqueMonths[key];
+            select.innerHTML += `<option value="${key}">${label}</option>`;
+        });
+        select.value = sortedKeys.includes(currentSelection) ? currentSelection : '';
+    });
+    
+    // Atualizar o valor ativo caso a seleção anterior tenha sido perdida (ex: foi excluído o último item daquele mês)
+    if (valorAtivo && !sortedKeys.includes(valorAtivo)) {
+        window.filtroMesSiriloAtivo = '';
+        aplicarFiltroMesTabelaApontamentos();
+    }
+}
+
+function salvarDadosApontSirilo() {
+    const linhas = [];
+    const tbody = document.getElementById('corpoTabelaApontSirilo');
+    if (!tbody) return;
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const selectCidade = tr.querySelector('.cidade-select');
+        const selectProcesso = tr.querySelector('.processo-select');
+        const selectFrente = tr.querySelector('.frente-select');
+        
+        const dateInput = tr.querySelector('input[type="date"]');
+        if (!dateInput) return;
+        
+        linhas.push({
+            data: dateInput.value,
+            frota: tr.querySelector('.frota-input') ? tr.querySelector('.frota-input').value : '',
+            placa: tr.querySelector('.placa-input') ? tr.querySelector('.placa-input').value : '',
+            cidade: selectCidade ? selectCidade.value : '',
+            processo: selectProcesso ? selectProcesso.value : '',
+            frente: selectFrente ? selectFrente.value : '',
+            kmIni: tr.querySelector('.km-inicial') ? tr.querySelector('.km-inicial').value : '',
+            kmFin: tr.querySelector('.km-final') ? tr.querySelector('.km-final').value : '',
+            resIni: tr.querySelector('.res-inicial') ? tr.querySelector('.res-inicial').value : '',
+            resFin: tr.querySelector('.res-final') ? tr.querySelector('.res-final').value : '',
+            totalKm: tr.querySelector('.total-km') ? tr.querySelector('.total-km').innerText : '0'
+        });
+    });
+    localStorage.setItem('dadosApontSiriloTransporte', JSON.stringify(linhas));
+}
+
+function adicionarLinhaCadastroSirilo(d = null) {
+    const tbody = document.getElementById('corpoTabelaCadastroSirilo');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td style="padding: 0 2px;"><input type="text" class="ti" value="${d ? d.frota : ''}" placeholder="FRT" maxlength="1" style="padding: 5px 0;"></td>
+        <td><input type="text" class="ti wide" value="${d ? d.cidade1 : ''}" placeholder="Cidade 1"></td>
+        <td><input type="text" class="ti wide" value="${d ? d.cidade2 : ''}" placeholder="Cidade 2"></td>
+        <td><input type="text" class="ti wide" value="${d ? d.processo1 : ''}" placeholder="Processo 1"></td>
+        <td><input type="text" class="ti wide" value="${d ? d.processo2 : ''}" placeholder="Processo 2"></td>
+        <td><input type="text" class="ti wide" value="${d ? d.frente1 : ''}" placeholder="Frente 1"></td>
+        <td><input type="text" class="ti wide" value="${d ? d.frente2 : ''}" placeholder="Frente 2"></td>
+        <td class="pdf-hidden" style="white-space: nowrap;">
+            <button class="btn btn-primary btn-sm" style="margin-right:4px;" onclick="editarLinhaCadastroSirilo(this)" title="Editar"><i class="fas fa-edit"></i> Editar</button>
+            <button class="btn btn-del btn-sm" onclick="removerLinha(this); onInputCadastroSirilo()" title="Remover"><i class="fas fa-trash-alt"></i> Excluir</button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function editarLinhaCadastroSirilo(btn) {
+    const tr = btn.closest('tr');
+    const inputs = tr.querySelectorAll('input');
+    
+    document.getElementById('novoCadFrota').value = inputs[0].value;
+    document.getElementById('novoCadCid1').value = inputs[1].value;
+    document.getElementById('novoCadCid2').value = inputs[2].value;
+    document.getElementById('novoCadProc1').value = inputs[3].value;
+    document.getElementById('novoCadProc2').value = inputs[4].value;
+    document.getElementById('novoCadFrente1').value = inputs[5].value;
+    document.getElementById('novoCadFrente2').value = inputs[6].value;
+
+    tr.remove();
+    onInputCadastroSirilo();
+    showToast('Modifique os dados no formulário acima e clique em Cadastrar!', 'warning');
+    
+    // Rola a tela suavemente para o formulário
+    document.getElementById('novoCadFrota').focus();
+    window.scrollTo({ top: document.getElementById('section-cadastro-sirilo').offsetTop, behavior: 'smooth' });
+}
+
+function inserirNovoCadastroSirilo() {
+    const frota = document.getElementById('novoCadFrota').value.trim();
+    if(!frota) { showToast('Informe a Frota!', 'warning'); return; }
+    
+    adicionarLinhaCadastroSirilo({
+        frota: frota,
+        cidade1: document.getElementById('novoCadCid1').value,
+        cidade2: document.getElementById('novoCadCid2').value,
+        processo1: document.getElementById('novoCadProc1').value,
+        processo2: document.getElementById('novoCadProc2').value,
+        frente1: document.getElementById('novoCadFrente1').value,
+        frente2: document.getElementById('novoCadFrente2').value
+    });
+    
+    document.getElementById('novoCadFrota').value = '';
+    document.getElementById('novoCadCid1').value = '';
+    document.getElementById('novoCadCid2').value = '';
+    document.getElementById('novoCadProc1').value = '';
+    document.getElementById('novoCadProc2').value = '';
+    document.getElementById('novoCadFrente1').value = '';
+    document.getElementById('novoCadFrente2').value = '';
+    
+    onInputCadastroSirilo();
+    showToast('Cadastro adicionado com sucesso!', 'success');
+}
+
+function limparFormularioCadastro() {
+    document.getElementById('novoCadFrota').value = '';
+    document.getElementById('novoCadCid1').value = '';
+    document.getElementById('novoCadCid2').value = '';
+    document.getElementById('novoCadProc1').value = '';
+    document.getElementById('novoCadProc2').value = '';
+    document.getElementById('novoCadFrente1').value = '';
+    document.getElementById('novoCadFrente2').value = '';
+}
+
+let saveTimeoutCadastro;
+function onInputCadastroSirilo() {
+    const badge = document.getElementById('badge-save-cadastro');
+    if (badge) { badge.className = 'autosave-badge autosave-saving'; badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> Salvando...'; }
+    clearTimeout(saveTimeoutCadastro);
+    saveTimeoutCadastro = setTimeout(() => {
+        salvarDadosCadastroSirilo();
+        atualizarListaFrotas();
+        if (badge) { badge.className = 'autosave-badge autosave-ok'; badge.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Salvo'; }
+    }, 800);
+}
+
+function salvarDadosCadastroSirilo() {
+    const linhas = [];
+    const tbody = document.getElementById('corpoTabelaCadastroSirilo');
+    if (!tbody) return;
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        if (inputs.length < 7) return;
+        if (inputs[0].value.trim() === '') return;
+        linhas.push({
+            frota: inputs[0].value,
+            cidade1: inputs[1].value,
+            cidade2: inputs[2].value,
+            processo1: inputs[3].value,
+            processo2: inputs[4].value,
+            frente1: inputs[5].value,
+            frente2: inputs[6].value
+        });
+    });
+    localStorage.setItem('dadosCadastroSirilo', JSON.stringify(linhas));
+}
+
+function atualizarListaFrotas() {
+    const saved = localStorage.getItem('dadosCadastroSirilo');
+    const datalist = document.getElementById('lista-frotas');
+    if(saved && datalist) {
+        try {
+            const cadastros = JSON.parse(saved);
+            if (Array.isArray(cadastros)) {
+                datalist.innerHTML = '';
+                cadastros.forEach(c => {
+                    if(c.frota) datalist.innerHTML += `<option value="${c.frota}">`;
+                });
+            }
+        } catch (e) {
+            console.error('Erro ao atualizar lista de frotas', e);
+        }
+    }
+}
+
+/* ===================================================
+   TOTAIS
+=================================================== */
+function onInput() {
+    let tentouSirilo = false;
+    document.querySelectorAll('#corpoTabelaRealizado tr').forEach(tr => {
+        const select = tr.querySelector('select');
+        if (select && !select.disabled && select.value === 'SIRILO') {
+            tentouSirilo = true;
+            select.value = 'ITAMARATY';
+        }
+    });
+    if (tentouSirilo) {
+        showToast('O realizado do Sirilo é calculado automaticamente por processo.', 'warning');
+    }
+
+    atualizarTotais();
+    // Debounce save indicator
+    const badge = document.getElementById('badge-save');
+    if (badge) { badge.className = 'autosave-badge autosave-saving'; badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> Salvando...'; }
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        salvarDados();
+        if (badge) { badge.className = 'autosave-badge autosave-ok'; badge.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Salvo'; }
+    }, 800);
+}
+
+function atualizarTotais() {
+    let totaisOrc = Array(12).fill(0);
+    let totaisReal = Array(12).fill(0);
+    let grandOrc = 0, grandReal = 0;
+    const resumoProps = {};
+
+    const configs = [
+        { tbodyId:'corpoTabela', totalColSel:'.total-col', grandId:'grand-total', totalLinhaClass:'total-linha' },
+        { tbodyId:'corpoTabelaRealizado', totalColSel:'.total-col-realizado', grandId:'grand-total-realizado', totalLinhaClass:'total-linha-realizado' }
+    ];
+
+    configs.forEach(cfg => {
+        const tbody = document.getElementById(cfg.tbodyId);
+        if (!tbody) return;
+        let grand = 0;
+
+        // Totais por coluna
+        for (let i = 0; i < 12; i++) {
+            let soma = 0;
+            tbody.querySelectorAll(`.mes-${i}`).forEach(inp => soma += parseValor(inp.value));
+            if (cfg.tbodyId === 'corpoTabela') totaisOrc[i] = soma;
+            else totaisReal[i] = soma;
+            const el = document.getElementById(cfg.grandId).closest('tfoot').querySelectorAll(cfg.totalColSel)[i];
+            if (el) el.innerText = soma > 0 ? fmt(soma) : 'R$ 0';
+        }
+
+        // Totais por linha
+        tbody.querySelectorAll('tr').forEach(tr => {
+            if (tr.style.display === 'none') return; // skip filtered
+            let somaLinha = 0;
+            tr.querySelectorAll('input[class*="mes-"]').forEach(inp => somaLinha += parseValor(inp.value));
+            const el = tr.querySelector(`.${cfg.totalLinhaClass}`);
+            if (el) el.innerText = fmt(somaLinha);
+            grand += somaLinha;
+
+            // Forecast por propriedade
+            const propVal = tr.querySelector('select')?.value || 'Sem Nome';
+            const propKey = propVal.trim().toUpperCase();
+            const mesVals = Array.from(tr.querySelectorAll('input[class*="mes-"]')).map(i => parseValor(i.value));
+
+            if (!resumoProps[propKey]) resumoProps[propKey] = { nome: propVal, orcado: 0, realizado: 0, mesesOrc: Array(12).fill(0), mesesReal: Array(12).fill(0) };
+            if (cfg.tbodyId === 'corpoTabela') {
+                resumoProps[propKey].orcado += somaLinha;
+                mesVals.forEach((v,i) => resumoProps[propKey].mesesOrc[i] += v);
+            } else {
+                resumoProps[propKey].realizado += somaLinha;
+                mesVals.forEach((v,i) => resumoProps[propKey].mesesReal[i] += v);
+            }
+        });
+
+        document.getElementById(cfg.grandId).innerText = fmt(grand);
+        if (cfg.tbodyId === 'corpoTabela') grandOrc = grand;
+        else grandReal = grand;
+    });
+
+    // Diferença
+    const diffCols = document.querySelectorAll('.diff-col');
+    const diffPercCols = document.querySelectorAll('.diff-perc-col');
+    let grandReavisado = 0;
+
+    totaisOrc.forEach((orc, i) => {
+        const real = totaisReal[i];
+        const diff = orc - real;
+        if (diffCols[i]) {
+            diffCols[i].innerText = fmt(diff);
+            diffCols[i].className = 'diff-col ' + (diff < 0 ? 'diff-neg' : 'diff-pos');
+        }
+        const pct = orc !== 0 ? (diff / orc) * 100 : 0;
+        if (diffPercCols[i]) {
+            diffPercCols[i].innerText = fmtPct(pct);
+            diffPercCols[i].className = 'diff-perc-col ' + (pct < 0 ? 'diff-neg' : 'diff-pos');
+        }
+        grandReavisado += (real !== 0) ? real : orc;
+    });
+
+    const diffTotal = grandOrc - grandReal;
+    const dtEl = document.getElementById('diff-grand-total');
+    const dpEl = document.getElementById('diff-grand-perc');
+    if (dtEl) { dtEl.innerText = fmt(diffTotal); dtEl.className = diffTotal < 0 ? 'diff-neg' : 'diff-pos'; }
+    const gPct = grandOrc !== 0 ? (diffTotal / grandOrc) * 100 : 0;
+    if (dpEl) { dpEl.innerText = fmtPct(gPct); dpEl.className = gPct < 0 ? 'diff-neg' : 'diff-pos'; }
+
+    // KPIs
+    document.getElementById('kpi-orcamento').innerText = fmt(grandOrc);
+    document.getElementById('kpi-realizado').innerText = fmt(grandReal);
+    document.getElementById('kpi-reavisado').innerText = fmt(grandReavisado);
+    const varFinal = grandOrc - grandReavisado;
+    const kvEl = document.getElementById('kpi-variacao');
+    kvEl.innerText = fmt(varFinal);
+    kvEl.className = 'kpi-val ' + (varFinal < 0 ? 'neg' : 'pos');
+
+    // Forecast
+    const corpoForecast = document.getElementById('corpoTabelaForecast');
+    if (corpoForecast) {
+        corpoForecast.innerHTML = '';
+        const props = Object.values(resumoProps).filter(p => p.nome !== 'Sem Nome' && p.nome !== '');
+        if (props.length === 0) {
+            corpoForecast.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px;">Selecione propriedades nas tabelas para gerar o forecast.</td></tr>';
+        } else {
+            props.forEach(p => {
+                let forecast = 0;
+                for (let i = 0; i < 12; i++) forecast += (p.mesesReal[i] !== 0) ? p.mesesReal[i] : p.mesesOrc[i];
+                const variacao = p.orcado - forecast;
+                const perc = p.orcado !== 0 ? (variacao / p.orcado) * 100 : 0;
+                const cls = variacao < 0 ? 'diff-neg' : 'diff-pos';
+                const just = justificativas[p.nome] || '';
+                let propCls = 'prop-other';
+                if (p.nome === 'SIRILO') propCls = 'prop-sirilo';
+                else if (p.nome === 'ITAMARATY') propCls = 'prop-itamaraty';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:left;"><span class="prop-badge ${propCls}">${p.nome}</span></td>
+                    <td>${fmt(p.orcado)}</td>
+                    <td>${fmt(p.realizado)}</td>
+                    <td style="font-weight:700;">${fmt(forecast)}</td>
+                    <td class="${cls}" style="font-weight:700;">${fmt(variacao)}</td>
+                    <td class="${cls}" style="font-weight:700;">${fmtPct(perc)}</td>
+                    <td><input type="text" class="just-input" value="${just}" placeholder="Justificativa..." oninput="salvarJustificativa('${p.nome.replace(/'/g,"\\'")}', this.value)"></td>
+                `;
+                corpoForecast.appendChild(tr);
+            });
+        }
+    }
+
+    // Gráfico
+    atualizarGrafico(totaisOrc, totaisReal);
+}
+
+/* ===================================================
+   GRÁFICO
+=================================================== */
+function inicializarGrafico() {
+    const ctx = document.getElementById('graficoComparativo').getContext('2d');
+    meuGrafico = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: MESES,
+            datasets: [
+                {
+                    label: 'Orçamento',
+                    data: Array(12).fill(0),
+                    backgroundColor: 'rgba(79,70,229,0.8)',
+                    borderRadius: 6, borderSkipped: false
+                },
+                {
+                    label: 'Realizado',
+                    data: Array(12).fill(0),
+                    backgroundColor: 'rgba(14,165,233,0.8)',
+                    borderRadius: 6, borderSkipped: false
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { font: { family: 'Inter', size: 12 }, color: '#334155' } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw)
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' } },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
+                    ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b', callback: v => 'R$ ' + v.toLocaleString('pt-BR') }
+                }
+            }
+        }
+    });
+}
+
+function atualizarGrafico(orc, real) {
+    if (!meuGrafico) return;
+    meuGrafico.data.datasets[0].data = orc;
+    meuGrafico.data.datasets[1].data = real;
+    meuGrafico.update();
+}
+
+function mudarTipoGrafico(tipo, btn) {
+    document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    meuGrafico.config.type = tipo;
+    meuGrafico.data.datasets[0].type = tipo;
+    meuGrafico.data.datasets[1].type = tipo;
+    meuGrafico.update();
+}
+
+/* ===================================================
+   SINCRONIZAÇÃO AUTOMÁTICA SIRILO
+=================================================== */
+function calcularCustosMensaisSirilo() {
+    let apontamentos = [];
+    const savedApont = localStorage.getItem('dadosApontSiriloTransporte');
+    if (savedApont) {
+        try {
+            apontamentos = JSON.parse(savedApont);
+        } catch (e) {
+            console.error('Erro ao ler apontamentos', e);
+        }
+    }
+
+    let configSirilo = {};
+    const savedConfig = localStorage.getItem('resumoSiriloConfig');
+    if (savedConfig) {
+        try {
+            configSirilo = JSON.parse(savedConfig);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Inicializar dados para cada um dos 12 meses da safra (Abril = index 0 a Março = index 11)
+    const dadosMensais = Array.from({ length: 12 }, () => ({
+        datasPorFrota: {},
+        grupos: {}
+    }));
+
+    apontamentos.forEach(ap => {
+        if (!ap.frota || !ap.data) return;
+        
+        const ref = obterMesReferenciaFormatado(ap.data);
+        if (!ref) return;
+        
+        const parts = ref.value.split('-');
+        const mesRef = parseInt(parts[1]); // 1 a 12
+        
+        let mesSafra = 0;
+        if (mesRef >= 4) {
+            mesSafra = mesRef - 4;
+        } else {
+            mesSafra = mesRef + 8;
+        }
+        
+        const dm = dadosMensais[mesSafra];
+        
+        if (!dm.datasPorFrota[ap.frota]) {
+            dm.datasPorFrota[ap.frota] = new Set();
+        }
+        dm.datasPorFrota[ap.frota].add(ap.data);
+        
+        const key = `${ap.frota}|${ap.cidade || ''}|${ap.processo || ''}|${ap.frente || ''}`;
+        if (!dm.grupos[key]) {
+            dm.grupos[key] = {
+                frota: ap.frota,
+                cidade: ap.cidade || '',
+                processo: ap.processo || '',
+                frente: ap.frente || '',
+                datas: new Set(),
+                km: 0
+            };
+        }
+        dm.grupos[key].datas.add(ap.data);
+        dm.grupos[key].km += parseFloat(ap.totalKm) || 0;
+    });
+
+    const custosPorProcesso = {};
+
+    dadosMensais.forEach((dm, mesSafra) => {
+        const somaDiasGruposPorFrota = {};
+        Object.keys(dm.grupos).forEach(key => {
+            const g = dm.grupos[key];
+            if (!somaDiasGruposPorFrota[g.frota]) {
+                somaDiasGruposPorFrota[g.frota] = 0;
+            }
+            somaDiasGruposPorFrota[g.frota] += g.datas.size;
+        });
+
+        Object.keys(dm.grupos).forEach(key => {
+            const g = dm.grupos[key];
+            const conf = configSirilo[key] || { centroCusto: '', custoFixo: 0, custoVarKm: 0 };
+            
+            const diasGrupo = g.datas.size;
+            const diasFrota = dm.datasPorFrota[g.frota] ? dm.datasPorFrota[g.frota].size : 0;
+            const somaDiasGrupos = somaDiasGruposPorFrota[g.frota] || 0;
+            const diasFrotaCalculo = Math.min(diasFrota, 30);
+            
+            let diasExibidos = 0;
+            if (somaDiasGrupos > 0) {
+                diasExibidos = Number((diasFrotaCalculo * (diasGrupo / somaDiasGrupos)).toFixed(2));
+            }
+            
+            const totalFixo = diasExibidos * (parseFloat(conf.custoFixo) || 0);
+            
+            let kmFranquia = 0;
+            if (somaDiasGrupos > 0) {
+                const franquiaTotalFrota = (7000 / 30) * diasFrotaCalculo;
+                kmFranquia = Math.round(franquiaTotalFrota * (diasGrupo / somaDiasGrupos));
+            }
+            
+            const kmExcedente = g.km > kmFranquia ? g.km - kmFranquia : 0;
+            const custoVariavel = kmExcedente * (parseFloat(conf.custoVarKm) || 0);
+            const custoTotal = totalFixo + custoVariavel;
+
+            const processoNome = (g.processo || 'Sem Processo').trim().toUpperCase();
+            if (processoNome === '') return;
+
+            if (!custosPorProcesso[processoNome]) {
+                custosPorProcesso[processoNome] = Array(12).fill(0);
+            }
+            custosPorProcesso[processoNome][mesSafra] += custoTotal;
+        });
+    });
+
+    return custosPorProcesso;
+}
+
+function sincronizarRealizadoSirilo() {
+    const tbody = document.getElementById('corpoTabelaRealizado');
+    if (!tbody) return;
+
+    const linhasManuais = [];
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const select = tr.querySelector('select');
+        if (select && !select.disabled && select.value !== 'SIRILO') {
+            const desc = tr.querySelector('input[type="text"]')?.value || '';
+            const meses = Array.from(tr.querySelectorAll('input[class*="mes-"]')).map(i => i.value);
+            linhasManuais.push({ propriedade: select.value, descricao: desc, meses });
+        }
+    });
+
+    const custosPorProcesso = calcularCustosMensaisSirilo();
+
+    tbody.innerHTML = '';
+
+    Object.keys(custosPorProcesso).sort().forEach(proc => {
+        const valoresMeses = custosPorProcesso[proc].map(v => v > 0 ? v.toFixed(2).replace('.', ',') : '');
+        adicionarLinhaSiriloRealizado({
+            propriedade: 'SIRILO',
+            descricao: proc,
+            meses: valoresMeses
+        });
+    });
+
+    linhasManuais.forEach(d => adicionarLinha('corpoTabelaRealizado', d));
+
+    if (tbody.children.length === 0) {
+        adicionarLinha('corpoTabelaRealizado');
+    }
+
+    atualizarTotais();
+    salvarDados();
+}
+
+function adicionarLinhaSiriloRealizado(dados) {
+    const tbody = document.getElementById('corpoTabelaRealizado');
+    if (!tbody) return;
+    const tr = document.createElement('tr');
+    
+    const prop = dados.propriedade || 'SIRILO';
+    const desc = dados.descricao || '';
+    const vals = dados.meses || Array(12).fill('');
+
+    tr.innerHTML = `
+        <td>
+            <select class="ts" disabled style="background: #f1f5f9; color: var(--text-muted);">
+                <option value="SIRILO" selected>SIRILO</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" class="ti wide" value="${desc}" disabled style="background: #f1f5f9; font-weight: 600; color: var(--primary);">
+        </td>
+        ${vals.map((v, i) => `
+            <td>
+                <input type="text" class="ti mes-${i}" value="${v}" disabled style="background: #f1f5f9; text-align: right;">
+            </td>
+        `).join('')}
+        <td class="total-linha-realizado" style="font-weight: 800; color: var(--primary);">R$ 0,00</td>
+        <td class="pdf-hidden" style="text-align: center; color: var(--text-muted); font-size: 0.95rem;">
+            <i class="fas fa-lock" title="Linha automática (Sirilo)"></i>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
+/* ===================================================
+   JUSTIFICATIVAS
+=================================================== */
+function salvarJustificativa(nome, valor) {
+    justificativas[nome] = valor;
+    salvarDados();
+}
+
+/* ===================================================
+   SALVAR / CARREGAR
+=================================================== */
+function salvarDados() {
+    const saveTable = (tbodyId, key) => {
+        const linhas = [];
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const sel = tr.querySelector('select');
+            const desc = tr.querySelector('input[type="text"]');
+            const meses = Array.from(tr.querySelectorAll('input[class*="mes-"]')).map(i => i.value);
+            linhas.push({ propriedade: sel ? sel.value : '', descricao: desc ? desc.value : '', meses });
+        });
+        localStorage.setItem(key, JSON.stringify(linhas));
+    };
+    saveTable('corpoTabela', 'dadosOrcamentoTransporte');
+    saveTable('corpoTabelaRealizado', 'dadosRealizadoTransporte');
+    localStorage.setItem('dadosJustificativas', JSON.stringify(justificativas));
+}
+
+function carregarDados() {
+    const loadTable = (tbodyId, key) => {
+        const saved = localStorage.getItem(key);
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody || !saved) return;
+        try {
+            const linhas = JSON.parse(saved);
+            if (Array.isArray(linhas) && linhas.length > 0) {
+                tbody.innerHTML = '';
+                linhas.forEach(d => adicionarLinha(tbodyId, d));
+            }
+        } catch (e) {
+            console.error('Erro ao processar dados salvos em ' + key, e);
+        }
+    };
+    loadTable('corpoTabela', 'dadosOrcamentoTransporte');
+    loadTable('corpoTabelaRealizado', 'dadosRealizadoTransporte');
+    
+    const savedCadastro = localStorage.getItem('dadosCadastroSirilo');
+    const tbodyCadastro = document.getElementById('corpoTabelaCadastroSirilo');
+    if (tbodyCadastro && savedCadastro) {
+        try {
+            const linhasCadastro = JSON.parse(savedCadastro);
+            if (Array.isArray(linhasCadastro) && linhasCadastro.length > 0) {
+                tbodyCadastro.innerHTML = '';
+                linhasCadastro.forEach(d => adicionarLinhaCadastroSirilo(d));
+            }
+        } catch (e) {
+            console.error('Erro ao processar cadastro de frotas', e);
+        }
+    }
+    atualizarListaFrotas();
+
+    const savedCC = localStorage.getItem('dadosCCSirilo');
+    const tbodyCC = document.getElementById('corpoTabelaCCSirilo');
+    if (tbodyCC && savedCC) {
+        try {
+            const linhasCC = JSON.parse(savedCC);
+            if (Array.isArray(linhasCC) && linhasCC.length > 0) {
+                tbodyCC.innerHTML = '';
+                linhasCC.forEach(d => adicionarLinhaCCSirilo(d));
+            }
+        } catch (e) {
+            console.error('Erro ao processar centros de custo salvos', e);
+        }
+    }
+
+    const savedApont = localStorage.getItem('dadosApontSiriloTransporte');
+    const tbodyApont = document.getElementById('corpoTabelaApontSirilo');
+    if (tbodyApont && savedApont) {
+        try {
+            const linhasApont = JSON.parse(savedApont);
+            if (Array.isArray(linhasApont) && linhasApont.length > 0) {
+                tbodyApont.innerHTML = '';
+                linhasApont.forEach(d => adicionarLinhaApontSirilo(d));
+            }
+        } catch (e) {
+            console.error('Erro ao processar apontamentos salvos', e);
+        }
+    }
+
+    const just = localStorage.getItem('dadosJustificativas');
+    if (just) {
+        try {
+            justificativas = JSON.parse(just);
+        } catch (e) {
+            console.error('Erro ao processar justificativas salvas', e);
+        }
+    }
+    atualizarTotais();
+    atualizarResumoSirilo();
+    atualizarRelatorioSirilo();
+    atualizarFiltrosDeMes();
+    sincronizarRealizadoSirilo();
+}
+
+/* ===================================================
+   EXCEL
+=================================================== */
+function exportarExcel(tipo) {
+    const wb = XLSX.utils.book_new();
+    const header = ['Propriedade', 'Descrição', ...MESES, 'Total'];
+
+    const tableToData = (tbodyId) => {
+        const rows = [header];
+        document.querySelectorAll(`#${tbodyId} tr`).forEach(tr => {
+            const sel = tr.querySelector('select')?.value || '';
+            const desc = tr.querySelector('input[type="text"]')?.value || '';
+            const meses = Array.from(tr.querySelectorAll('input[class*="mes-"]')).map(i => parseValor(i.value));
+            const total = meses.reduce((a, b) => a + b, 0);
+            if (sel || desc) rows.push([sel, desc, ...meses, total]);
+        });
+        return rows;
+    };
+
+    if (tipo === 'orcamento') {
+        const ws = XLSX.utils.aoa_to_sheet(tableToData('corpoTabela'));
+        XLSX.utils.book_append_sheet(wb, ws, 'Orçamento');
+        XLSX.writeFile(wb, `Orcamento_Transporte_${hoje()}.xlsx`);
+    } else if (tipo === 'realizado') {
+        const ws = XLSX.utils.aoa_to_sheet(tableToData('corpoTabelaRealizado'));
+        XLSX.utils.book_append_sheet(wb, ws, 'Realizado');
+        XLSX.writeFile(wb, `Realizado_Transporte_${hoje()}.xlsx`);
+    } else if (tipo === 'forecast') {
+        const rows = [['Propriedade','Orçado Total','Realizado Acum.','Forecast','Variação','% Desvio','Justificativa']];
+        document.querySelectorAll('#corpoTabelaForecast tr').forEach(tr => {
+            const tds = tr.querySelectorAll('td');
+            if (tds.length >= 6) {
+                const just = tr.querySelector('input')?.value || '';
+                rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText, tds[4].innerText, tds[5].innerText, just]);
+            }
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, 'Forecast');
+        XLSX.writeFile(wb, `Forecast_Transporte_${hoje()}.xlsx`);
+    } else if (tipo === 'apont-sirilo') {
+        const rows = [['DATA','FROTA','PLACA','CIDADE','PROCESSO','FRENTE','KM INICIAL','KM FINAL','RES. INICIAL','RES. FINAL','TOTAL KM']];
+        document.querySelectorAll('#corpoTabelaApontSirilo tr').forEach(tr => {
+            const selectCidade = tr.querySelector('.cidade-select');
+            const selectProcesso = tr.querySelector('.processo-select');
+            const selectFrente = tr.querySelector('.frente-select');
+            const total = tr.querySelector('.total-km');
+            const dateInput = tr.querySelector('input[type="date"]');
+            if (dateInput && total) {
+                rows.push([
+                    dateInput.value, 
+                    tr.querySelector('.frota-input') ? tr.querySelector('.frota-input').value : '',
+                    tr.querySelector('.placa-input') ? tr.querySelector('.placa-input').value : '',
+                    selectCidade ? selectCidade.value : '',
+                    selectProcesso ? selectProcesso.value : '', 
+                    selectFrente ? selectFrente.value : '', 
+                    tr.querySelector('.km-inicial') ? tr.querySelector('.km-inicial').value : '', 
+                    tr.querySelector('.km-final') ? tr.querySelector('.km-final').value : '',
+                    tr.querySelector('.res-inicial') ? tr.querySelector('.res-inicial').value : '',
+                    tr.querySelector('.res-final') ? tr.querySelector('.res-final').value : '',
+                    total.innerText
+                ]);
+            }
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, 'Apont. Sirilo');
+        XLSX.writeFile(wb, `Apontamentos_Sirilo_${hoje()}.xlsx`);
+    } else if (tipo === 'resumo-sirilo') {
+        const rows = [['FROTA','CIDADE','PROCESSO','CENTRO DE CUSTO','FRENTE','CUSTO FIXO','DIAS TRABALHADOS','TOTAL FIXO','KM (FRANQUIA)','KM TOTAL','KM EXCEDENTE','VALOR KM EXCED.','CUSTO VARIÁVEL','CUSTO TOTAL']];
+        document.querySelectorAll('#corpoTabelaResumoSirilo tr').forEach(tr => {
+            const key = tr.dataset.key;
+            if (key) {
+                const tds = tr.querySelectorAll('td');
+                const centroCusto = tr.querySelector('.centro-custo')?.value || '';
+                const custoFixo = tr.querySelector('.custo-fixo')?.value || '';
+                const custoVarKm = tr.querySelector('.custo-var-km')?.value || '';
+                rows.push([
+                    tds[0].innerText,
+                    tds[1].innerText,
+                    tds[2].innerText,
+                    centroCusto,
+                    tds[4].innerText,
+                    custoFixo,
+                    tds[6].innerText,
+                    tds[7].innerText,
+                    tds[8].innerText, // Km (franquia)
+                    tds[9].innerText,  // Km Total
+                    tds[10].innerText, // Km Excedente
+                    custoVarKm,        // Valor Km Excedente
+                    tds[12].innerText, // Custo Variável
+                    tds[13].innerText  // Custo Total
+                ]);
+            }
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, 'Resumo Custos Sirilo');
+        XLSX.writeFile(wb, `Resumo_Custos_Sirilo_${hoje()}.xlsx`);
+    } else if (tipo === 'relatorio-sirilo-processo') {
+        const rows = [];
+        const frotasGrupos = window.lastListaGruposSirilo || [];
+        
+        // Agrupar os dados por Processo
+        const processos = {};
+        frotasGrupos.forEach(item => {
+            const proc = item.processo || 'Sem Processo';
+            if (!processos[proc]) {
+                processos[proc] = {
+                    nome: proc,
+                    centroCusto: item.centroCusto || '',
+                    itens: []
+                };
+            }
+            processos[proc].itens.push(item);
+        });
+
+        let totalGeralKm = 0;
+        let totalGeralFixo = 0;
+        let totalGeralVariavel = 0;
+        let totalGeralTotal = 0;
+
+        const resumoGeralItens = [];
+
+        Object.values(processos).forEach(proc => {
+            rows.push([`PROCESSO: ${proc.nome.toUpperCase()}`, `CENTRO DE CUSTO: ${proc.centroCusto}`]);
+            rows.push(['CIDADE', 'FRENTE', 'TOTAL KM', 'TOTAL FIXO', 'VALOR KM EXCED.', 'CUSTO VARIÁVEL', 'CUSTO TOTAL']);
+            
+            let subKm = 0;
+            let subFixo = 0;
+            let subVariavel = 0;
+            let subTotal = 0;
+
+            proc.itens.forEach(item => {
+                subKm += item.kmTotal;
+                subFixo += item.totalFixo;
+                subVariavel += item.custoVariavel;
+                subTotal += item.custoTotal;
+
+                rows.push([
+                    item.cidade || '—',
+                    item.frente || '—',
+                    item.kmTotal,
+                    item.totalFixo,
+                    item.custoVarKm,
+                    item.custoVariavel,
+                    item.custoTotal
+                ]);
+            });
+
+            totalGeralKm += subKm;
+            totalGeralFixo += subFixo;
+            totalGeralVariavel += subVariavel;
+            totalGeralTotal += subTotal;
+
+            resumoGeralItens.push([proc.nome, proc.centroCusto, subKm, subFixo, subVariavel, subTotal]);
+
+            rows.push(['SUBTOTAL DO PROCESSO', '', subKm, subFixo, '—', subVariavel, subTotal]);
+            rows.push([]); // linha em branco
+        });
+
+        // Adicionar Resumo Geral ao Excel
+        rows.push(['RESUMO GERAL DOS PROCESSOS']);
+        rows.push(['PROCESSO', 'CENTRO DE CUSTO', 'TOTAL KM', 'TOTAL FIXO', 'CUSTO VARIÁVEL', 'CUSTO TOTAL']);
+        
+        resumoGeralItens.forEach(item => {
+            rows.push(item);
+        });
+        rows.push(['TOTAL GERAL CONSOLIDADO', '', totalGeralKm, totalGeralFixo, totalGeralVariavel, totalGeralTotal]);
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, 'Relatorio Sirilo Processo');
+        XLSX.writeFile(wb, `Relatorio_Sirilo_Processo_${hoje()}.xlsx`);
+    }
+    showToast('Excel exportado com sucesso!', 'success');
+}
+
+function hoje() { return new Date().toISOString().split('T')[0]; }
+
+/* ===================================================
+   PDF
+=================================================== */
+function exportarPDF() {
+    showToast('Gerando PDF, aguarde...', 'warning');
+    const el = document.getElementById('relatorio-container');
+    
+    // 1. Ocultar botões que não devem sair no PDF
+    const elsToHide = el.querySelectorAll('.btn-add, .btn-del, .btn-menu-toggle, .toolbar-right, .pdf-hidden');
+    elsToHide.forEach(b => b.style.display = 'none');
+    
+    // 2. Guardar estado original
+    const origStyle = el.getAttribute('style') || '';
+    const isSidebarHidden = document.body.classList.contains('sidebar-hidden');
+    
+    const kpiGrid = document.querySelector('.kpi-grid');
+    const origKpiStyle = kpiGrid ? (kpiGrid.getAttribute('style') || '') : '';
+    if (kpiGrid) kpiGrid.style.display = 'grid'; // Ensure KPI cards are displayed in the global PDF report
+    
+    // 3. Temporariamente expandir todos os .table-wrap para não cortar as linhas
+    const tableWraps = el.querySelectorAll('.table-wrap');
+    const origTableWrapStyles = [];
+    tableWraps.forEach((wrap, i) => {
+        origTableWrapStyles[i] = wrap.getAttribute('style') || '';
+        wrap.style.setProperty('max-height', 'none', 'important');
+        wrap.style.setProperty('overflow', 'visible', 'important');
+        wrap.style.setProperty('overflow-y', 'visible', 'important');
+    });
+
+    // 4. Preparar layout (esconder sidebar, expandir largura para não espremer as colunas)
+    document.body.classList.add('sidebar-hidden');
+    el.style.width = '1250px';
+    el.style.marginLeft = '0';
+    el.style.padding = '20px';
+    
+    // 5. Mostrar todas as seções simultaneamente para o PDF
+    const sections = el.querySelectorAll('.section-content');
+    sections.forEach(s => s.style.display = 'block');
+
+    html2pdf().set({
+        margin: [10, 10, 10, 10],
+        filename: `Relatorio_Transporte_Safra_25_26_${hoje()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 1250 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    }).from(el).save().then(() => {
+        // 6. Restaurar estado original
+        elsToHide.forEach(b => b.style.display = '');
+        sections.forEach(s => s.style.display = ''); // Remove o estilo inline
+        tableWraps.forEach((wrap, i) => {
+            if (origTableWrapStyles[i]) wrap.setAttribute('style', origTableWrapStyles[i]);
+            else wrap.removeAttribute('style');
+        });
+        if (kpiGrid) {
+            if (origKpiStyle) kpiGrid.setAttribute('style', origKpiStyle);
+            else kpiGrid.removeAttribute('style');
+        }
+        if (!isSidebarHidden) document.body.classList.remove('sidebar-hidden');
+        if (origStyle) el.setAttribute('style', origStyle);
+        else el.removeAttribute('style');
+        showToast('PDF gerado com sucesso!', 'success');
+    });
+}
+
+function exportarPDFSirilo() {
+    showToast('Gerando PDF do Relatório Sirilo, aguarde...', 'warning');
+    const el = document.getElementById('section-relatorio-sirilo');
+    if (!el) return;
+
+    // 1. Ocultar botões e filtros no PDF
+    const searchDiv = el.querySelector('.srch');
+    const monthSelect = el.querySelector('#filtroMesRelatorio');
+    const toolbarRight = el.querySelector('.toolbar-right');
+
+    const elementsToHide = [searchDiv, monthSelect, toolbarRight].filter(Boolean);
+    elementsToHide.forEach(item => item.style.setProperty('display', 'none', 'important'));
+
+    // 2. Guardar estado original
+    const origStyle = el.getAttribute('style') || '';
+    const isSidebarHidden = document.body.classList.contains('sidebar-hidden');
+
+    // 3. Temporariamente expandir todos os .table-wrap para não cortar as linhas
+    const tableWraps = el.querySelectorAll('.table-wrap');
+    const origTableWrapStyles = [];
+    tableWraps.forEach((wrap, i) => {
+        origTableWrapStyles[i] = wrap.getAttribute('style') || '';
+        wrap.style.setProperty('max-height', 'none', 'important');
+        wrap.style.setProperty('overflow', 'visible', 'important');
+        wrap.style.setProperty('overflow-y', 'visible', 'important');
+    });
+
+    // 4. Preparar layout (esconder sidebar, expandir largura para o A4 paisagem)
+    document.body.classList.add('sidebar-hidden');
+    el.style.width = '1200px';
+    el.style.marginLeft = '0';
+    el.style.padding = '20px';
+    el.style.background = '#f8fafc';
+
+    html2pdf().set({
+        margin: [10, 10, 10, 10],
+        filename: `Relatorio_Sirilo_Processo_${hoje()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 1200 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    }).from(el).save().then(() => {
+        // 5. Restaurar estado original
+        elementsToHide.forEach(item => item.style.display = '');
+        tableWraps.forEach((wrap, i) => {
+            if (origTableWrapStyles[i]) wrap.setAttribute('style', origTableWrapStyles[i]);
+            else wrap.removeAttribute('style');
+        });
+        if (!isSidebarHidden) document.body.classList.remove('sidebar-hidden');
+        if (origStyle) el.setAttribute('style', origStyle);
+        else el.removeAttribute('style');
+        showToast('PDF do Relatório Sirilo gerado com sucesso!', 'success');
+    });
+}
+
+/* ===================================================
+   BACKUP
+=================================================== */
+function exportarBackup() {
+    const b = {
+        orcamento: localStorage.getItem('dadosOrcamentoTransporte'),
+        realizado: localStorage.getItem('dadosRealizadoTransporte'),
+        justificativas: localStorage.getItem('dadosJustificativas'),
+        apontSirilo: localStorage.getItem('dadosApontSiriloTransporte'),
+        cadastroSirilo: localStorage.getItem('dadosCadastroSirilo'),
+        dadosCCSirilo: localStorage.getItem('dadosCCSirilo'),
+        resumoSiriloConfig: localStorage.getItem('resumoSiriloConfig')
+    };
+    const blob = new Blob([JSON.stringify(b, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `backup_transporte_${hoje()}.json`; a.click();
+    showToast('Backup exportado!', 'success');
+}
+
+function importarBackup(event) {
+    const f = event.target.files[0]; if (!f) return;
+    if (!confirm('⚠️ Importar irá SUBSTITUIR todos os dados atuais. Confirmar?')) { event.target.value = ''; return; }
+    const r = new FileReader();
+    r.onload = e => {
+        try {
+            const d = JSON.parse(e.target.result);
+            if (d.orcamento) localStorage.setItem('dadosOrcamentoTransporte', d.orcamento);
+            if (d.realizado) localStorage.setItem('dadosRealizadoTransporte', d.realizado);
+            if (d.justificativas) localStorage.setItem('dadosJustificativas', d.justificativas);
+            if (d.apontSirilo) localStorage.setItem('dadosApontSiriloTransporte', d.apontSirilo);
+            if (d.cadastroSirilo) localStorage.setItem('dadosCadastroSirilo', d.cadastroSirilo);
+            if (d.dadosCCSirilo) localStorage.setItem('dadosCCSirilo', d.dadosCCSirilo);
+            if (d.resumoSiriloConfig) localStorage.setItem('resumoSiriloConfig', d.resumoSiriloConfig);
+            showToast('Dados importados! Recarregando...', 'success');
+            setTimeout(() => location.reload(), 1200);
+        } catch { showToast('Erro ao importar o arquivo.', 'danger'); }
+    };
+    r.readAsText(f);
+}
+
+/* ===================================================
+   TOAST
+=================================================== */
+function showToast(msg, tipo = 'success') {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    const colors = { success: '#10b981', danger: '#ef4444', warning: '#f59e0b' };
+    const icons  = { success: 'fa-check-circle', danger: 'fa-times-circle', warning: 'fa-exclamation-triangle' };
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.style.background = colors[tipo] || colors.success;
+    t.innerHTML = `<i class="fas ${icons[tipo]||icons.success}"></i> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

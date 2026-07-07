@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Relatório de Monitoramento CTT - Painel de Coordenação" />
+  <title>Relatório de Monitoramento CTT</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- SheetJS para exportação Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:       #0284c7;
+      --primary-dark:  #0369a1;
+      --bg-body:       #f8fafc;
+      --bg-card:       #ffffff;
+      --text-main:     #1e293b;
+      --text-muted:    #64748b;
+      --border:        #e2e8f0;
+      --success:       #22c55e;
+      --warning:       #f59e0b;
+      --danger:        #ef4444;
+
+      /* aliases internos para manter compatibilidade */
+      --clr-bg:        var(--bg-body);
+      --clr-surface:   var(--bg-card);
+      --clr-surface2:  #f1f5f9;
+      --clr-border:    var(--border);
+      --clr-accent:    var(--success);
+      --clr-accent2:   var(--primary);
+      --clr-export:    var(--warning);
+      --clr-text:      var(--text-main);
+      --clr-muted:     var(--text-muted);
+      --clr-header-bg: #f1f5f9;
+      --clr-row-alt:   #f8fafc;
+      --clr-row-hover: #f0f9ff;
+      --radius:        8px;
+      --radius-lg:     12px;
+      --shadow:        0 2px 12px rgba(2,132,199,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--clr-bg);
+      color: var(--clr-text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ===== HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 60%, #0ea5e9 100%);
+      border-bottom: 1px solid var(--clr-border);
+      padding: 28px 40px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 16px; }
+
+    .logo-badge {
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.20);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 16px rgba(255,255,255,.25);
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,.3);
+    }
+
+    .header-titles h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: .3px;
+      color: #ffffff;
+    }
+
+    .header-titles p {
+      font-size: .78rem;
+      color: rgba(255,255,255,.75);
+      margin-top: 2px;
+    }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all .2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-export-excel {
+      background: #ffffff;
+      color: #16a34a;
+      border-color: #bbf7d0;
+      box-shadow: 0 1px 4px rgba(34,197,94,.15);
+    }
+    .btn-export-excel:hover {
+      background: #f0fdf4;
+      border-color: #22c55e;
+      box-shadow: 0 4px 14px rgba(34,197,94,.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-export-pdf {
+      background: #ffffff;
+      color: #dc2626;
+      border-color: #fecaca;
+      box-shadow: 0 1px 4px rgba(239,68,68,.15);
+    }
+    .btn-export-pdf:hover {
+      background: #fff5f5;
+      border-color: #ef4444;
+      box-shadow: 0 4px 14px rgba(239,68,68,.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-import-excel {
+      background: #ffffff;
+      color: var(--primary-dark);
+      border-color: #bae6fd;
+      box-shadow: 0 1px 4px rgba(2,132,199,.15);
+    }
+    .btn-import-excel:hover {
+      background: #f0f9ff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(2,132,199,.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-limpar {
+      background: #ffffff;
+      color: #64748b;
+      border-color: #e2e8f0;
+      box-shadow: 0 1px 4px rgba(100,116,139,.10);
+    }
+    .btn-limpar:hover {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+      box-shadow: 0 4px 14px rgba(239,68,68,.15);
+      transform: translateY(-1px);
+    }
+
+    .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* ===== MAIN CONTENT ===== */
+    .content {
+      max-width: 1600px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* ===== STATS CARDS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .stat-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(2,132,199,.12);
+    }
+
+    .stat-label {
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--clr-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--clr-text);
+      line-height: 1;
+    }
+
+    .stat-value.green  { color: #16a34a; }
+    .stat-value.blue   { color: var(--primary); }
+    .stat-value.orange { color: #d97706; }
+
+    /* Lista dentro do card (por modelo / por frente) */
+    .stat-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .stat-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: .8rem;
+    }
+
+    /* ===== CUSTOM MULTI-SELECT ===== */
+    .custom-multiselect {
+      position: relative;
+      width: 250px;
+    }
+    .multiselect-header {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--clr-border);
+      font-size: 0.95rem;
+      color: var(--clr-text);
+      background: #f9fafb;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .multiselect-header:hover {
+      border-color: var(--primary);
+    }
+    .multiselect-header svg {
+      width: 16px;
+      height: 16px;
+      color: var(--clr-muted);
+      transition: transform 0.2s;
+    }
+    .multiselect-header.open svg {
+      transform: rotate(180deg);
+    }
+    .multiselect-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 4px;
+      background: #fff;
+      border: 1px solid var(--clr-border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+    .multiselect-dropdown.sl-hidden {
+      display: none;
+    }
+    .multiselect-option {
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .multiselect-option:hover {
+      background: #f1f5f9;
+    }
+    .multiselect-option input {
+      cursor: pointer;
+    }
+
+    .stat-list .sl-name {
+      color: var(--clr-text);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+    }
+
+    .stat-list .sl-badge {
+      flex-shrink: 0;
+      min-width: 26px;
+      text-align: center;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: var(--primary-dark);
+      border: 1px solid #bae6fd;
+    }
+
+    .stat-list .sl-bar-wrap {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .stat-list .sl-bar {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--primary), #38bdf8);
+      transition: width .4s ease;
+    }
+
+    /* Abas dentro dos cards de métrica */
+    .metric-tabs {
+      display: flex;
+      gap: 4px;
+      margin: 8px 0 10px;
+    }
+    .mtab {
+      flex: 1;
+      padding: 4px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: .7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .mtab:hover  { border-color: var(--primary); color: var(--primary); }
+    .mtab.active {
+      background: #e0f2fe;
+      border-color: #bae6fd;
+      color: var(--primary-dark);
+    }
+    .stat-list.sl-hidden { display: none; }
+
+    /* Bloco de valor geral */
+    .stat-geral {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      padding: 6px 0 2px;
+      line-height: 1;
+    }
+    .stat-geral.sl-hidden { display: none; }
+    .stat-geral.green  { color: #16a34a; }
+    .stat-geral.orange { color: #d97706; }
+    .stat-geral.purple { color: #7c3aed; }
+
+    /* Badge de métrica (verde/laranja) */
+    .stat-list .sl-badge-green  { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+    .stat-list .sl-badge-orange { background: #fef3c7; color: #d97706; border-color: #fde68a; }
+    .stat-list .sl-badge-purple { background: #f3e8ff; color: #7c3aed; border-color: #e9d5ff; }
+
+    /* Badge de total no título do card */
+    .stat-total-badge {
+      margin-left: 6px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 700;
+      background: #dcfce7;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .stat-total-badge:empty { display: none; }
+    .stat-total-orange { background: #fef3c7; color: #d97706; border-color: #fde68a; }
+    .stat-total-purple { background: #f3e8ff; color: #7c3aed; border-color: #e9d5ff; }
+
+    /* ===== SEARCH BAR ===== */
+    .search-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px; height: 15px;
+      color: var(--clr-muted);
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 9px 14px 9px 38px;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      color: var(--clr-text);
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    #searchInput:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2,132,199,.15);
+    }
+    #searchInput::placeholder { color: var(--clr-muted); }
+
+    .results-count {
+      font-size: .78rem;
+      color: var(--clr-muted);
+      white-space: nowrap;
+    }
+
+    /* ===== TABLE CONTAINER ===== */
+    .table-container {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .table-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--clr-border);
+      background: var(--clr-header-bg);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .table-title {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 600;
+    }
+    .badge-blue {
+      background: #e0f2fe;
+      color: var(--primary-dark);
+      border: 1px solid #bae6fd;
+    }
+
+    /* ===== TABLE ===== */
+    .table-scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+
+    thead tr {
+      background: var(--clr-header-bg);
+      border-bottom: 2px solid var(--clr-border);
+    }
+
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: .73rem;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--clr-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color .15s;
+    }
+    th:hover { color: var(--clr-text); }
+
+    th.sort-asc::after  { content: " ↑"; color: var(--primary); }
+    th.sort-desc::after { content: " ↓"; color: var(--primary); }
+
+    tbody tr {
+      border-bottom: 1px solid var(--clr-border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr:hover { background: var(--clr-row-hover); }
+
+    td {
+      padding: 11px 14px;
+      color: var(--clr-text);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+
+    .td-frente {
+      color: var(--clr-muted);
+      font-size: .8rem;
+    }
+
+    .td-processo {
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+
+    .td-modelo {
+      font-weight: 500;
+    }
+
+    .td-equip {
+      font-family: 'Courier New', monospace;
+      font-size: .78rem;
+      color: #7c3aed;
+    }
+
+    .td-num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 600;
+    }
+    .pill-green  { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+    .pill-orange { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--clr-muted);
+      font-size: .75rem;
+      border-top: 1px solid var(--clr-border);
+      margin-top: 40px;
+    }
+
+    /* ===== TOAST ===== */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--clr-surface2);
+      border: 1px solid var(--clr-border);
+      border-left: 4px solid var(--clr-accent);
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: .82rem;
+      color: var(--clr-text);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .3s, transform .3s;
+      z-index: 9999;
+      pointer-events: none;
+      min-width: 220px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ===== MAIN TABS ===== */
+    .main-tabs-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--clr-border);
+      padding-bottom: 0;
+    }
+
+    .main-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--clr-muted);
+      cursor: pointer;
+      border-radius: var(--radius) var(--radius) 0 0;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .main-tab-btn:hover {
+      color: var(--primary);
+      background: #f1f5f9;
+    }
+
+    .main-tab-btn.active {
+      color: var(--primary-dark);
+      border-bottom-color: var(--primary);
+      background: #e0f2fe;
+    }
+
+    .tab-content.sl-hidden {
+      display: none !important;
+    }
+
+    /* ===== FILTER SELECT ===== */
+    .filter-wrapper {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      flex-wrap: wrap;
+    }
+
+    .filter-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--clr-border);
+      flex-shrink: 0;
+      margin: 0 4px;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      white-space: nowrap;
+    }
+
+    .filter-select {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--clr-text);
+      background-color: var(--clr-bg);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .filter-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2,132,199,.15);
+    }
+
+    /* ===== CARD CHART WRAPPER ===== */
+    .card-chart-wrapper {
+      position: relative;
+      height: 160px;
+      width: 100%;
+      margin-top: 14px;
+      border-top: 1px dashed var(--clr-border);
+      padding-top: 10px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .page-header { padding: 18px 20px; }
+      .content { padding: 0 14px; margin: 20px auto; }
+      .btn { padding: 8px 13px; font-size: .78rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <header class="page-header">
+    <div class="header-left">
+      <div class="logo-badge">🚜</div>
+      <div class="header-titles">
+        <h1>Relatório de Monitoramento CTT</h1>
+        <p id="headerDate">Painel de Coordenação · carregando…</p>
+      </div>
+    </div>
+
+    <!-- input oculto para leitura do arquivo Excel -->
+    <input type="file" id="fileInputExcel" accept=".xlsx,.xls" style="display:none" onchange="processarArquivoExcel(event)" />
+
+    <div class="toolbar">
+      <button class="btn btn-import-excel" id="btnImportExcel" onclick="document.getElementById('fileInputExcel').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+        </svg>
+        Importar Excel
+      </button>
+
+      <button class="btn btn-export-excel" id="btnExportExcel" onclick="exportarExcel()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+        </svg>
+        Exportar Excel
+      </button>
+
+      <button class="btn btn-export-pdf" id="btnExportPDF" onclick="exportarPDF()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
+        </svg>
+        Imprimir / PDF
+      </button>
+
+      <button class="btn btn-limpar" id="btnLimpar" onclick="limparDados()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+        </svg>
+        Limpar
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="content">
+
+    <!-- Menu de Abas Principal -->
+    <div class="main-tabs-container">
+      <button class="main-tab-btn active" id="tab-relatorios" onclick="switchMainTab('relatorios')">
+        📊 Relatórios & Indicadores
+      </button>
+      <button class="main-tab-btn" id="tab-historico" onclick="switchMainTab('historico')">
+        📋 Base Histórica
+      </button>
+    </div>
+
+    <!-- Conteúdo da Aba Relatórios -->
+    <div id="content-relatorios" class="tab-content">
+      <!-- Filtros -->
+      <div class="filter-wrapper">
+        <label class="filter-label">Frente:</label>
+        <div class="custom-multiselect" id="multiSelectFrente" style="margin-right:10px;">
+          <div class="multiselect-header" onclick="toggleMultiSelect('frenteDropdown')">
+            <span id="frenteSelectedText">Todas as Frentes</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="multiselect-dropdown sl-hidden" id="frenteDropdown">
+            <!-- Opções injetadas via JS -->
+          </div>
+        </div>
+
+        <div class="filter-divider"></div>
+
+        <label for="filterMes" class="filter-label">Mês:</label>
+        <select id="filterMes" class="filter-select" onchange="atualizarStats()">
+          <option value="todos">Todos os Meses</option>
+        </select>
+      </div>
+      <!-- STATS CARDS -->
+      <section class="stats-grid" aria-label="Resumo estatístico">
+
+        <!-- Motor Ligado -->
+        <div class="stat-card">
+          <div class="stat-label">⏱️ Motor Ligado Total <span class="stat-total-badge" id="totalMotor"></span></div>
+          <div class="metric-tabs">
+            <button class="mtab active" onclick="switchTab(this,'motorOperacao')">Operação</button>
+            <button class="mtab" onclick="switchTab(this,'motorEquipamento')">Por Equipamento</button>
+            <button class="mtab" onclick="switchTab(this,'motorModelo')">Por Modelo</button>
+          </div>
+          <ul class="stat-list" id="motorOperacao"></ul>
+          <ul class="stat-list sl-hidden" id="motorEquipamento"></ul>
+          <ul class="stat-list sl-hidden" id="motorModelo"></ul>
+        </div>
+
+        <!-- RPM -->
+        <div class="stat-card">
+          <div class="stat-label">⚙️ RPM Médio Geral <span class="stat-total-badge" id="totalRPM"></span></div>
+          <div class="metric-tabs">
+            <button class="mtab active" onclick="switchTab(this,'rpmOperacao')">Operação</button>
+            <button class="mtab" onclick="switchTab(this,'rpmEquipamento')">Por Equipamento</button>
+            <button class="mtab" onclick="switchTab(this,'rpmModelo')">Por Modelo</button>
+          </div>
+          <ul class="stat-list" id="rpmOperacao"></ul>
+          <ul class="stat-list sl-hidden" id="rpmEquipamento"></ul>
+          <ul class="stat-list sl-hidden" id="rpmModelo"></ul>
+        </div>
+
+        <!-- Velocidade -->
+        <div class="stat-card">
+          <div class="stat-label">💨 Vel. Média Efetiva <span class="stat-total-badge stat-total-orange" id="totalVel"></span></div>
+          <div class="metric-tabs">
+            <button class="mtab active" onclick="switchTab(this,'velOperacao')">Operação</button>
+            <button class="mtab" onclick="switchTab(this,'velEquipamento')">Por Equipamento</button>
+            <button class="mtab" onclick="switchTab(this,'velModelo')">Por Modelo</button>
+          </div>
+          <ul class="stat-list" id="velOperacao"></ul>
+          <ul class="stat-list sl-hidden" id="velEquipamento"></ul>
+          <ul class="stat-list sl-hidden" id="velModelo"></ul>
+        </div>
+
+        <!-- Consumo -->
+        <div class="stat-card">
+          <div class="stat-label">⛽ Consumo Médio <span class="stat-total-badge stat-total-purple" id="totalConsumo"></span></div>
+          <div class="metric-tabs">
+            <button class="mtab active" onclick="switchTab(this,'consumoOperacao')">Operação</button>
+            <button class="mtab" onclick="switchTab(this,'consumoEquipamento')">Por Equipamento</button>
+            <button class="mtab" onclick="switchTab(this,'consumoModelo')">Por Modelo</button>
+          </div>
+          <ul class="stat-list" id="consumoOperacao"></ul>
+          <ul class="stat-list sl-hidden" id="consumoEquipamento"></ul>
+          <ul class="stat-list sl-hidden" id="consumoModelo"></ul>
+        </div>
+      </section>
+
+      <!-- GRÁFICOS MENSAIS POR OPERAÇÃO -->
+      <h3 style="font-size: 1rem; color: var(--clr-text); margin-bottom: 16px;">Evolução Mensal por Operação</h3>
+      <div class="filter-wrapper" style="margin-bottom: 16px;">
+        <label for="filterOperacaoMensal" class="filter-label">Filtro de Operação:</label>
+        <select id="filterOperacaoMensal" class="filter-select" onchange="atualizarStats()">
+          <option value="todos">Todas as Operações</option>
+        </select>
+      </div>
+      <div id="monthlyChartsContainer"></div>
+    </div>
+
+    <!-- Conteúdo da Aba Base Histórica -->
+    <div id="content-historico" class="tab-content sl-hidden">
+      <!-- SEARCH + COUNTER -->
+      <div class="search-bar-wrapper">
+        <div class="search-input-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Pesquisar por processo, frente, equipamento…" oninput="filtrarTabelaDebounced()" />
+        </div>
+        <span class="results-count" id="resultsCount"></span>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-container">
+        <div class="table-header-bar">
+          <div class="table-title">
+            📋 Dados de Monitoramento
+            <span class="badge badge-blue" id="badgeCount">0 registros</span>
+          </div>
+          <span style="font-size:.75rem; color:var(--clr-muted);">Clique no cabeçalho para ordenar</span>
+        </div>
+
+        <div class="table-scroll">
+          <table id="tabelaMonitoramento" aria-label="Tabela de monitoramento CTT">
+            <thead>
+              <tr>
+                <th id="th-0" onclick="ordenarTabela(0)">Frente</th>
+                <th id="th-1" onclick="ordenarTabela(1)">Processo</th>
+                <th id="th-2" onclick="ordenarTabela(2)">Modelo Equipamento</th>
+                <th id="th-3" onclick="ordenarTabela(3)">Equipamento</th>
+                <th id="th-4" onclick="ordenarTabela(4)">Motor Ligado (h)</th>
+                <th id="th-5" onclick="ordenarTabela(5)">RPM Médio</th>
+                <th id="th-6" onclick="ordenarTabela(6)">Velocidade Média Efetivo (km/h)</th>
+                <th id="th-7" onclick="ordenarTabela(7)">Consumo Médio (l/h)</th>
+                <th id="th-8" onclick="ordenarTabela(8)">Modelo</th>
+                <th id="th-9" onclick="ordenarTabela(9)">Mês</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Dados gerados pelo JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="page-footer">
+    Painel de Coordenação CTT &nbsp;·&nbsp; Gerado em <span id="footerDate"></span>
+  </footer>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" role="alert" aria-live="polite"></div>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    /* ──────────────────────────────────────────────
+       DADOS DE EXEMPLO
+       Substitua este array pelos seus dados reais
+       ou carregue via fetch/API.
+    ────────────────────────────────────────────── */
+    let dados = [
+      {
+        mes: "Janeiro",
+        frente: "Frente Norte",
+        processo: "Preparo de Solo",
+        modeloEquipamento: "Trator Agrícola",
+        equipamento: "EQ-1042",
+        motorLigado: 8.5,
+        rpmMedio: 1850,
+        velocidadeMedia: 6.3,
+        consumoMedio: 14.2,
+        modelo: "John Deere 7J"
+      },
+      {
+        mes: "Janeiro",
+        frente: "Frente Sul",
+        processo: "Colheita",
+        modeloEquipamento: "Colhedora",
+        equipamento: "EQ-2031",
+        motorLigado: 10.2,
+        rpmMedio: 2100,
+        velocidadeMedia: 5.1,
+        consumoMedio: 18.7,
+        modelo: "Case IH Axial-Flow"
+      },
+      {
+        mes: "Janeiro",
+        frente: "Frente Leste",
+        processo: "Pulverização",
+        modeloEquipamento: "Pulverizador",
+        equipamento: "EQ-3018",
+        motorLigado: 7.8,
+        rpmMedio: 1700,
+        velocidadeMedia: 12.4,
+        consumoMedio: 22.1,
+        modelo: "Jacto Uniport 3030"
+      },
+      {
+        mes: "Fevereiro",
+        frente: "Frente Norte",
+        processo: "Tratos Culturais",
+        modeloEquipamento: "Trator Agrícola",
+        equipamento: "EQ-1055",
+        motorLigado: 9.1,
+        rpmMedio: 1920,
+        velocidadeMedia: 7.8,
+        consumoMedio: 15.6,
+        modelo: "New Holland T7"
+      },
+      {
+        mes: "Fevereiro",
+        frente: "Frente Oeste",
+        processo: "Preparo de Solo",
+        modeloEquipamento: "Escavadeira",
+        equipamento: "EQ-4007",
+        motorLigado: 11.3,
+        rpmMedio: 1500,
+        velocidadeMedia: 3.2,
+        consumoMedio: 28.4,
+        modelo: "Caterpillar 320"
+      },
+      {
+        mes: "Fevereiro",
+        frente: "Frente Sul",
+        processo: "Plantio",
+        modeloEquipamento: "Plantadeira",
+        equipamento: "EQ-5022",
+        motorLigado: 6.4,
+        rpmMedio: 2200,
+        velocidadeMedia: 8.9,
+        consumoMedio: 12.3,
+        modelo: "Semeato SHM 17/21"
+      },
+      {
+        mes: "Março",
+        frente: "Frente Leste",
+        processo: "Colheita",
+        modeloEquipamento: "Colhedora",
+        equipamento: "EQ-2044",
+        motorLigado: 12.0,
+        rpmMedio: 1980,
+        velocidadeMedia: 4.7,
+        consumoMedio: 20.5,
+        modelo: "Massey Ferguson 9895"
+      },
+      {
+        mes: "Março",
+        frente: "Frente Norte",
+        processo: "Tratos Culturais",
+        modeloEquipamento: "Trator Agrícola",
+        equipamento: "EQ-1063",
+        motorLigado: 5.5,
+        rpmMedio: 1780,
+        velocidadeMedia: 9.5,
+        consumoMedio: 13.8,
+        modelo: "Valtra T174"
+      }
+    ];
+
+    // Carrega dados salvos do localStorage se existirem
+    const dadosSalvos = localStorage.getItem('dadosMonitoramentoCTT');
+    if (dadosSalvos) {
+      try {
+        dados = JSON.parse(dadosSalvos);
+      } catch (e) {
+        console.error("Erro ao carregar dados salvos", e);
+      }
+    }
+
+    // Função auxiliar para salvar dados no localStorage
+    function salvarDados() {
+      localStorage.setItem('dadosMonitoramentoCTT', JSON.stringify(dados));
+    }
+
+    /* ──────────────────────────────────────────────
+       ESTADO GLOBAL
+    ────────────────────────────────────────────── */
+    // Regra: excluir registros com velocidade < 0,5 km/h da tabela
+    const VEL_MIN = 0.5;
+    let dadosFiltrados = dados.filter(d => (d.velocidadeMedia ?? 0) >= VEL_MIN);
+    let sortCol = -1;
+    let sortAsc = true;
+
+    const COLUNAS_EXPORT = [
+      "Frente",
+      "Processo",
+      "Modelo Equipamento",
+      "Equipamento",
+      "Motor Ligado (h)",
+      "RPM Médio",
+      "Velocidade Média Efetivo (km/h)",
+      "Consumo Médio (l/h)",
+      "Modelo",
+      "Mês"
+    ];
+
+    const CAMPOS = [
+      "frente",
+      "processo",
+      "modeloEquipamento",
+      "equipamento",
+      "motorLigado",
+      "rpmMedio",
+      "velocidadeMedia",
+      "consumoMedio",
+      "modelo",
+      "mes"
+    ];
+
+    /* ──────────────────────────────────────────────
+       INICIALIZAÇÃO
+    ────────────────────────────────────────────── */
+    document.addEventListener("DOMContentLoaded", () => {
+      const agora = new Date();
+      const opts  = { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" };
+      const dtStr = agora.toLocaleDateString("pt-BR", opts);
+      document.getElementById("headerDate").textContent = `Painel de Coordenação · ${dtStr}`;
+      document.getElementById("footerDate").textContent = dtStr;
+
+      popularFiltros();
+      renderizarTabela();
+      atualizarStats();
+    });
+
+    /* ──────────────────────────────────────────────
+       RENDERIZAR TABELA
+    ────────────────────────────────────────────── */
+    function renderizarTabela() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      if (dadosFiltrados.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" style="text-align:center; padding:40px; color:var(--clr-muted);">
+              Nenhum registro encontrado.
+            </td>
+          </tr>`;
+        atualizarContadores(0);
+        return;
+      }
+
+      dadosFiltrados.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="td-frente">${esc(row.frente)}</td>
+          <td class="td-processo">${esc(row.processo)}</td>
+          <td class="td-modelo">${esc(row.modeloEquipamento)}</td>
+          <td class="td-equip">${esc(String(row.equipamento ?? "").slice(0, 6))}</td>
+          <td class="td-num">${fmt(row.motorLigado)}</td>
+          <td class="td-num">${fmt(row.rpmMedio, 0)}</td>
+          <td class="td-num">${fmt(row.velocidadeMedia)}</td>
+          <td class="td-num">${fmt(row.consumoMedio)}</td>
+          <td>${esc(row.modelo)}</td>
+          <td>${esc(row.mes)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      atualizarContadores(dadosFiltrados.length);
+    }
+
+    let frentesSelecionadas = [];
+    let timerFiltro = null;
+    
+    function filtrarTabelaDebounced() {
+      clearTimeout(timerFiltro);
+      timerFiltro = setTimeout(filtrarTabela, 300);
+    }
+
+    function sortMeses(mesesArray) {
+      const mapaMes = { "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4, "Maio": 5, "Junho": 6, "Julho": 7, "Agosto": 8, "Setembro": 9, "Outubro": 10, "Novembro": 11, "Dezembro": 12 };
+      return mesesArray.sort((a, b) => {
+        if (!a.includes("/")) return a.localeCompare(b);
+        if (!b.includes("/")) return a.localeCompare(b);
+        const [mA, yA] = a.split("/");
+        const [mB, yB] = b.split("/");
+        const numA = (parseInt(yA) * 100) + (mapaMes[mA] || 0);
+        const numB = (parseInt(yB) * 100) + (mapaMes[mB] || 0);
+        return numA - numB;
+      });
+    }
+
+    function toggleMultiSelect(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('sl-hidden');
+      el.previousElementSibling.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      document.querySelectorAll('.custom-multiselect').forEach(ms => {
+        if (!ms.contains(e.target)) {
+          const drop = ms.querySelector('.multiselect-dropdown');
+          const header = ms.querySelector('.multiselect-header');
+          if (drop) drop.classList.add('sl-hidden');
+          if (header) header.classList.remove('open');
+        }
+      });
+    });
+
+    function onFrenteChange(val, isChecked) {
+      if (val === 'todos') {
+        frentesSelecionadas = [];
+        document.querySelectorAll('.cb-frente').forEach(cb => cb.checked = false);
+        const cbTodos = document.getElementById('cbFrenteTodos');
+        if (cbTodos) cbTodos.checked = true;
+      } else {
+        if (isChecked) {
+          frentesSelecionadas.push(val);
+        } else {
+          frentesSelecionadas = frentesSelecionadas.filter(v => v !== val);
+        }
+        const cbTodos = document.getElementById('cbFrenteTodos');
+        if (cbTodos) cbTodos.checked = (frentesSelecionadas.length === 0);
+      }
+      atualizarFrenteText();
+      atualizarStats();
+    }
+
+    function atualizarFrenteText() {
+      const el = document.getElementById("frenteSelectedText");
+      if (!el) return;
+      if (frentesSelecionadas.length === 0) {
+        el.textContent = "Todas as Frentes";
+      } else if (frentesSelecionadas.length === 1) {
+        el.textContent = frentesSelecionadas[0];
+      } else {
+        el.textContent = `${frentesSelecionadas.length} selecionadas`;
+      }
+    }
+
+    /* ──────────────────────────────────────────────
+       FORMATAÇÃO
+    ────────────────────────────────────────────── */
+    function fmt(v, dec = 1) {
+      return typeof v === "number"
+        ? v.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec })
+        : v ?? "—";
+    }
+
+    function esc(str) {
+      if (str == null) return "—";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /* ──────────────────────────────────────────────
+       CONTADORES & STATS
+    ────────────────────────────────────────────── */
+    function atualizarContadores(n) {
+      const total = dados.length;
+      document.getElementById("badgeCount").textContent = `${n} registro${n !== 1 ? "s" : ""}`;
+      document.getElementById("resultsCount").textContent =
+        n < total ? `Mostrando ${n} de ${total} registros` : `${total} registro${total !== 1 ? "s" : ""}`;
+    }
+
+    function popularFiltroFrente() {
+      const dropdown = document.getElementById("frenteDropdown");
+      if (!dropdown) return;
+      const frentesUnicas = [...new Set(dados.map(d => d.frente).filter(Boolean))].sort();
+      
+      let html = `
+        <label class="multiselect-option">
+          <input type="checkbox" value="todos" id="cbFrenteTodos" ${frentesSelecionadas.length === 0 ? 'checked' : ''} onchange="onFrenteChange('todos', this.checked)">
+          <span>Todas as Frentes</span>
+        </label>
+      `;
+      
+      frentesUnicas.forEach(f => {
+        const isChecked = frentesSelecionadas.includes(f) ? "checked" : "";
+        html += `
+          <label class="multiselect-option">
+            <input type="checkbox" value="${f}" class="cb-frente" ${isChecked} onchange="onFrenteChange('${f}', this.checked)">
+            <span>${f}</span>
+          </label>
+        `;
+      });
+      dropdown.innerHTML = html;
+      atualizarFrenteText();
+    }
+
+    function popularFiltros() {
+      popularFiltroFrente();
+
+      // Filtro Mês
+      const selectM = document.getElementById("filterMes");
+      if (selectM) {
+        const valAntigoM = selectM.value;
+        selectM.innerHTML = '<option value="todos">Todos os Meses</option>';
+        let mesesUnicos = [...new Set(dados.map(d => d.mes).filter(Boolean))];
+        mesesUnicos = sortMeses(mesesUnicos);
+        mesesUnicos.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m; opt.textContent = m;
+          selectM.appendChild(opt);
+        });
+        selectM.value = mesesUnicos.includes(valAntigoM) ? valAntigoM : "todos";
+      }
+    }
+
+    function atualizarStats() {
+      // Filtro Operação (Apenas Gráficos Mensais) dependente da Frente
+      const selectO = document.getElementById("filterOperacaoMensal");
+      if (selectO) {
+        const valAntigoO = selectO.value;
+        selectO.innerHTML = '<option value="todos">Todas as Operações</option>';
+        const dadosFrente = frentesSelecionadas.length === 0 ? dados : dados.filter(d => frentesSelecionadas.includes(d.frente));
+        const opsUnicas = [...new Set(dadosFrente.map(d => d.processo).filter(Boolean))].sort();
+        opsUnicas.forEach(o => {
+          const opt = document.createElement("option");
+          opt.value = o; opt.textContent = o;
+          selectO.appendChild(opt);
+        });
+        selectO.value = opsUnicas.includes(valAntigoO) ? valAntigoO : "todos";
+      }
+
+      const selectM = document.getElementById("filterMes");
+      const mesSel = selectM ? selectM.value : "todos";
+
+      const dadosFiltradosStats = dados.filter(d => {
+        const matchFrente = (frentesSelecionadas.length === 0) || frentesSelecionadas.includes(d.frente);
+        const matchMes    = (mesSel === "todos")    || (d.mes === mesSel);
+        return matchFrente && matchMes;
+      });
+
+      const total = dadosFiltradosStats.length;
+      
+      if (!total) {
+        ["totalMotor","totalRPM","totalVel","totalConsumo"].forEach(id => {
+          const el = document.getElementById(id); if (el) el.textContent = "";
+        });
+        const vazioLi = `<li><span class="sl-name" style="color:var(--clr-muted);">Sem dados</span></li>`;
+        ["motorOperacao","motorEquipamento","motorModelo",
+         "rpmOperacao","rpmEquipamento","rpmModelo",
+         "velOperacao","velEquipamento","velModelo",
+         "consumoOperacao","consumoEquipamento","consumoModelo"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = vazioLi;
+        });
+        return;
+      }
+
+      // Soma agrupada por campo (para motorLigado)
+      function somaAgrupada(metrica, grupo) {
+        const somaVal = {};
+        dadosFiltradosStats.forEach(d => {
+          const chave = d[grupo] || "(sem info)";
+          somaVal[chave] = (somaVal[chave] || 0) + (d[metrica] || 0);
+        });
+        return Object.keys(somaVal)
+          .map(k => [k, somaVal[k]])
+          .sort((a, b) => b[1] - a[1]);
+      }
+
+      // Média ponderada agrupada por campo (usando motorLigado como peso)
+      function mediaPonderadaAgrupada(metrica, grupo) {
+        const somatorioValores = {};
+        const somatorioPesos = {};
+        dadosFiltradosStats.forEach(d => {
+          const chave = d[grupo] || "(sem info)";
+          const val = d[metrica];
+          const peso = d.motorLigado;
+          if (val != null && !isNaN(val) && peso != null && !isNaN(peso) && peso > 0) {
+            somatorioValores[chave] = (somatorioValores[chave] || 0) + (val * peso);
+            somatorioPesos[chave] = (somatorioPesos[chave] || 0) + peso;
+          }
+        });
+        return Object.keys(somatorioPesos)
+          .map(k => [k, somatorioPesos[k] > 0 ? (somatorioValores[k] / somatorioPesos[k]) : 0])
+          .sort((a, b) => b[1] - a[1]);
+      }
+
+      // Render lista de métrica com badge colorido
+      function renderListaMedia(idEl, grupos, sufixo, dec = 1, badgeClass = "") {
+        const ul = document.getElementById(idEl);
+        if (!ul) return;
+        if (!grupos.length) {
+          ul.innerHTML = `<li><span class="sl-name" style="color:var(--clr-muted);">Sem dados</span></li>`;
+          return;
+        }
+        const max = grupos[0][1];
+        ul.innerHTML = grupos.map(([nome, val]) => `
+          <li>
+            <span class="sl-name" title="${nome}">${nome}</span>
+            <div class="sl-bar-wrap">
+              <div class="sl-bar" style="width:${Math.round((val/max)*100)}%"></div>
+            </div>
+            <span class="sl-badge ${badgeClass}">${fmt(val, dec)}${sufixo}</span>
+          </li>
+        `).join("");
+      }
+
+      // Helpers para cálculos gerais
+      const somaGeral = campo => dadosFiltradosStats.reduce((s, d) => s + (d[campo] || 0), 0);
+      const mediaPonderadaGeral = metrica => {
+        let somatorioValores = 0;
+        let somatorioPesos = 0;
+        dadosFiltradosStats.forEach(d => {
+          const val = d[metrica];
+          const peso = d.motorLigado;
+          if (val != null && !isNaN(val) && peso != null && !isNaN(peso) && peso > 0) {
+            somatorioValores += val * peso;
+            somatorioPesos += peso;
+          }
+        });
+        return somatorioPesos > 0 ? (somatorioValores / somatorioPesos) : 0;
+      };
+
+      // Geral removido — agora exibido como lista por Operação
+
+      // Totais no label de cada card
+      const setTotal = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+      setTotal("totalMotor",   fmt(somaGeral("motorLigado")) + " h");
+      setTotal("totalRPM",     fmt(mediaPonderadaGeral("rpmMedio"), 0) + " rpm");
+      setTotal("totalVel",     fmt(mediaPonderadaGeral("velocidadeMedia")) + " km/h");
+      setTotal("totalConsumo", fmt(mediaPonderadaGeral("consumoMedio")) + " l/h");
+
+      // Motor Ligado — Por Operação (Soma)
+      renderListaMedia("motorOperacao",   somaAgrupada("motorLigado",     "processo"), " h",    1, "sl-badge-green");
+      // Motor Ligado — Por Equipamento e Modelo (Soma)
+      renderListaMedia("motorEquipamento", somaAgrupada("motorLigado",    "equipamento"),  " h",    1, "sl-badge-green");
+      renderListaMedia("motorModelo", somaAgrupada("motorLigado",    "modelo"),  " h",    1, "sl-badge-green");
+
+      // RPM — Por Operação (Média Ponderada)
+      renderListaMedia("rpmOperacao",      mediaPonderadaAgrupada("rpmMedio",       "processo"),  "",      0);
+      // RPM — Por Equipamento e Modelo
+      renderListaMedia("rpmEquipamento",   mediaPonderadaAgrupada("rpmMedio",       "equipamento"),  "",      0);
+      renderListaMedia("rpmModelo",   mediaPonderadaAgrupada("rpmMedio",       "modelo"),  "",      0);
+
+      // Velocidade — Por Operação (Média Ponderada)
+      renderListaMedia("velOperacao",      mediaPonderadaAgrupada("velocidadeMedia","processo"),  " km/h", 1, "sl-badge-orange");
+      // Velocidade — Por Equipamento e Modelo
+      renderListaMedia("velEquipamento",   mediaPonderadaAgrupada("velocidadeMedia","equipamento"),  " km/h", 1, "sl-badge-orange");
+      renderListaMedia("velModelo",   mediaPonderadaAgrupada("velocidadeMedia","modelo"),  " km/h", 1, "sl-badge-orange");
+
+      // Consumo — Por Operação (Média Ponderada)
+      renderListaMedia("consumoOperacao",  mediaPonderadaAgrupada("consumoMedio",   "processo"),  " l/h",  1, "sl-badge-purple");
+      // Consumo — Por Equipamento e Modelo
+      renderListaMedia("consumoEquipamento",mediaPonderadaAgrupada("consumoMedio",  "equipamento"),  " l/h",  1, "sl-badge-purple");
+      renderListaMedia("consumoModelo",mediaPonderadaAgrupada("consumoMedio",  "modelo"),  " l/h",  1, "sl-badge-purple");
+
+      // Renderiza os gráficos por processo
+      renderizarGraficos(dadosFiltradosStats);
+    }
+
+    let chartInstances = {
+      motor: null,
+      rpm: null,
+      velocidade: null,
+      consumo: null
+    };
+
+    // Registra o plugin de rótulos de dados globalmente para Chart.js
+    Chart.register(ChartDataLabels);
+
+    function criarGrafico(canvasId, labels, valores, labelDataset, corFundo, corBorda, sufixo, dec = 1, tipoLabel = "Média") {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return null;
+
+      const ctx = canvas.getContext("2d");
+      return new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: labelDataset,
+            data: valores,
+            backgroundColor: corFundo,
+            borderColor: corBorda,
+            borderWidth: 1,
+            borderRadius: 6,
+            barPercentage: 0.5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              top: 6,
+              left: 6,
+              right: 48 // Espaço na direita para evitar que os rótulos fiquem cortados
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` ${tipoLabel}: ${context.parsed.x.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec })}${sufixo}`;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'right',
+              offset: 2,
+              color: '#475569', // Cor cinza slate discreta e elegante
+              font: {
+                weight: 'bold',
+                size: 10,
+                family: "'Inter', sans-serif"
+              },
+              formatter: function(value) {
+                return value.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + sufixo;
+              }
+            }
+          },
+          indexAxis: 'y', // Garante barras horizontais
+          scales: {
+            x: {
+              display: false,
+              beginAtZero: true
+            },
+            y: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  size: 9,
+                  family: "'Inter', sans-serif"
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function criarGraficoMensalOperacao(canvasId, labels, valores, titulo, corFundo, corBorda, sufixo, dec = 1) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return null;
+
+      const ctx = canvas.getContext("2d");
+      return new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: titulo,
+            data: valores,
+            backgroundColor: corFundo,
+            borderColor: corBorda,
+            borderWidth: 1,
+            borderRadius: 6,
+            barPercentage: 0.6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: { top: 20 }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.parsed.y.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec })}${sufixo}`;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'top',
+              offset: -2,
+              color: '#475569',
+              font: { weight: 'bold', size: 10, family: "'Inter', sans-serif" },
+              formatter: function(value) {
+                if(!value || value === 0) return "";
+                return value.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + sufixo;
+              },
+              display: true
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 10, family: "'Inter', sans-serif" } }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: { font: { size: 10, family: "'Inter', sans-serif" } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderizarGraficos(dadosList) {
+      // Destrói os gráficos existentes para evitar conflitos de canvas
+      Object.keys(chartInstances).forEach(k => {
+        if (chartInstances[k]) {
+          chartInstances[k].destroy();
+        }
+      });
+      chartInstances = { motor: null, rpm: null, velocidade: null, consumo: null };
+
+      if (dadosList.length === 0) return;
+
+      // Função auxiliar para calcular médias/somas agrupadas por processo com validação de dados
+      const obterDadosGrafico = (campo, validaZero = true, tipo = "media") => {
+        const soma = {}, cont = {};
+        const somatorioValores = {};
+        const somatorioPesos = {};
+
+        dadosList.forEach(d => {
+          const proc = d.processo || "(sem processo)";
+          const val = d[campo];
+          if (val === undefined || val === null || isNaN(val)) return;
+          if (validaZero && val <= 0) return; // Validação de dados (desconsidera zeros)
+
+          if (tipo === "ponderada") {
+            const peso = d.motorLigado;
+            if (peso !== undefined && peso !== null && !isNaN(peso) && peso > 0) {
+              somatorioValores[proc] = (somatorioValores[proc] || 0) + (val * peso);
+              somatorioPesos[proc] = (somatorioPesos[proc] || 0) + peso;
+            }
+          } else {
+            soma[proc] = (soma[proc] || 0) + val;
+            cont[proc] = (cont[proc] || 0) + 1;
+          }
+        });
+
+        const chaves = tipo === "ponderada" ? Object.keys(somatorioPesos) : Object.keys(soma);
+        const labels = chaves.sort();
+
+        const valores = labels.map(l => {
+          if (tipo === "ponderada") {
+            return somatorioPesos[l] > 0 ? parseFloat((somatorioValores[l] / somatorioPesos[l]).toFixed(2)) : 0;
+          } else if (tipo === "soma") {
+            return parseFloat(soma[l].toFixed(2));
+          } else {
+            return parseFloat((soma[l] / cont[l]).toFixed(2));
+          }
+        });
+
+        return { labels, valores };
+      };
+
+      // 1. Motor Ligado (Soma)
+      const dMotor = obterDadosGrafico("motorLigado", true, "soma");
+      chartInstances.motor = criarGrafico("chartMotor", dMotor.labels, dMotor.valores, "Motor Ligado Total", "rgba(34, 197, 94, 0.75)", "rgba(34, 197, 94, 1)", " h", 1, "Total");
+
+      // 2. RPM (Média Ponderada)
+      const dRPM = obterDadosGrafico("rpmMedio", true, "ponderada");
+      chartInstances.rpm = criarGrafico("chartRPM", dRPM.labels, dRPM.valores, "RPM Médio Geral", "rgba(2, 132, 199, 0.75)", "rgba(2, 132, 199, 1)", "", 0, "Média Ponderada");
+
+      // 3. Velocidade (Média Ponderada)
+      const dVel = obterDadosGrafico("velocidadeMedia", true, "ponderada");
+      chartInstances.velocidade = criarGrafico("chartVelocidade", dVel.labels, dVel.valores, "Vel. Média Efetiva", "rgba(245, 158, 11, 0.75)", "rgba(245, 158, 11, 1)", " km/h", 1, "Média Ponderada");
+
+      // 4. Consumo (Média Ponderada)
+      const dConsumo = obterDadosGrafico("consumoMedio", true, "ponderada");
+      chartInstances.consumo = criarGrafico("chartConsumo", dConsumo.labels, dConsumo.valores, "Consumo Médio", "rgba(124, 58, 237, 0.75)", "rgba(124, 58, 237, 1)", " l/h", 1, "Média Ponderada");
+
+      // ====== Gráficos Mensais ======
+      const containerMensal = document.getElementById("monthlyChartsContainer");
+      if (!containerMensal) return;
+      containerMensal.innerHTML = ""; // Limpa os gráficos anteriores
+
+      const selectO = document.getElementById("filterOperacaoMensal");
+      const operacaoSel = selectO ? selectO.value : "todos";
+
+      const dadosBase = dados.filter(d => {
+        const matchFrente = (frentesSelecionadas.length === 0) || frentesSelecionadas.includes(d.frente);
+        const matchOp     = (operacaoSel === "todos") || (d.processo === operacaoSel);
+        return matchFrente && matchOp;
+      });
+
+      const mesesSet = new Set();
+      const procsSet = new Set();
+      dadosBase.forEach(d => {
+        mesesSet.add(d.mes || "(sem mês)");
+        procsSet.add(d.processo || "(sem processo)");
+      });
+      let labelsMeses = [...mesesSet];
+      labelsMeses = sortMeses(labelsMeses);
+      const processos = [...procsSet].sort();
+
+      processos.forEach((proc, idxProc) => {
+        const procContainer = document.createElement("div");
+        procContainer.style.marginBottom = "32px";
+        
+        const procTitle = document.createElement("h4");
+        procTitle.style.fontSize = "1rem";
+        procTitle.style.color = "var(--clr-text)";
+        procTitle.style.marginBottom = "12px";
+        procTitle.style.borderBottom = "1px solid var(--clr-border)";
+        procTitle.style.paddingBottom = "8px";
+        procTitle.textContent = `Operação: ${proc}`;
+        procContainer.appendChild(procTitle);
+
+        const statsGrid = document.createElement("section");
+        statsGrid.className = "stats-grid";
+        statsGrid.setAttribute("aria-label", `Gráficos Mensais - ${proc}`);
+        
+        procContainer.appendChild(statsGrid);
+        containerMensal.appendChild(procContainer);
+
+        const metricas = [
+          { id: "Motor", titulo: "📅 Motor Ligado Mensal (h)", campo: "motorLigado", tipo: "soma", corFundo: "rgba(34, 197, 94, 0.75)", corBorda: "rgba(34, 197, 94, 1)", sufixo: " h", dec: 1 },
+          { id: "RPM", titulo: "📅 RPM Médio Mensal", campo: "rpmMedio", tipo: "ponderada", corFundo: "rgba(2, 132, 199, 0.75)", corBorda: "rgba(2, 132, 199, 1)", sufixo: "", dec: 0 },
+          { id: "Vel", titulo: "📅 Vel. Média Mensal (km/h)", campo: "velocidadeMedia", tipo: "ponderada", corFundo: "rgba(245, 158, 11, 0.75)", corBorda: "rgba(245, 158, 11, 1)", sufixo: " km/h", dec: 1 },
+          { id: "Consumo", titulo: "📅 Consumo Médio Mensal (l/h)", campo: "consumoMedio", tipo: "ponderada", corFundo: "rgba(124, 58, 237, 0.75)", corBorda: "rgba(124, 58, 237, 1)", sufixo: " l/h", dec: 1 }
+        ];
+
+        const dadosProc = dadosBase.filter(d => (d.processo || "(sem processo)") === proc);
+        
+        metricas.forEach(metrica => {
+          const valoresMes = labelsMeses.map(mes => {
+            const dMes = dadosProc.filter(d => (d.mes || "(sem mês)") === mes);
+            let valFinal = 0;
+            if (dMes.length > 0) {
+              if (metrica.tipo === "soma") {
+                valFinal = dMes.reduce((s, d) => s + (d[metrica.campo] || 0), 0);
+              } else if (metrica.tipo === "ponderada") {
+                let somV = 0, somP = 0;
+                dMes.forEach(d => {
+                  if (d[metrica.campo] != null && !isNaN(d[metrica.campo]) && d.motorLigado > 0) {
+                    somV += d[metrica.campo] * d.motorLigado;
+                    somP += d.motorLigado;
+                  }
+                });
+                valFinal = somP > 0 ? (somV / somP) : 0;
+              }
+            }
+            return parseFloat(valFinal.toFixed(2));
+          });
+
+          const statCard = document.createElement("div");
+          statCard.className = "stat-card";
+          
+          const statLabel = document.createElement("div");
+          statLabel.className = "stat-label";
+          statLabel.textContent = metrica.titulo;
+          
+          const chartWrapper = document.createElement("div");
+          chartWrapper.className = "card-chart-wrapper";
+          chartWrapper.style.height = "250px";
+          
+          const canvasId = `chartMensal${metrica.id}_${idxProc}`;
+          const canvasEl = document.createElement("canvas");
+          canvasEl.id = canvasId;
+          
+          chartWrapper.appendChild(canvasEl);
+          statCard.appendChild(statLabel);
+          statCard.appendChild(chartWrapper);
+          statsGrid.appendChild(statCard);
+
+          chartInstances[canvasId] = criarGraficoMensalOperacao(
+            canvasId, 
+            labelsMeses, 
+            valoresMes, 
+            metrica.titulo,
+            metrica.corFundo, 
+            metrica.corBorda, 
+            metrica.sufixo, 
+            metrica.dec
+          );
+        });
+      });
+    }
+
+    /* --------------------------------------------------
+       TROCA DE ABA DOS CARDS DE MéTRICA
+    -------------------------------------------------- */
+    function switchTab(btn, listId) {
+      const card = btn.closest('.stat-card');
+      card.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      card.querySelectorAll('.stat-list').forEach(ul => ul.classList.add('sl-hidden'));
+      document.getElementById(listId).classList.remove('sl-hidden');
+    }
+
+    /* --------------------------------------------------
+       TROCA DE ABA PRINCIPAL (MENU)
+    -------------------------------------------------- */
+    function switchMainTab(tabId) {
+      document.querySelectorAll(".main-tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(content => content.classList.add("sl-hidden"));
+
+      if (tabId === 'relatorios') {
+        document.getElementById("tab-relatorios").classList.add("active");
+        document.getElementById("content-relatorios").classList.remove("sl-hidden");
+      } else if (tabId === 'historico') {
+        document.getElementById("tab-historico").classList.add("active");
+        document.getElementById("content-historico").classList.remove("sl-hidden");
+      }
+    }
+
+    /* ──────────────────────────────────────────────
+       FILTRO / PESQUISA
+    ────────────────────────────────────────────── */
+    function filtrarTabela() {
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+      // Sempre exclui registros com velocidade < 0,5 km/h
+      const dadosValidos = dados.filter(d => (d.velocidadeMedia ?? 0) >= VEL_MIN);
+      dadosFiltrados = q
+        ? dadosValidos.filter(d =>
+            CAMPOS.some(c => String(d[c] ?? "").toLowerCase().includes(q))
+          )
+        : [...dadosValidos];
+
+      sortCol = -1;
+      limparSortHeaders();
+      renderizarTabela();
+    }
+
+    /* ──────────────────────────────────────────────
+       ORDENAÇÃO
+    ────────────────────────────────────────────── */
+    function ordenarTabela(col) {
+      if (sortCol === col) {
+        sortAsc = !sortAsc;
+      } else {
+        sortCol = col;
+        sortAsc = true;
+      }
+
+      const campo = CAMPOS[col];
+      dadosFiltrados.sort((a, b) => {
+        const va = a[campo] ?? "";
+        const vb = b[campo] ?? "";
+        const cmp = typeof va === "number"
+          ? va - vb
+          : String(va).localeCompare(String(vb), "pt-BR");
+        return sortAsc ? cmp : -cmp;
+      });
+
+      limparSortHeaders();
+      const th = document.getElementById(`th-${col}`);
+      if (th) th.className = sortAsc ? "sort-asc" : "sort-desc";
+
+      renderizarTabela();
+    }
+
+    function limparSortHeaders() {
+      document.querySelectorAll("th").forEach(th => th.className = "");
+    }
+
+    /* ──────────────────────────────────────────────
+       UTILITÁRIO: linhas para exportação
+    ────────────────────────────────────────────── */
+    function linhasParaExport(rows) {
+      return rows.map(d => [
+        d.frente,
+        d.processo,
+        d.modeloEquipamento,
+        d.equipamento,
+        d.motorLigado,
+        d.rpmMedio,
+        d.velocidadeMedia,
+        d.consumoMedio,
+        d.modelo,
+        d.mes
+      ]);
+    }
+
+    /* ──────────────────────────────────────────────
+       IMPORTAR EXCEL
+    ────────────────────────────────────────────── */
+    function processarArquivoExcel(event) {
+      const arquivo = event.target.files[0];
+      if (!arquivo) return;
+
+      if (typeof XLSX === "undefined") {
+        mostrarToast("⚠️ Biblioteca XLSX não carregada.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const workbook  = XLSX.read(e.target.result, { type: "array" });
+          const planilha  = workbook.Sheets[workbook.SheetNames[0]];
+          const linhas    = XLSX.utils.sheet_to_json(planilha, { header: 1, defval: "" });
+
+          if (linhas.length < 2) {
+            mostrarToast("⚠️ Planilha vazia ou sem dados.");
+            return;
+          }
+
+          // Encontra a linha de cabeçalho (a primeira que tiver pelo menos 2 cabeçalhos esperados)
+          let headerRowIndex = 0;
+          for (let i = 0; i < Math.min(linhas.length, 10); i++) {
+            const row = linhas[i];
+            if (row) {
+              let matches = 0;
+              row.forEach(c => {
+                const str = String(c).toLowerCase();
+                if (str.includes("frente") || str.includes("equipamento") || str.includes("motor") || str.includes("rpm") || str.includes("consumo")) {
+                  matches++;
+                }
+              });
+              if (matches >= 2) {
+                headerRowIndex = i;
+                break;
+              }
+            }
+          }
+
+          const cabecalho = linhas[headerRowIndex].map(c => String(c).trim());
+          const idx = campo => cabecalho.findIndex(
+            h => h.toLowerCase().includes(campo.toLowerCase())
+          );
+          const idxExato = campo => cabecalho.findIndex(
+            h => h.toLowerCase() === campo.toLowerCase()
+          );
+
+          const iFrente    = idx("frente");
+          let iMes         = idx("mês");
+          if (iMes === -1) iMes = idx("mes");
+          const iProcesso  = idx("processo");
+          const iModEq     = idx("modelo equip");
+          const iEquip     = idxExato("equipamento");
+          
+          let iMotor = cabecalho.findIndex(h => h.toLowerCase().includes("motor ligado"));
+          if (iMotor === -1) iMotor = idx("motor");
+          if (iMotor === -1) iMotor = 6;
+
+          const iRPM       = idx("rpm");
+          const iVel       = idx("velocidade");
+          const iConsumo   = idx("consumo");
+          let iModelo = idxExato("modelo");
+          if (iModelo === -1) {
+            iModelo = cabecalho.findIndex((h, i) => h.toLowerCase().includes("modelo") && i !== iModEq);
+          }
+
+          console.log("Mapeamento de colunas do Excel:", {
+            cabecalho,
+            headerRowIndex,
+            frente: iFrente,
+            processo: iProcesso,
+            modeloEquipamento: iModEq,
+            equipamento: iEquip,
+            motorLigado: iMotor,
+            rpm: iRPM,
+            velocidade: iVel,
+            consumo: iConsumo,
+            modelo: iModelo
+          });
+
+          const safeGet = (row, index, def = "") => (index >= 0 && index < row.length) ? (row[index] ?? def) : def;
+
+          const formatExcelDate = (serial) => {
+            if (!serial || isNaN(serial)) return String(serial).trim();
+            const num = parseFloat(serial);
+            if (num < 10000 || num > 90000) return String(serial).trim();
+            const date = new Date(Math.round((num - 25569) * 86400 * 1000));
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            return `${meses[date.getUTCMonth()]}/${date.getUTCFullYear()}`;
+          };
+
+          const safeParseFloat = (val) => {
+            if (val === null || val === undefined || val === "") return 0;
+            if (typeof val === "number") return isNaN(val) ? 0 : val;
+            let str = String(val).trim().replace(/[^\d.,-]/g, "").replace(",", ".");
+            const num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+          };
+
+          const novos = linhas.slice(headerRowIndex + 1)
+            .filter(l => l.some(c => c !== ""))
+            .map(l => {
+              const valMotor = safeGet(l, iMotor, "");
+              const motorLigadoVal = safeParseFloat(valMotor);
+              return {
+                mes:               formatExcelDate(safeGet(l, iMes, "")),
+                frente:            safeGet(l, iFrente, ""),
+                processo:          safeGet(l, iProcesso, ""),
+                modeloEquipamento: safeGet(l, iModEq, ""),
+                equipamento:       String(safeGet(l, iEquip, "")).slice(0, 6),
+                motorLigado:       motorLigadoVal,
+                rpmMedio:          safeParseFloat(safeGet(l, iRPM, 0)),
+                velocidadeMedia:   safeParseFloat(safeGet(l, iVel, 0)),
+                consumoMedio:      safeParseFloat(safeGet(l, iConsumo, 0)),
+                modelo:            safeGet(l, iModelo, "")
+              };
+            })
+            .filter(d => {
+              if (d.motorLigado <= 0) return false;
+              const procUpper = String(d.processo).trim().toUpperCase();
+              if (procUpper.includes("NÃO DEFINIDO") || procUpper.includes("NAO DEFINIDO")) return false;
+              return true;
+            });
+
+          if (novos.length === 0) {
+            mostrarToast("⚠️ Nenhuma linha válida encontrada.");
+            return;
+          }
+
+          // Acrescenta os dados novos à tabela
+          novos.forEach(r => dados.push(r));
+          salvarDados();
+          dadosFiltrados = [...dados];
+          sortCol = -1;
+          limparSortHeaders();
+          document.getElementById("searchInput").value = "";
+          popularFiltros();
+          renderizarTabela();
+          atualizarStats();
+          mostrarToast(`✅ ${novos.length} registro(s) importado(s) com sucesso!`);
+
+        } catch(err) {
+          console.error(err);
+          mostrarToast("❌ Erro ao ler o arquivo Excel.");
+        }
+
+        // Limpa o input para permitir reimportar o mesmo arquivo
+        event.target.value = "";
+      };
+      reader.readAsArrayBuffer(arquivo);
+    }
+
+    /* ──────────────────────────────────────────────
+       EXPORTAR EXCEL (XLSX)
+    ────────────────────────────────────────────── */
+    function exportarExcel() {
+      if (typeof XLSX === "undefined") {
+        mostrarToast("⚠️ Biblioteca XLSX não carregada.");
+        return;
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet([
+        COLUNAS_EXPORT,
+        ...linhasParaExport(dadosFiltrados)
+      ]);
+
+      // Largura das colunas
+      ws["!cols"] = [
+        { wch: 16 }, { wch: 16 }, { wch: 22 }, { wch: 14 },
+        { wch: 18 }, { wch: 12 }, { wch: 32 }, { wch: 20 }, { wch: 22 }, { wch: 14 }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Monitoramento CTT");
+      XLSX.writeFile(wb, "monitoramento_CTT.xlsx");
+      mostrarToast("✅ Excel exportado com sucesso!");
+    }
+
+    /* ──────────────────────────────────────────────
+       LIMPAR DADOS
+    ────────────────────────────────────────────── */
+    function limparDados() {
+      if (dados.length === 0) {
+        mostrarToast("ℹ️ A tabela já está vazia.");
+        return;
+      }
+      if (!confirm("Deseja realmente limpar todos os dados da tabela?")) return;
+
+      dados.length = 0;
+      salvarDados();
+      dadosFiltrados = [];
+      sortCol = -1;
+      limparSortHeaders();
+      document.getElementById("searchInput").value = "";
+
+      // Zera os cards de métrica
+      document.getElementById("motorGeral").textContent   = "— h";
+      document.getElementById("rpmGeral").textContent     = "—";
+      document.getElementById("velGeral").textContent     = "— km/h";
+      document.getElementById("consumoGeral").textContent = "— l/h";
+      const vazioLi = `<li><span class="sl-name" style="color:var(--clr-muted);">Sem dados</span></li>`;
+      ["motorEquipamento","motorModelo","rpmEquipamento","rpmModelo",
+       "velEquipamento","velModelo","consumoEquipamento","consumoModelo"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = vazioLi;
+      });
+
+      popularFiltroFrente();
+      renderizarTabela();
+      mostrarToast("🗑️ Dados limpos com sucesso!");
+    }
+
+    /* ──────────────────────────────────────────────
+       IMPRIMIR / PDF
+    ────────────────────────────────────────────── */
+    function exportarPDF() {
+      window.print();
+    }
+
+    /* ──────────────────────────────────────────────
+       AUXILIAR: download
+    ────────────────────────────────────────────── */
+    function baixarArquivo(blob, nome) {
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href     = url;
+      link.download = nome;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    /* ──────────────────────────────────────────────
+       TOAST
+    ────────────────────────────────────────────── */
+    let toastTimer;
+    function mostrarToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
+    }
+  </script>
+
+  <!-- ===== ESTILOS DE IMPRESSÃO ===== -->
+  <style media="print">
+    body { background: #fff; color: #000; font-size: 10pt; }
+    .page-header { position: static; background: #fff; border-bottom: 2px solid #000; padding: 10px; box-shadow: none; }
+    .logo-badge, .toolbar, .search-bar-wrapper, .stats-grid, #toast, .chart-container-card, .main-tabs-container, .filter-wrapper { display: none !important; }
+    .header-titles h1 { color: #000; font-size: 14pt; }
+    .header-titles p  { color: #444; }
+    .table-container { border: 1px solid #ccc; box-shadow: none; }
+    .table-header-bar { background: #f0f0f0; border-bottom: 1px solid #ccc; }
+    .table-title { color: #000; }
+    .badge-blue { background: #e0e0e0; color: #333; border: 1px solid #999; }
+    table { font-size: 9pt; }
+    th { background: #e8e8e8; color: #333; border-bottom: 2px solid #999; }
+    tbody tr:nth-child(even) { background: #f9f9f9; }
+    .td-processo { color: #1a56db; }
+    .td-equip    { color: #7c3aed; }
+    .td-frente   { color: #555; }
+    .page-footer { color: #555; border-top: 1px solid #ccc; }
+  </style>
+
+</body>
+</html>
