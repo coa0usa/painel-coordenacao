@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,39 +20,47 @@
 
   <style>
     /* ===== RESET & BASE ===== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --primary:       #0284c7;
-      --primary-dark:  #0369a1;
-      --bg-body:       #f8fafc;
-      --bg-card:       #ffffff;
-      --text-main:     #1e293b;
-      --text-muted:    #64748b;
-      --border:        #e2e8f0;
-      --success:       #22c55e;
-      --warning:       #f59e0b;
-      --danger:        #ef4444;
-
-      /* aliases internos para manter compatibilidade */
-      --clr-bg:        var(--bg-body);
-      --clr-surface:   var(--bg-card);
-      --clr-surface2:  #f1f5f9;
-      --clr-border:    var(--border);
-      --clr-accent:    var(--success);
-      --clr-accent2:   var(--primary);
-      --clr-export:    var(--warning);
-      --clr-text:      var(--text-main);
-      --clr-muted:     var(--text-muted);
-      --clr-header-bg: #f1f5f9;
-      --clr-row-alt:   #f8fafc;
-      --clr-row-hover: #f0f9ff;
-      --radius:        8px;
-      --radius-lg:     12px;
-      --shadow:        0 2px 12px rgba(2,132,199,.10);
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    html { scroll-behavior: smooth; }
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+
+      /* aliases internos para manter compatibilidade */
+      --clr-bg: var(--bg-body);
+      --clr-surface: var(--bg-card);
+      --clr-surface2: #f1f5f9;
+      --clr-border: var(--border);
+      --clr-accent: var(--success);
+      --clr-accent2: var(--primary);
+      --clr-export: var(--warning);
+      --clr-text: var(--text-main);
+      --clr-muted: var(--text-muted);
+      --clr-header-bg: #f1f5f9;
+      --clr-row-alt: #f8fafc;
+      --clr-row-hover: #f0f9ff;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 2px 12px rgba(2, 132, 199, .10);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -77,17 +86,24 @@
       z-index: 100;
     }
 
-    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
     .logo-badge {
-      width: 46px; height: 46px;
+      width: 46px;
+      height: 46px;
       border-radius: 10px;
-      background: rgba(255,255,255,.20);
-      display: flex; align-items: center; justify-content: center;
+      background: rgba(255, 255, 255, .20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 20px;
-      box-shadow: 0 0 16px rgba(255,255,255,.25);
+      box-shadow: 0 0 16px rgba(255, 255, 255, .25);
       flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,.3);
+      border: 1px solid rgba(255, 255, 255, .3);
     }
 
     .header-titles h1 {
@@ -99,7 +115,7 @@
 
     .header-titles p {
       font-size: .78rem;
-      color: rgba(255,255,255,.75);
+      color: rgba(255, 255, 255, .75);
       margin-top: 2px;
     }
 
@@ -131,12 +147,13 @@
       background: #ffffff;
       color: #16a34a;
       border-color: #bbf7d0;
-      box-shadow: 0 1px 4px rgba(34,197,94,.15);
+      box-shadow: 0 1px 4px rgba(34, 197, 94, .15);
     }
+
     .btn-export-excel:hover {
       background: #f0fdf4;
       border-color: #22c55e;
-      box-shadow: 0 4px 14px rgba(34,197,94,.25);
+      box-shadow: 0 4px 14px rgba(34, 197, 94, .25);
       transform: translateY(-1px);
     }
 
@@ -144,12 +161,13 @@
       background: #ffffff;
       color: #dc2626;
       border-color: #fecaca;
-      box-shadow: 0 1px 4px rgba(239,68,68,.15);
+      box-shadow: 0 1px 4px rgba(239, 68, 68, .15);
     }
+
     .btn-export-pdf:hover {
       background: #fff5f5;
       border-color: #ef4444;
-      box-shadow: 0 4px 14px rgba(239,68,68,.25);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, .25);
       transform: translateY(-1px);
     }
 
@@ -157,12 +175,13 @@
       background: #ffffff;
       color: var(--primary-dark);
       border-color: #bae6fd;
-      box-shadow: 0 1px 4px rgba(2,132,199,.15);
+      box-shadow: 0 1px 4px rgba(2, 132, 199, .15);
     }
+
     .btn-import-excel:hover {
       background: #f0f9ff;
       border-color: var(--primary);
-      box-shadow: 0 4px 14px rgba(2,132,199,.25);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, .25);
       transform: translateY(-1px);
     }
 
@@ -170,17 +189,22 @@
       background: #ffffff;
       color: #64748b;
       border-color: #e2e8f0;
-      box-shadow: 0 1px 4px rgba(100,116,139,.10);
+      box-shadow: 0 1px 4px rgba(100, 116, 139, .10);
     }
+
     .btn-limpar:hover {
       background: #fef2f2;
       color: #dc2626;
       border-color: #fecaca;
-      box-shadow: 0 4px 14px rgba(239,68,68,.15);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, .15);
       transform: translateY(-1px);
     }
 
-    .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
 
     /* ===== MAIN CONTENT ===== */
     .content {
@@ -204,9 +228,10 @@
       padding: 18px 20px;
       transition: border-color .2s, box-shadow .2s;
     }
+
     .stat-card:hover {
       border-color: var(--primary);
-      box-shadow: 0 4px 16px rgba(2,132,199,.12);
+      box-shadow: 0 4px 16px rgba(2, 132, 199, .12);
     }
 
     .stat-label {
@@ -228,9 +253,17 @@
       line-height: 1;
     }
 
-    .stat-value.green  { color: #16a34a; }
-    .stat-value.blue   { color: var(--primary); }
-    .stat-value.orange { color: #d97706; }
+    .stat-value.green {
+      color: #16a34a;
+    }
+
+    .stat-value.blue {
+      color: var(--primary);
+    }
+
+    .stat-value.orange {
+      color: #d97706;
+    }
 
     /* Lista dentro do card (por modelo / por frente) */
     .stat-list {
@@ -255,6 +288,7 @@
       position: relative;
       width: 250px;
     }
+
     .multiselect-header {
       padding: 8px 12px;
       border-radius: 8px;
@@ -268,18 +302,22 @@
       align-items: center;
       transition: border 0.2s, box-shadow 0.2s;
     }
+
     .multiselect-header:hover {
       border-color: var(--primary);
     }
+
     .multiselect-header svg {
       width: 16px;
       height: 16px;
       color: var(--clr-muted);
       transition: transform 0.2s;
     }
+
     .multiselect-header.open svg {
       transform: rotate(180deg);
     }
+
     .multiselect-dropdown {
       position: absolute;
       top: 100%;
@@ -289,15 +327,17 @@
       background: #fff;
       border: 1px solid var(--clr-border);
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       z-index: 100;
       max-height: 250px;
       overflow-y: auto;
       padding: 8px 0;
     }
+
     .multiselect-dropdown.sl-hidden {
       display: none;
     }
+
     .multiselect-option {
       padding: 6px 16px;
       display: flex;
@@ -306,9 +346,11 @@
       cursor: pointer;
       transition: background 0.1s;
     }
+
     .multiselect-option:hover {
       background: #f1f5f9;
     }
+
     .multiselect-option input {
       cursor: pointer;
     }
@@ -342,6 +384,7 @@
       border-radius: 4px;
       overflow: hidden;
     }
+
     .stat-list .sl-bar {
       height: 100%;
       border-radius: 4px;
@@ -355,6 +398,7 @@
       gap: 4px;
       margin: 8px 0 10px;
     }
+
     .mtab {
       flex: 1;
       padding: 4px 0;
@@ -368,13 +412,21 @@
       cursor: pointer;
       transition: all .15s;
     }
-    .mtab:hover  { border-color: var(--primary); color: var(--primary); }
+
+    .mtab:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
     .mtab.active {
       background: #e0f2fe;
       border-color: #bae6fd;
       color: var(--primary-dark);
     }
-    .stat-list.sl-hidden { display: none; }
+
+    .stat-list.sl-hidden {
+      display: none;
+    }
 
     /* Bloco de valor geral */
     .stat-geral {
@@ -384,15 +436,41 @@
       padding: 6px 0 2px;
       line-height: 1;
     }
-    .stat-geral.sl-hidden { display: none; }
-    .stat-geral.green  { color: #16a34a; }
-    .stat-geral.orange { color: #d97706; }
-    .stat-geral.purple { color: #7c3aed; }
+
+    .stat-geral.sl-hidden {
+      display: none;
+    }
+
+    .stat-geral.green {
+      color: #16a34a;
+    }
+
+    .stat-geral.orange {
+      color: #d97706;
+    }
+
+    .stat-geral.purple {
+      color: #7c3aed;
+    }
 
     /* Badge de métrica (verde/laranja) */
-    .stat-list .sl-badge-green  { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
-    .stat-list .sl-badge-orange { background: #fef3c7; color: #d97706; border-color: #fde68a; }
-    .stat-list .sl-badge-purple { background: #f3e8ff; color: #7c3aed; border-color: #e9d5ff; }
+    .stat-list .sl-badge-green {
+      background: #dcfce7;
+      color: #16a34a;
+      border-color: #bbf7d0;
+    }
+
+    .stat-list .sl-badge-orange {
+      background: #fef3c7;
+      color: #d97706;
+      border-color: #fde68a;
+    }
+
+    .stat-list .sl-badge-purple {
+      background: #f3e8ff;
+      color: #7c3aed;
+      border-color: #e9d5ff;
+    }
 
     /* Badge de total no título do card */
     .stat-total-badge {
@@ -407,9 +485,22 @@
       letter-spacing: 0;
       text-transform: none;
     }
-    .stat-total-badge:empty { display: none; }
-    .stat-total-orange { background: #fef3c7; color: #d97706; border-color: #fde68a; }
-    .stat-total-purple { background: #f3e8ff; color: #7c3aed; border-color: #e9d5ff; }
+
+    .stat-total-badge:empty {
+      display: none;
+    }
+
+    .stat-total-orange {
+      background: #fef3c7;
+      color: #d97706;
+      border-color: #fde68a;
+    }
+
+    .stat-total-purple {
+      background: #f3e8ff;
+      color: #7c3aed;
+      border-color: #e9d5ff;
+    }
 
     /* ===== SEARCH BAR ===== */
     .search-bar-wrapper {
@@ -431,7 +522,8 @@
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      width: 15px; height: 15px;
+      width: 15px;
+      height: 15px;
       color: var(--clr-muted);
       pointer-events: none;
     }
@@ -448,11 +540,15 @@
       outline: none;
       transition: border-color .2s, box-shadow .2s;
     }
+
     #searchInput:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(2,132,199,.15);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, .15);
     }
-    #searchInput::placeholder { color: var(--clr-muted); }
+
+    #searchInput::placeholder {
+      color: var(--clr-muted);
+    }
 
     .results-count {
       font-size: .78rem;
@@ -498,6 +594,7 @@
       font-size: .7rem;
       font-weight: 600;
     }
+
     .badge-blue {
       background: #e0f2fe;
       color: var(--primary-dark);
@@ -505,7 +602,9 @@
     }
 
     /* ===== TABLE ===== */
-    .table-scroll { overflow-x: auto; }
+    .table-scroll {
+      overflow-x: auto;
+    }
 
     table {
       width: 100%;
@@ -531,18 +630,37 @@
       user-select: none;
       transition: color .15s;
     }
-    th:hover { color: var(--clr-text); }
 
-    th.sort-asc::after  { content: " ↑"; color: var(--primary); }
-    th.sort-desc::after { content: " ↓"; color: var(--primary); }
+    th:hover {
+      color: var(--clr-text);
+    }
+
+    th.sort-asc::after {
+      content: " ↑";
+      color: var(--primary);
+    }
+
+    th.sort-desc::after {
+      content: " ↓";
+      color: var(--primary);
+    }
 
     tbody tr {
       border-bottom: 1px solid var(--clr-border);
       transition: background .15s;
     }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:nth-child(even) { background: #f8fafc; }
-    tbody tr:hover { background: var(--clr-row-hover); }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    tbody tr:hover {
+      background: var(--clr-row-hover);
+    }
 
     td {
       padding: 11px 14px;
@@ -585,8 +703,18 @@
       font-size: .72rem;
       font-weight: 600;
     }
-    .pill-green  { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
-    .pill-orange { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+
+    .pill-green {
+      background: #dcfce7;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .pill-orange {
+      background: #fef3c7;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
 
     /* ===== FOOTER ===== */
     .page-footer {
@@ -618,7 +746,11 @@
       pointer-events: none;
       min-width: 220px;
     }
-    #toast.show { opacity: 1; transform: translateY(0); }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* ===== CATEGORY TABS ===== */
     .category-tabs-container {
@@ -746,7 +878,7 @@
 
     .filter-select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(2,132,199,.15);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, .15);
     }
 
     /* ===== CARD CHART WRAPPER ===== */
@@ -761,9 +893,19 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 640px) {
-      .page-header { padding: 18px 20px; }
-      .content { padding: 0 14px; margin: 20px auto; }
-      .btn { padding: 8px 13px; font-size: .78rem; }
+      .page-header {
+        padding: 18px 20px;
+      }
+
+      .content {
+        padding: 0 14px;
+        margin: 20px auto;
+      }
+
+      .btn {
+        padding: 8px 13px;
+        font-size: .78rem;
+      }
     }
 
     /* ===== MULTI-UNIDADE ===== */
@@ -779,9 +921,24 @@
       text-transform: uppercase;
       flex-shrink: 0;
     }
-    .unit-sajb { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-    .unit-sapb { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-    .unit-other { background: #f3e8ff; color: #6d28d9; border: 1px solid #e9d5ff; }
+
+    .unit-sajb {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+
+    .unit-sapb {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .unit-other {
+      background: #f3e8ff;
+      color: #6d28d9;
+      border: 1px solid #e9d5ff;
+    }
 
 
 
@@ -794,10 +951,12 @@
       font-size: .78rem;
       margin-top: 4px;
     }
+
     .comp-table thead tr {
       background: transparent;
       border-bottom: 1px solid var(--border);
     }
+
     .comp-table th {
       padding: 4px 6px;
       font-size: .68rem;
@@ -808,15 +967,26 @@
       cursor: default;
       user-select: none;
     }
-    .comp-table th:first-child { text-align: left; }
-    .comp-table th.sajb-header { color: #0369a1; }
-    .comp-table th.sapb-header { color: #b45309; }
+
+    .comp-table th:first-child {
+      text-align: left;
+    }
+
+    .comp-table th.sajb-header {
+      color: #0369a1;
+    }
+
+    .comp-table th.sapb-header {
+      color: #b45309;
+    }
+
     .comp-table td {
       padding: 5px 6px;
       vertical-align: middle;
       border-bottom: 1px solid #f1f5f9;
       white-space: nowrap;
     }
+
     .comp-table td:first-child {
       font-weight: 500;
       color: var(--clr-text);
@@ -824,18 +994,41 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .comp-table td.val-sajb { text-align: right; color: #0369a1; font-weight: 600; }
-    .comp-table td.val-sapb { text-align: right; color: #b45309; font-weight: 600; }
+
+    .comp-table td.val-sajb {
+      text-align: right;
+      color: #0369a1;
+      font-weight: 600;
+    }
+
+    .comp-table td.val-sapb {
+      text-align: right;
+      color: #b45309;
+      font-weight: 600;
+    }
+
     .comp-table td.val-delta {
       text-align: right;
       font-size: .7rem;
       font-weight: 600;
       padding-left: 2px;
     }
-    .delta-pos { color: #16a34a; }
-    .delta-neg { color: #dc2626; }
-    .delta-zero { color: var(--clr-muted); }
-    .comp-table tbody tr:hover { background: #f8fafc; }
+
+    .delta-pos {
+      color: #16a34a;
+    }
+
+    .delta-neg {
+      color: #dc2626;
+    }
+
+    .delta-zero {
+      color: var(--clr-muted);
+    }
+
+    .comp-table tbody tr:hover {
+      background: #f8fafc;
+    }
 
     /* Linha de total no card comparativo */
     .comp-total-row td {
@@ -852,11 +1045,13 @@
         size: landscape;
         margin: 10mm;
       }
+
       body {
         background: #fff;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
+
       /* Oculta elementos interativos e de topo que não precisam ir pro papel */
       .page-header button,
       .category-tabs-container,
@@ -869,41 +1064,96 @@
       #formLitrosTon {
         display: none !important;
       }
+
       /* Ajusta os cards para não quebrarem e ocuparem melhor o espaço */
       .stat-card {
         break-inside: avoid;
         box-shadow: none;
         border: 1px solid #ccc;
       }
+
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 10px;
       }
+
       .lt-grid-responsive {
         grid-template-columns: 1fr !important;
       }
+
       /* Garante que os gráficos desenhados em canvas não sejam cortados */
       canvas {
         max-width: 100% !important;
         page-break-inside: avoid;
       }
+
       /* Oculta abas que não estão ativas mas que poderiam bugar no print */
       .tab-content.sl-hidden {
         display: none !important;
       }
     }
+
     /* ===== DRAG-DROP ZONE MANOBRA ===== */
     #manobraDropZone:hover,
     #manobraDropZone.dz-over {
       border-color: var(--primary);
       background: #f0f9ff;
-      box-shadow: 0 0 0 3px rgba(2,132,199,.12);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, .12);
     }
-    #manobraDropZone.dz-over { border-style: solid; }
+
+    #manobraDropZone.dz-over {
+      border-style: solid;
+    }
+
+    /* ===== LOADING OVERLAY ===== */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s;
+    }
+
+    #loadingOverlay.sl-hidden {
+      display: none;
+    }
+
+    .spinner {
+      border: 4px solid var(--clr-border);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
+
 <body>
+
+  <div id="loadingOverlay" class="sl-hidden">
+    <div class="spinner"></div>
+    <div style="font-weight: 600; color: var(--text-main); font-size: 1rem;">Processando dados...</div>
+  </div>
 
   <!-- ===== PAGE HEADER ===== -->
   <header class="page-header">
@@ -916,28 +1166,24 @@
     </div>
 
     <!-- input oculto para leitura do arquivo Excel -->
-    <input type="file" id="fileInputExcel" accept=".xlsx,.xls" style="display:none" onchange="processarArquivoExcel(event)" />
+    <input type="file" id="fileInputExcel" accept=".xlsx,.xls" style="display:none"
+      onchange="processarArquivoExcel(event)" />
 
     <div class="toolbar">
 
 
-      <button class="btn btn-import-excel" id="btnImportExcel" onclick="document.getElementById('fileInputExcel').click()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-        </svg>
-        Importar Excel
-      </button>
-
       <button class="btn btn-export-excel" id="btnExportExcel" onclick="exportarExcel()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
         </svg>
         Exportar Excel
       </button>
 
       <button class="btn btn-export-pdf" id="btnExportPDF" onclick="exportarPDF()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
         </svg>
         Imprimir / PDF
       </button>
@@ -948,7 +1194,8 @@
   <main class="content">
 
     <!-- Container do Seletor e Botão Limpar -->
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
       <!-- Seletor de Categoria Superior -->
       <div class="category-tabs-container" style="margin-bottom: 0;">
         <button class="category-tab-btn active" id="cat-colhedora" onclick="switchCategory('Colhedora')">
@@ -962,13 +1209,25 @@
         </button>
       </div>
 
-      <!-- Botão Limpar por Categoria -->
-      <button class="btn btn-limpar" id="btnLimparCategoria" onclick="limparDados()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-        </svg>
-        Limpar <span id="lblLimparCategoria">Colhedoras</span>
-      </button>
+      <!-- Botões de Ação por Categoria -->
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-import-excel" id="btnImportCategoria" onclick="abrirImportacaoCategoria()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Importar <span id="lblImportCategoria">Colhedoras</span>
+        </button>
+        <button class="btn btn-limpar" id="btnLimparCategoria" onclick="limparDados()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+          </svg>
+          Limpar <span id="lblLimparCategoria">Colhedoras</span>
+        </button>
+      </div>
     </div>
 
     <!-- Menu de Abas Principal -->
@@ -981,6 +1240,9 @@
       </button>
       <button class="main-tab-btn" id="tab-litros-ton" onclick="switchMainTab('litros-ton')">
         ⛽ Litros por Tonelada
+      </button>
+      <button class="main-tab-btn" id="tab-kmlitros" onclick="switchMainTab('kmlitros')">
+        🛣️ KM / Litros
       </button>
       <button class="main-tab-btn" id="tab-manobra" onclick="switchMainTab('manobra')" style="display:none;">
         🔄 Tempo de Manobra
@@ -997,7 +1259,9 @@
           <div class="multiselect-header" onclick="toggleMultiSelect('unidadeDropdown')">
             <span id="unidadeSelectedText">Todas</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="multiselect-dropdown sl-hidden" id="unidadeDropdown">
@@ -1012,7 +1276,9 @@
           <div class="multiselect-header" onclick="toggleMultiSelect('frenteDropdown')">
             <span id="frenteSelectedText">Todas as Frentes</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="multiselect-dropdown sl-hidden" id="frenteDropdown">
@@ -1028,7 +1294,9 @@
           <div class="multiselect-header" onclick="toggleMultiSelect('modeloEquipDropdown')">
             <span id="modeloEquipSelectedText">Todos os Modelos</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="multiselect-dropdown sl-hidden" id="modeloEquipDropdown">
@@ -1044,7 +1312,9 @@
           <div class="multiselect-header" onclick="toggleMultiSelect('processoDropdown')">
             <span id="processoSelectedText">Todos os Processos</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="multiselect-dropdown sl-hidden" id="processoDropdown">
@@ -1060,88 +1330,40 @@
         </select>
       </div>
       <!-- STATS CARDS -->
-      <section class="stats-grid" aria-label="Resumo estatístico">
-
-        <!-- L/t Acumulado -->
+      <!-- STATS CONSOLIDADOS -->
+      <section class="stats-grid" aria-label="Resumo estatístico" style="grid-template-columns: 1fr;">
+        <!-- Tabela Resumo Geral -->
         <div class="stat-card">
-          <div class="stat-label">⛽ Litros por Tonelada <span class="stat-total-badge" id="totalLt"></span></div>
-          <div class="metric-tabs">
-            <button class="mtab active" id="ltTabBtn" style="pointer-events: none; cursor: default;">Acumulado Lançado</button>
+          <div class="stat-label" style="display:flex; justify-content:space-between; margin-bottom: 0;">
+            <span id="tituloResumoGeral">📊 Resumo Geral de Indicadores</span>
+            <!-- Um lugar para exibir se é Colhedora, etc -->
           </div>
-          <ul class="stat-list" id="ltAcumulado"></ul>
+          <div class="table-container" style="margin-top: 15px;" id="tabelaResumoGeralContainer">
+            <!-- Tabela gerada via JS -->
+          </div>
         </div>
 
-        <!-- Tempo de Manobra (Top Card) -->
-        <div class="stat-card sl-hidden" id="cardTopTempoManobra">
-          <div class="stat-label">🔄 Tempo de Manobra <span class="stat-total-badge" id="totalTempoManobra"></span></div>
-          <div class="metric-tabs">
-            <button class="mtab active" style="pointer-events: none; cursor: default;">Média por Unidade</button>
+        <!-- Tabela de Detalhamento -->
+        <div class="stat-card" id="cardDetalhamento">
+          <div class="stat-label" style="margin-bottom: 15px;">🔍 Detalhamento por Modelo</div>
+          <div class="table-container" id="tabelaDetalhamentoContainer">
+            <!-- Tabela gerada via JS -->
           </div>
-          <ul class="stat-list" id="listaTempoManobra"></ul>
-        </div>
-
-        <!-- Motor Ligado -->
-        <div class="stat-card">
-          <div class="stat-label">⏱️ Motor Ligado <span class="stat-total-badge" id="totalMotor"></span></div>
-          <div class="metric-tabs">
-            <button class="mtab active" onclick="switchTab(this,'motorOperacao')">Operação</button>
-            <button class="mtab" onclick="switchTab(this,'motorEquipamento')">Por Equipamento</button>
-            <button class="mtab" onclick="switchTab(this,'motorModelo')">Por Modelo</button>
-          </div>
-          <ul class="stat-list" id="motorOperacao"></ul>
-          <ul class="stat-list sl-hidden" id="motorEquipamento"></ul>
-          <ul class="stat-list sl-hidden" id="motorModelo"></ul>
-        </div>
-
-        <!-- RPM -->
-        <div class="stat-card">
-          <div class="stat-label">⚙️ RPM Médio Geral <span class="stat-total-badge" id="totalRPM"></span></div>
-          <div class="metric-tabs">
-            <button class="mtab active" onclick="switchTab(this,'rpmOperacao')">Operação</button>
-            <button class="mtab" onclick="switchTab(this,'rpmEquipamento')">Por Equipamento</button>
-            <button class="mtab" onclick="switchTab(this,'rpmModelo')">Por Modelo</button>
-          </div>
-          <ul class="stat-list" id="rpmOperacao"></ul>
-          <ul class="stat-list sl-hidden" id="rpmEquipamento"></ul>
-          <ul class="stat-list sl-hidden" id="rpmModelo"></ul>
-        </div>
-
-        <!-- Velocidade -->
-        <div class="stat-card">
-          <div class="stat-label">💨 Vel. Média Efetiva <span class="stat-total-badge stat-total-orange" id="totalVel"></span></div>
-          <div class="metric-tabs">
-            <button class="mtab active" onclick="switchTab(this,'velOperacao')">Operação</button>
-            <button class="mtab" onclick="switchTab(this,'velEquipamento')">Por Equipamento</button>
-            <button class="mtab" onclick="switchTab(this,'velModelo')">Por Modelo</button>
-          </div>
-          <ul class="stat-list" id="velOperacao"></ul>
-          <ul class="stat-list sl-hidden" id="velEquipamento"></ul>
-          <ul class="stat-list sl-hidden" id="velModelo"></ul>
-        </div>
-
-        <!-- Consumo -->
-        <div class="stat-card">
-          <div class="stat-label">⛽ Consumo Médio <span class="stat-total-badge stat-total-purple" id="totalConsumo"></span></div>
-          <div class="metric-tabs">
-            <button class="mtab active" onclick="switchTab(this,'consumoOperacao')">Operação</button>
-            <button class="mtab" onclick="switchTab(this,'consumoEquipamento')">Por Equipamento</button>
-            <button class="mtab" onclick="switchTab(this,'consumoModelo')">Por Modelo</button>
-          </div>
-          <ul class="stat-list" id="consumoOperacao"></ul>
-          <ul class="stat-list sl-hidden" id="consumoEquipamento"></ul>
-          <ul class="stat-list sl-hidden" id="consumoModelo"></ul>
         </div>
       </section>
 
       <!-- GRÁFICOS DIÁRIOS POR FRENTE -->
-      <h3 id="evolucaoTitle" style="font-size: 1rem; color: var(--clr-text); margin-bottom: 16px;">Evolução Diária por Unidade</h3>
+      <h3 id="evolucaoTitle" style="font-size: 1rem; color: var(--clr-text); margin-bottom: 16px;">Evolução Diária por
+        Unidade</h3>
       <div class="filter-wrapper" style="margin-bottom: 16px;">
         <label class="filter-label">Filtro de Frente:</label>
         <div class="custom-multiselect" id="multiSelectFrenteGraficos" style="min-width:180px; margin-right:10px;">
           <div class="multiselect-header" onclick="toggleMultiSelect('frenteGraficosDropdown')">
             <span id="frenteGraficosSelectedText">Todas as Frentes</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="multiselect-dropdown sl-hidden" id="frenteGraficosDropdown">
@@ -1149,14 +1371,16 @@
           </div>
         </div>
       </div>
-      
+
       <div id="monthlyChartsContainer"></div>
 
       <!-- Gráficos de comparativo Litros por Tonelada (Dashboard) -->
       <div class="stat-card" style="padding: 20px; margin-top: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div class="stat-label" style="margin-bottom: 0;">📈 Evolução Mensal de L/t (SAJB vs SAPB)</div>
-          <select id="ltChartFilterCategoriaDash" class="filter-select" onchange="renderizarGraficosLitrosToneladas()" style="max-width: 200px;">
+          <select id="ltChartFilterCategoriaDash" class="filter-select" onchange="renderizarGraficosLitrosToneladas()"
+            style="max-width: 200px;">
             <option value="todas">Todas as Categorias</option>
             <option value="Colhedora">Colhedora</option>
             <option value="Canavieiro">Canavieiro</option>
@@ -1170,11 +1394,11 @@
           <canvas id="chartLitrosTonDash"></canvas>
         </div>
       </div>
-      </div>
 
       <!-- NOVO: Gráfico Tempo de Manobra (Dashboard) -->
       <div id="manobraDashboardCard" class="stat-card sl-hidden" style="padding: 20px; margin-top: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div class="stat-label" style="margin-bottom: 0;">🔄 Tempo de Manobra (Média)</div>
         </div>
         <div class="card-chart-wrapper" style="height: 360px; border-top: none;">
@@ -1188,10 +1412,13 @@
       <!-- SEARCH + COUNTER -->
       <div class="search-bar-wrapper">
         <div class="search-input-wrap">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
-          <input type="text" id="searchInput" placeholder="Pesquisar por processo, frente, equipamento…" oninput="filtrarTabelaDebounced()" />
+          <input type="text" id="searchInput" placeholder="Pesquisar por processo, frente, equipamento…"
+            oninput="filtrarTabelaDebounced()" />
         </div>
         <span class="results-count" id="resultsCount"></span>
       </div>
@@ -1209,24 +1436,24 @@
         <div class="table-scroll">
           <table id="tabelaMonitoramento" aria-label="Tabela de monitoramento CTT">
             <thead>
-              <tr>
-                <th id="th-0" onclick="ordenarTabela(0)">Unidade</th>
-                <th id="th-1" onclick="ordenarTabela(1)">Frente</th>
-                <th id="th-2" onclick="ordenarTabela(2)">Processo</th>
-                <th id="th-3" onclick="ordenarTabela(3)">Modelo Equipamento</th>
-                <th id="th-4" onclick="ordenarTabela(4)">Equipamento</th>
-                <th id="th-5" onclick="ordenarTabela(5)">Motor Ligado (h)</th>
-                <th id="th-6" onclick="ordenarTabela(6)">RPM Médio</th>
-                <th id="th-7" onclick="ordenarTabela(7)">Velocidade Média Efetivo (km/h)</th>
-                <th id="th-8" onclick="ordenarTabela(8)">Consumo Médio (l/h)</th>
-                <th id="th-9" onclick="ordenarTabela(9)">Modelo</th>
-                <th id="th-10" onclick="ordenarTabela(10)">Data</th>
-              </tr>
+              <!-- thead is injected dynamically by renderizarTabela() -->
             </thead>
             <tbody id="tableBody">
               <!-- Dados gerados pelo JS -->
             </tbody>
           </table>
+        </div>
+
+        <!-- Paginação -->
+        <div id="paginacaoContainer"
+          style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 0 8px;">
+          <div id="paginacaoInfo" style="font-size: 0.85rem; color: var(--clr-muted);"></div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="mudarPagina(-1)" class="btn btn-limpar" id="btnPagAnt"
+              style="padding: 4px 12px; font-size: 0.85rem;" disabled>Anterior</button>
+            <button onclick="mudarPagina(1)" class="btn btn-import-excel" id="btnPagProx"
+              style="padding: 4px 12px; font-size: 0.85rem;">Próxima</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1234,14 +1461,16 @@
     <!-- Conteúdo da Aba Litros por Tonelada -->
     <div id="content-litros-ton" class="tab-content sl-hidden">
       <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
-        
+
         <!-- Bloco superior: Lançamento de dados -->
         <div class="stat-card" style="padding: 20px;">
-          <div class="stat-label" style="margin-bottom: 16px; font-size: 1rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">
+          <div class="stat-label"
+            style="margin-bottom: 16px; font-size: 1rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">
             ✍️ Lançamento de Litros por Tonelada
           </div>
-          
-          <form id="formLitrosTon" onsubmit="lancarLitrosToneladas(event)" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;">
+
+          <form id="formLitrosTon" onsubmit="lancarLitrosToneladas(event)"
+            style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;">
             <div class="form-group" style="min-width: 130px; flex: 1;">
               <label for="ltUnidade" class="filter-label">Unidade:</label>
               <select id="ltUnidade" class="filter-select" style="width: 100%; height: 38px;">
@@ -1249,18 +1478,20 @@
                 <option value="SAPB">🏭 SAPB</option>
               </select>
             </div>
-            
+
             <div class="form-group" style="min-width: 180px; flex: 1;">
               <label for="ltCategoria" class="filter-label">Tipo de Categoria:</label>
-              <select id="ltCategoria" class="filter-select" style="width: 100%; height: 38px;" onchange="onCategoriaInputTypeChange()">
+              <select id="ltCategoria" class="filter-select" style="width: 100%; height: 38px;"
+                onchange="onCategoriaInputTypeChange()">
                 <option value="Colhedora">🚜 Colhedora</option>
                 <option value="Canavieiro">🚛 Canavieiro</option>
                 <option value="Transbordo">🌾 Transbordo</option>
                 <option value="Outros">✏️ Outros (Digitar...)</option>
               </select>
-              <input type="text" id="ltCategoriaCustom" class="filter-select sl-hidden" placeholder="Digite a categoria..." style="width: 100%; height: 38px; margin-top: 8px;" />
+              <input type="text" id="ltCategoriaCustom" class="filter-select sl-hidden"
+                placeholder="Digite a categoria..." style="width: 100%; height: 38px; margin-top: 8px;" />
             </div>
-            
+
             <div class="form-group" style="min-width: 140px; flex: 1;">
               <label for="ltMes" class="filter-label">Mês:</label>
               <select id="ltMes" class="filter-select" style="width: 100%; height: 38px;">
@@ -1279,14 +1510,17 @@
                 <option value="Acumulado">Acumulado (Lançamento Manual)</option>
               </select>
             </div>
-            
+
             <div class="form-group" style="min-width: 150px; flex: 1;">
               <label for="ltValor" class="filter-label">Litros/Toneladas (L/t):</label>
-              <input type="number" id="ltValor" class="filter-select" style="width: 100%; height: 38px;" step="any" min="0.001" required placeholder="Ex: 0.222" />
+              <input type="number" id="ltValor" class="filter-select" style="width: 100%; height: 38px;" step="any"
+                min="0.001" required placeholder="Ex: 0.222" />
             </div>
-            
-            <button type="submit" class="btn btn-import-excel" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 16px; height: 16px;">
+
+            <button type="submit" class="btn btn-import-excel"
+              style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                stroke="currentColor" style="width: 16px; height: 16px;">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
               Lançar
@@ -1296,7 +1530,7 @@
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr; gap: 24px; flex-wrap: wrap;" class="lt-grid-responsive">
-        
+
         <!-- Tabela de lançamentos -->
         <div class="stat-card" style="padding: 20px; display: flex; flex-direction: column;">
           <div class="stat-label" style="margin-bottom: 12px;">📊 Lançamentos Efetuados</div>
@@ -1307,7 +1541,8 @@
                   <th>Unidade</th>
                   <th>Mês</th>
                   <th>Categoria</th>
-                  <th style="text-align: right; color: var(--clr-accent); font-weight: bold;">Litros/Toneladas (L/t)</th>
+                  <th style="text-align: right; color: var(--clr-accent); font-weight: bold;">Litros/Toneladas (L/t)
+                  </th>
                   <th style="text-align: center; width: 40px;">Ação</th>
                 </tr>
               </thead>
@@ -1327,20 +1562,20 @@
 
         <!-- Bloco de Importação Excel -->
         <div class="stat-card" style="padding: 20px;">
-          <div class="stat-label" style="margin-bottom: 16px; font-size: 1rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">
+          <div class="stat-label"
+            style="margin-bottom: 16px; font-size: 1rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">
             📥 Importar Manobra
           </div>
 
           <!-- input oculto -->
-          <input type="file" id="fileInputManobra" accept=".xlsx,.xls" style="display:none" onchange="importarManobraExcel(event)" />
+          <input type="file" id="fileInputManobra" accept=".xlsx,.xls" style="display:none"
+            onchange="importarManobraExcel(event)" />
 
           <!-- Zona de drop -->
-          <div id="manobraDropZone"
-            onclick="document.getElementById('fileInputManobra').click()"
+          <div id="manobraDropZone" onclick="document.getElementById('fileInputManobra').click()"
             ondragover="event.preventDefault(); this.classList.add('dz-over');"
             ondragleave="this.classList.remove('dz-over');"
-            ondrop="this.classList.remove('dz-over'); importarManobraExcelDrop(event);"
-            style="
+            ondrop="this.classList.remove('dz-over'); importarManobraExcelDrop(event);" style="
               border: 2px dashed var(--clr-border);
               border-radius: var(--radius-lg);
               padding: 36px 24px;
@@ -1350,13 +1585,18 @@
               background: #f8fafc;
             ">
             <div style="font-size: 2.4rem; margin-bottom: 10px;">📂</div>
-            <div style="font-size: .9rem; font-weight: 600; color: var(--clr-text); margin-bottom: 4px;">Clique aqui ou arraste o arquivo Excel</div>
-            <div style="font-size: .78rem; color: var(--clr-muted);">Formatos aceitos: <strong>.xlsx</strong> e <strong>.xls</strong></div>
+            <div style="font-size: .9rem; font-weight: 600; color: var(--clr-text); margin-bottom: 4px;">Clique aqui ou
+              arraste o arquivo Excel</div>
+            <div style="font-size: .78rem; color: var(--clr-muted);">Formatos aceitos: <strong>.xlsx</strong> e
+              <strong>.xls</strong>
+            </div>
             <div style="font-size: .74rem; color: var(--clr-muted); margin-top: 6px;">
               Colunas esperadas:
               <code style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Data Hora Local</code>
-              <code style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Código Equipamento</code>
-              <code style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Soma de Manobra CD (seg)</code>
+              <code
+                style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Código Equipamento</code>
+              <code
+                style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Soma de Manobra CD (seg)</code>
               <code style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Quant. Manobra CD</code>
               <code style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">Tempo/manobra</code>
               <code style="background:#e0f2fe;padding:1px 6px;border-radius:4px;color:#0369a1;">unidade</code>
@@ -1366,14 +1606,18 @@
           <!-- Ações abaixo da zona -->
           <div style="display:flex; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap;">
             <button class="btn btn-import-excel" onclick="document.getElementById('fileInputManobra').click()">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
               </svg>
               Selecionar Arquivo Excel
             </button>
             <button class="btn btn-export-excel" onclick="baixarModeloManobraExcel()">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
               Baixar Modelo
             </button>
@@ -1384,11 +1628,14 @@
 
       <!-- Tabela de Registros de Manobra -->
       <div class="stat-card" style="padding: 20px; display: flex; flex-direction: column;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div class="stat-label" style="margin-bottom: 0;">📊 Registros de Manobra Importados</div>
           <button class="btn btn-limpar" style="height: 34px; font-size: .78rem;" onclick="limparManobras()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" style="width:14px;height:14px;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
             </svg>
             Limpar Tudo
           </button>
@@ -1415,6 +1662,56 @@
       </div>
     </div>
 
+    <!-- Conteúdo da Aba KM/Litros -->
+    <div id="content-kmlitros" class="tab-content sl-hidden">
+      <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
+        <div class="stat-card" style="padding: 20px;">
+          <div class="stat-label"
+            style="margin-bottom: 16px; font-size: 1rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 8px;">
+            📥 Importar KM / Litros
+          </div>
+          <input type="file" id="fileInputKmLitros" accept=".xlsx,.xls" style="display:none"
+            onchange="importarKmLitrosExcel(event)" />
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-import-excel" onclick="document.getElementById('fileInputKmLitros').click()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Selecionar Arquivo Excel
+            </button>
+            <span id="kmArquivoNome" style="font-size:.78rem; color:var(--clr-muted);"></span>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card" style="padding: 20px; display: flex; flex-direction: column;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div class="stat-label" style="margin-bottom: 0;">📊 Registros de KM/Litros Importados</div>
+          <button class="btn btn-limpar" style="height: 34px; font-size: .78rem;" onclick="limparKmLitros()">
+            Limpar Tudo
+          </button>
+        </div>
+        <div class="table-scroll" style="flex: 1; max-height: 420px;">
+          <table class="comp-table" style="font-size: .8rem;" id="tabelaKmLitros">
+            <thead>
+              <tr>
+                <th style="text-align:center;">Código</th>
+                <th style="text-align:left;">Descrição</th>
+                <th style="text-align:center;">Data</th>
+                <th style="text-align:center;">Abastes</th>
+                <th style="text-align:center;">Km/H</th>
+                <th style="text-align:center;">UNIDADE</th>
+                <th style="text-align:center;">COMPARTIMENTO</th>
+                <th style="text-align:center; width: 50px;">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyKmLitros"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- ===== FOOTER ===== -->
@@ -1587,32 +1884,42 @@
       if (!row) return false;
       const equip = String(row.modeloEquipamento || "").toLowerCase();
       const proc = String(row.processo || "").toLowerCase();
-      
+      const mod = String(row.modelo || "").toLowerCase();
+
+      const obviousColhedora = equip.includes("colhedora") || mod.includes("ch570") || mod.includes("ch670") || mod.includes("ch950");
+
       if (category === "Colhedora") {
-        return equip.includes("colhedora") || proc.includes("colheita");
+        return obviousColhedora || proc.includes("colheita") || mod.includes("colhedora");
       }
       if (category === "Canavieiro") {
-        return equip.includes("canavieiro") || equip.includes("caminhao") || equip.includes("caminhão") || proc.includes("transporte") || proc.includes("carreamento");
+        if (obviousColhedora) return false; // Nunca exibe colhedoras aqui, mesmo que o processo seja transporte
+        return equip.includes("canavieiro") || equip.includes("caminhao") || equip.includes("caminhão") || proc.includes("transporte") || proc.includes("carreamento") || mod.includes("caminhao") || mod.includes("caminhão") || mod.includes("vw") || mod.includes("mb") || mod.includes("volvo") || mod.includes("scania");
       }
       if (category === "Transbordo") {
-        return equip.includes("transbordo") || proc.includes("transbordo");
+        if (obviousColhedora) return false; // Nunca exibe colhedoras aqui
+        return equip.includes("transbordo") || proc.includes("transbordo") || mod.includes("trator") || mod.includes("transbordo");
       }
       return true;
     }
 
     function switchCategory(category) {
       categoriaAtiva = category;
-      
+
       // Atualiza o estado visual das abas de categoria
       document.querySelectorAll(".category-tab-btn").forEach(btn => btn.classList.remove("active"));
       const btnAtivo = document.getElementById(`cat-${category.toLowerCase()}`);
       if (btnAtivo) btnAtivo.classList.add("active");
 
-      // Atualiza o rótulo do botão limpar da categoria
-      const lbl = document.getElementById("lblLimparCategoria");
-      if (lbl) {
-        lbl.textContent = category === "Colhedora" ? "Colhedoras" : category === "Canavieiro" ? "Canavieiros" : "Transbordos";
-      }
+      // Atualiza o título do Resumo Geral para refletir a aba
+      const tituloResumo = document.getElementById('tituloResumoGeral');
+      if (tituloResumo) tituloResumo.textContent = `📊 Resumo Geral de Indicadores - ${category}`;
+
+      // Atualiza o rótulo dos botões da categoria (Limpar / Importar)
+      const lblLimpar = document.getElementById("lblLimparCategoria");
+      const lblImport = document.getElementById("lblImportCategoria");
+      const labelText = category === "Colhedora" ? "Colhedoras" : category === "Canavieiro" ? "Canavieiros" : "Transbordos";
+      if (lblLimpar) lblLimpar.textContent = labelText;
+      if (lblImport) lblImport.textContent = labelText;
 
       // Reseta filtros secundários para evitar inconsistências entre categorias
       frentesSelecionadas = [];
@@ -1620,7 +1927,7 @@
       unidadesSelecionadas = [];
       modeloEquipSelecionados = [];
       processosSelecionados = [];
-      
+
       // Sincroniza o dropdown de lançamento de L/t
       const ltCatSelect = document.getElementById("ltCategoria");
       if (ltCatSelect) {
@@ -1633,7 +1940,7 @@
       if (ltChartFilter) {
         ltChartFilter.value = category;
       }
-      
+
       // Reseta campo de busca
       const searchInput = document.getElementById("searchInput");
       if (searchInput) searchInput.value = "";
@@ -1642,7 +1949,7 @@
       popularFiltros();
       filtrarTabela();
       atualizarStats();
-      
+
       // Sempre atualiza o gráfico de L/t do Dashboard para sincronismo imediato
       renderizarGraficosLitrosToneladas();
 
@@ -1705,6 +2012,21 @@
       localStorage.setItem('dadosLitrosToneladas', JSON.stringify(dadosLitrosToneladas));
     }
 
+    // ── Aba de KM/Litros State ──
+    let dadosKmLitros = [];
+    const dadosKmLitrosSalvos = localStorage.getItem('dadosKmLitros');
+    if (dadosKmLitrosSalvos) {
+      try {
+        dadosKmLitros = JSON.parse(dadosKmLitrosSalvos);
+      } catch (e) {
+        console.error("Erro ao carregar dados de KM/Litros", e);
+      }
+    }
+
+    function salvarDadosKmLitros() {
+      localStorage.setItem('dadosKmLitros', JSON.stringify(dadosKmLitros));
+    }
+
     /* ──────────────────────────────────────────────
        ESTADO GLOBAL
     ────────────────────────────────────────────── */
@@ -1715,6 +2037,10 @@
     let dadosFiltrados = dados.filter(d => (d.velocidadeMedia ?? 0) >= VEL_MIN && (d.motorLigado ?? 0) >= MOT_MIN);
     let sortCol = -1;
     let sortAsc = true;
+
+    // Configurações de Paginação da Base Histórica
+    let paginaAtual = 1;
+    const linhasPorPagina = 100;
 
     const COLUNAS_EXPORT = [
       "Unidade",
@@ -1749,16 +2075,22 @@
     ────────────────────────────────────────────── */
     document.addEventListener("DOMContentLoaded", () => {
       const agora = new Date();
-      const opts  = { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" };
+      const opts = { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" };
       const dtStr = agora.toLocaleDateString("pt-BR", opts);
       document.getElementById("headerDate").textContent = `Painel de Coordenação · ${dtStr}`;
       document.getElementById("footerDate").textContent = dtStr;
 
-      popularFiltros();
-      renderizarTabela();
-      atualizarStats();
-      // Inicializa visibilidade da aba Tempo de Manobra (aparece se categoria = Colhedora)
-      atualizarVisibilidadeAbaManobra();
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) overlay.classList.remove("sl-hidden");
+
+      setTimeout(() => {
+        popularFiltros();
+        renderizarTabela();
+        atualizarStats();
+        // Inicializa visibilidade da aba Tempo de Manobra (aparece se categoria = Colhedora)
+        atualizarVisibilidadeAbaManobra();
+        if (overlay) overlay.classList.add("sl-hidden");
+      }, 50);
     });
 
     /* ──────────────────────────────────────────────
@@ -1771,8 +2103,42 @@
     }
 
     function renderizarTabela() {
+      const thead = document.querySelector("#tabelaMonitoramento thead");
       const tbody = document.getElementById("tableBody");
-      tbody.innerHTML = "";
+
+      if (categoriaAtiva === 'Canavieiro') {
+        thead.innerHTML = `
+          <tr>
+            <th onclick="ordenarTabela(0)">Unidade</th>
+            <th onclick="ordenarTabela(1)">Equipamento</th>
+            <th onclick="ordenarTabela(2)">Modelo</th>
+            <th onclick="ordenarTabela(3)">TC</th>
+            <th onclick="ordenarTabela(4)">Cargas</th>
+            <th onclick="ordenarTabela(5)">Viagens</th>
+            <th onclick="ordenarTabela(6)">TC/C</th>
+            <th onclick="ordenarTabela(7)">TC/V</th>
+            <th onclick="ordenarTabela(8)">Dist.</th>
+            <th onclick="ordenarTabela(9)">Compartimento</th>
+            <th onclick="ordenarTabela(10)">Data</th>
+          </tr>
+        `;
+      } else {
+        thead.innerHTML = `
+          <tr>
+            <th onclick="ordenarTabela(0)">Unidade</th>
+            <th onclick="ordenarTabela(1)">Frente</th>
+            <th onclick="ordenarTabela(2)">Processo</th>
+            <th onclick="ordenarTabela(3)">Modelo Equipamento</th>
+            <th onclick="ordenarTabela(4)">Equipamento</th>
+            <th onclick="ordenarTabela(5)">Motor Ligado (h)</th>
+            <th onclick="ordenarTabela(6)">RPM Médio</th>
+            <th onclick="ordenarTabela(7)">Velocidade Média Efetivo (km/h)</th>
+            <th onclick="ordenarTabela(8)">Consumo Médio (l/h)</th>
+            <th onclick="ordenarTabela(9)">Modelo</th>
+            <th onclick="ordenarTabela(10)">Data</th>
+          </tr>
+        `;
+      }
 
       if (dadosFiltrados.length === 0) {
         tbody.innerHTML = `
@@ -1782,28 +2148,82 @@
             </td>
           </tr>`;
         atualizarContadores(0);
+        atualizarPaginacao();
         return;
       }
 
-      dadosFiltrados.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${unitBadgeHtml(row.unidade)}</td>
-          <td class="td-frente">${esc(row.frente)}</td>
-          <td class="td-processo">${esc(row.processo)}</td>
-          <td class="td-modelo">${esc(row.modeloEquipamento)}</td>
-          <td class="td-equip">${esc(String(row.equipamento ?? ""))}</td>
-          <td class="td-num">${fmt(row.motorLigado)}</td>
-          <td class="td-num">${fmt(row.rpmMedio, 0)}</td>
-          <td class="td-num">${fmt(row.velocidadeMedia)}</td>
-          <td class="td-num">${fmt(row.consumoMedio)}</td>
-          <td class="td-modelo">${esc(row.modelo)}</td>
-          <td>${esc(row.data || row.mes)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      const inicio = (paginaAtual - 1) * linhasPorPagina;
+      const fim = inicio + linhasPorPagina;
+      const dadosPagina = dadosFiltrados.slice(inicio, fim);
+
+      const htmlRows = dadosPagina.map(row => {
+        if (categoriaAtiva === 'Canavieiro') {
+          return `
+            <tr>
+              <td>${unitBadgeHtml(row.unidade)}</td>
+              <td class="td-equip">${esc(String(row.equipamento ?? ""))}</td>
+              <td class="td-modelo">${esc(row.modelo)}</td>
+              <td class="td-num">${fmt(row.tc, 2)}</td>
+              <td class="td-num">${fmt(row.cargas, 0)}</td>
+              <td class="td-num">${fmt(row.viagens, 0)}</td>
+              <td class="td-num">${fmt(row.tc_c, 2)}</td>
+              <td class="td-num">${fmt(row.tc_v, 2)}</td>
+              <td class="td-num">${fmt(row.dist, 2)}</td>
+              <td>${esc(row.compartimento)}</td>
+              <td>${esc(row.data || row.mes)}</td>
+            </tr>
+          `;
+        } else {
+          return `
+            <tr>
+              <td>${unitBadgeHtml(row.unidade)}</td>
+              <td class="td-frente">${esc(row.frente)}</td>
+              <td class="td-processo">${esc(row.processo)}</td>
+              <td class="td-modelo">${esc(row.modeloEquipamento)}</td>
+              <td class="td-equip">${esc(String(row.equipamento ?? ""))}</td>
+              <td class="td-num">${fmt(row.motorLigado)}</td>
+              <td class="td-num">${fmt(row.rpmMedio, 0)}</td>
+              <td class="td-num">${fmt(row.velocidadeMedia)}</td>
+              <td class="td-num">${fmt(row.consumoMedio)}</td>
+              <td class="td-modelo">${esc(row.modelo)}</td>
+              <td>${esc(row.data || row.mes)}</td>
+            </tr>
+          `;
+        }
+      }).join("");
+
+      tbody.innerHTML = htmlRows;
 
       atualizarContadores(dadosFiltrados.length);
+      atualizarPaginacao();
+    }
+
+    function atualizarPaginacao() {
+      const totalPaginas = Math.ceil(dadosFiltrados.length / linhasPorPagina) || 1;
+      const inicio = (paginaAtual - 1) * linhasPorPagina + 1;
+      const fim = Math.min(paginaAtual * linhasPorPagina, dadosFiltrados.length);
+
+      const info = document.getElementById("paginacaoInfo");
+      if (info) {
+        if (dadosFiltrados.length === 0) {
+          info.textContent = "";
+        } else {
+          info.textContent = `Exibindo ${inicio} a ${fim} de ${dadosFiltrados.length} registros (Página ${paginaAtual} de ${totalPaginas})`;
+        }
+      }
+
+      const btnAnt = document.getElementById("btnPagAnt");
+      const btnProx = document.getElementById("btnPagProx");
+      if (btnAnt) btnAnt.disabled = paginaAtual <= 1;
+      if (btnProx) btnProx.disabled = paginaAtual >= totalPaginas;
+    }
+
+    function mudarPagina(delta) {
+      const totalPaginas = Math.ceil(dadosFiltrados.length / linhasPorPagina) || 1;
+      paginaAtual += delta;
+      if (paginaAtual < 1) paginaAtual = 1;
+      if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+      renderizarTabela();
     }
 
     let frentesSelecionadas = [];
@@ -1812,7 +2232,7 @@
     let modeloEquipSelecionados = []; // [] = todos os modelos
     let processosSelecionados = []; // [] = todos os processos
     let timerFiltro = null;
-    
+
     function filtrarTabelaDebounced() {
       clearTimeout(timerFiltro);
       timerFiltro = setTimeout(filtrarTabela, 300);
@@ -1827,7 +2247,7 @@
           if (numA !== numB) return numA - numB;
           return a.localeCompare(b);
         }
-        
+
         let numA, numB;
         if (a.includes("/")) {
           const [mA, yA] = a.split("/");
@@ -1880,7 +2300,7 @@
       el.classList.toggle('sl-hidden');
       el.previousElementSibling.classList.toggle('open');
     }
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       document.querySelectorAll('.custom-multiselect').forEach(ms => {
         if (!ms.contains(e.target)) {
           const drop = ms.querySelector('.multiselect-dropdown');
@@ -1957,14 +2377,17 @@
     // Helper para obter dados filtrados ignorando um filtro específico (para cross-filtering)
     function obterDadosFiltradosExceto(filtroExcluido) {
       const selectM = document.getElementById("filterMes");
-      const mesSel  = selectM ? selectM.value : "todos";
+      const mesSel = selectM ? selectM.value : "todos";
 
       return dados.filter(d => {
         // Filtro de Categoria Principal
         if (!matchCategory(d, categoriaAtiva)) return false;
 
         // Regra de velocidade mínima
-        if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
+        if (categoriaAtiva !== 'Canavieiro') {
+          if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
+          if ((d.motorLigado ?? 0) < MOT_MIN) return false;
+        }
 
         if (filtroExcluido !== 'unidade') {
           const match = (unidadesSelecionadas.length === 0) || unidadesSelecionadas.includes(d.unidade || 'SAJB');
@@ -1993,11 +2416,11 @@
     function popularFiltroUnidade() {
       const dropdown = document.getElementById("unidadeDropdown");
       if (!dropdown) return;
-      
+
       // Obtém opções baseadas nos outros filtros
       const dadosFiltrados = obterDadosFiltradosExceto('unidade');
       const unidadesUnicas = [...new Set(dadosFiltrados.map(d => d.unidade || 'SAJB').filter(Boolean))].sort();
-      
+
       // Poda seleções que não existem mais com o novo filtro
       unidadesSelecionadas = unidadesSelecionadas.filter(u => unidadesUnicas.includes(u));
 
@@ -2058,10 +2481,10 @@
     function popularFiltroModeloEquip() {
       const dropdown = document.getElementById("modeloEquipDropdown");
       if (!dropdown) return;
-      
+
       const dadosFiltrados = obterDadosFiltradosExceto('modeloEquip');
       const modelosUnicos = [...new Set(dadosFiltrados.map(d => d.modeloEquipamento).filter(Boolean))].sort();
-      
+
       modeloEquipSelecionados = modeloEquipSelecionados.filter(m => modelosUnicos.includes(m));
 
       let html = `
@@ -2118,10 +2541,10 @@
     function popularFiltroProcesso() {
       const dropdown = document.getElementById("processoDropdown");
       if (!dropdown) return;
-      
+
       const dadosFiltrados = obterDadosFiltradosExceto('processo');
       const processosUnicos = [...new Set(dadosFiltrados.map(d => d.processo).filter(Boolean))].sort();
-      
+
       processosSelecionados = processosSelecionados.filter(p => processosUnicos.includes(p));
 
       let html = `
@@ -2176,11 +2599,11 @@
       if (!selectM) return;
       const valAntigoM = selectM.value;
       selectM.innerHTML = '<option value="todos">Todos os Meses</option>';
-      
+
       const dadosFiltrados = obterDadosFiltradosExceto('data');
       let mesesUnicos = [...new Set(dadosFiltrados.map(d => d.mes).filter(Boolean))];
       mesesUnicos = sortMeses(mesesUnicos);
-      
+
       mesesUnicos.forEach(m => {
         const opt = document.createElement("option");
         opt.value = m; opt.textContent = m;
@@ -2225,14 +2648,14 @@
       if (!dropdown) return;
 
       const selectM = document.getElementById("filterMes");
-      const mesSel  = selectM ? selectM.value : "todos";
+      const mesSel = selectM ? selectM.value : "todos";
 
       const dadosFiltroFrente = dados.filter(d => {
         if (!matchCategory(d, categoriaAtiva)) return false;
         const matchUnidade = (unidadesSelecionadas.length === 0) || unidadesSelecionadas.includes(d.unidade || 'SAJB');
         const matchProcesso = (processosSelecionados.length === 0) || processosSelecionados.includes(d.processo);
-        const matchModelo   = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
-        const matchMes      = (mesSel === "todos") || (d.mes === mesSel);
+        const matchModelo = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
+        const matchMes = (mesSel === "todos") || (d.mes === mesSel);
         return matchUnidade && matchProcesso && matchModelo && matchMes;
       });
 
@@ -2262,19 +2685,19 @@
     function popularFiltroFrente() {
       const dropdown = document.getElementById("frenteDropdown");
       if (!dropdown) return;
-      
+
       const dadosFiltrados = obterDadosFiltradosExceto('frente');
       const frentesUnicas = [...new Set(dadosFiltrados.map(d => d.frente).filter(Boolean))].sort();
-      
+
       frentesSelecionadas = frentesSelecionadas.filter(f => frentesUnicas.includes(f));
-      
+
       let html = `
         <label class="multiselect-option">
           <input type="checkbox" value="todos" id="cbFrenteTodos" ${frentesSelecionadas.length === 0 ? 'checked' : ''} onchange="onFrenteChange('todos', this.checked)">
           <span>Todas as Frentes</span>
         </label>
       `;
-      
+
       frentesUnicas.forEach(f => {
         const isChecked = frentesSelecionadas.includes(f) ? "checked" : "";
         html += `
@@ -2314,7 +2737,7 @@
       const ltBtn = document.getElementById("ltTabBtn");
       if (ltBtn) ltBtn.textContent = mesSel === "todos" ? "Acumulado Lançado" : mesTarget;
 
-      const formatLt = (v) => v !== null ? v.toFixed(3).replace('.',',') : '—';
+      const formatLt = (v) => v !== null ? v.toFixed(3).replace('.', ',') : '—';
       const ulLt = document.getElementById("ltAcumulado");
       if (!ulLt) return;
 
@@ -2345,13 +2768,14 @@
         const [u1, u2] = unidadesPresentes;
         const val1 = obterMediaAcumulado(u1);
         const val2 = obterMediaAcumulado(u2);
-        
+
         const delta = (a, b) => {
           if (!b || b === 0) return '';
           const pct = ((a - b) / b) * 100;
           if (Math.abs(pct) < 0.5) return `<span class="delta-zero">≈0%</span>`;
           const sign = pct > 0 ? '+' : '';
-          const cls  = pct > 0 ? 'delta-pos' : 'delta-neg';
+          // Litros por Tonelada: menor é melhor. Se pct > 0 (subiu), é ruim (delta-neg).
+          const cls = pct > 0 ? 'delta-neg' : 'delta-pos';
           return `<span class="${cls}">${sign}${pct.toFixed(0)}%</span>`;
         };
 
@@ -2359,19 +2783,19 @@
           <table class="comp-table">
             <thead><tr>
               <th>Operação/Grupo</th>
-              <th class="${u1==='SAJB'?'sajb-header':'sapb-header'}">${u1}</th>
-              <th class="${u2==='SAJB'?'sajb-header':'sapb-header'}">${u2}</th>
+              <th class="${u1 === 'SAJB' ? 'sajb-header' : 'sapb-header'}">${u1}</th>
+              <th class="${u2 === 'SAJB' ? 'sajb-header' : 'sapb-header'}">${u2}</th>
               <th style="color:var(--clr-muted)">Δ</th>
             </tr></thead>
             <tbody>
               ${[categoriaAtiva].map(cat => {
-                return `<tr>
+          return `<tr>
                   <td title="${cat}">${cat}</td>
                   <td class="val-sajb">${formatLt(val1)}</td>
                   <td class="val-sapb">${formatLt(val2)}</td>
-                  <td class="val-delta">${(val1!=null && val2!=null) ? delta(val1, val2) : ''}</td>
+                  <td class="val-delta">${(val1 != null && val2 != null) ? delta(val1, val2) : ''}</td>
                 </tr>`;
-              }).join('')}
+        }).join('')}
             </tbody>
           </table>
         `;
@@ -2419,45 +2843,54 @@
 
       // Lê filtros atualizados
       const selectM = document.getElementById("filterMes");
-      const mesSel  = selectM ? selectM.value : "todos";
+      const mesSel = selectM ? selectM.value : "todos";
 
       // (filtro de frente nos gráficos é gerenciado pelo multiselect frenteGraficosDropdown — sem select legado)
 
       // Dados filtrados para stats (mesmas regras de qualidade mínima da tabela)
       const dadosFiltradosStats = dados.filter(d => {
         if (!matchCategory(d, categoriaAtiva)) return false;
-        if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
-        if ((d.motorLigado ?? 0) < MOT_MIN) return false;
-        const matchUnidade  = (unidadesSelecionadas.length === 0) || unidadesSelecionadas.includes(d.unidade || 'SAJB');
-        const matchFrente   = (frentesSelecionadas.length === 0)  || frentesSelecionadas.includes(d.frente);
-        const matchModelo   = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
+
+        // Regras de qualidade de dados só se aplicam se não for Canavieiro (que não tem esses dados)
+        if (categoriaAtiva !== 'Canavieiro') {
+          if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
+          if ((d.motorLigado ?? 0) < MOT_MIN) return false;
+        }
+
+        const matchUnidade = (unidadesSelecionadas.length === 0) || unidadesSelecionadas.includes(d.unidade || 'SAJB');
+        const matchFrente = (frentesSelecionadas.length === 0) || frentesSelecionadas.includes(d.frente);
+        const matchModelo = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
         const matchProcesso = (processosSelecionados.length === 0) || processosSelecionados.includes(d.processo);
-        const matchMes      = (mesSel === "todos") || (d.mes === mesSel);
+        const matchMes = (mesSel === "todos") || (d.mes === mesSel);
         return matchUnidade && matchFrente && matchModelo && matchProcesso && matchMes;
       });
 
       // Detectar quais unidades estão selecionadas ou presentes nos dados gerais
       const unidadesPresentes = unidadesSelecionadas.length > 0
         ? unidadesSelecionadas.slice().sort()
-        : (dados.length > 0 
-            ? [...new Set(dados.map(d => d.unidade || 'SAJB').filter(Boolean))].sort() 
-            : ['SAJB']);
-      const modoComparativo   = unidadesPresentes.length >= 2;
+        : (dados.length > 0
+          ? [...new Set(dados.map(d => d.unidade || 'SAJB').filter(Boolean))].sort()
+          : ['SAJB']);
+      const modoComparativo = unidadesPresentes.length >= 2;
 
       if (!dadosFiltradosStats.length) {
-        ["totalMotor","totalRPM","totalVel","totalConsumo"].forEach(id => {
+        ["totalMotor", "totalRPM", "totalVel", "totalConsumo"].forEach(id => {
           const el = document.getElementById(id); if (el) el.textContent = "";
         });
         const vazioLi = `<li><span class="sl-name" style="color:var(--clr-muted);">Sem dados</span></li>`;
-        ["motorOperacao","motorEquipamento","motorModelo",
-         "rpmOperacao","rpmEquipamento","rpmModelo",
-         "velOperacao","velEquipamento","velModelo",
-         "consumoOperacao","consumoEquipamento","consumoModelo"].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.innerHTML = vazioLi;
-        });
+        ["motorOperacao", "motorEquipamento", "motorModelo",
+          "rpmOperacao", "rpmEquipamento", "rpmModelo",
+          "velOperacao", "velEquipamento", "velModelo",
+          "consumoOperacao", "consumoEquipamento", "consumoModelo"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = vazioLi;
+          });
         renderizarGraficos(dadosFiltradosStats);
         filtrarTabela();
+
+        // Renderiza as tabelas consolidadas mesmo sem dados da planilha,
+        // para que métricas independentes (como Litros por Tonelada) possam ser exibidas no Resumo Geral.
+        renderTabelasConsolidadas(modoComparativo, unidadesPresentes, [], null, mesSel);
 
         // Também renderiza e atualiza o card de L/t acumulado!
         renderLtAcumulado(unidadesPresentes, modoComparativo, mesSel);
@@ -2474,7 +2907,7 @@
           if (v > 0) {
             const chave = d[grupo] || "(sem info)";
             somaVal[chave] = (somaVal[chave] || 0) + v;
-            
+
             if (!eqDiasPorGrupo[chave]) eqDiasPorGrupo[chave] = new Set();
             // A chave única de contagem: Equipamento + Data
             const eq = d.equipamento || "(sem equip)";
@@ -2482,11 +2915,11 @@
             eqDiasPorGrupo[chave].add(`${eq}|${dt}`);
           }
         });
-        
+
         return Object.keys(somaVal).map(k => {
           const numEquipDias = eqDiasPorGrupo[k].size || 1;
           return [k, somaVal[k] / numEquipDias];
-        }).sort((a,b) => b[1]-a[1]);
+        }).sort((a, b) => b[1] - a[1]);
       }
 
       function mediaPonderadaAgrupadaDe(lista, metrica, grupo) {
@@ -2499,21 +2932,21 @@
             somP[chave] = (somP[chave] || 0) + peso;
           }
         });
-        return Object.keys(somP).map(k => [k, somP[k] > 0 ? somV[k]/somP[k] : 0]).sort((a,b) => b[1]-a[1]);
+        return Object.keys(somP).map(k => [k, somP[k] > 0 ? somV[k] / somP[k] : 0]).sort((a, b) => b[1] - a[1]);
       }
 
-      function somaGeralDe(lista, campo) { return lista.reduce((s,d) => s+(d[campo]||0), 0); }
+      function somaGeralDe(lista, campo) { return lista.reduce((s, d) => s + (d[campo] || 0), 0); }
       function mediaPonderadaGeralDe(lista, metrica) {
-        let sv=0, sp=0;
-        lista.forEach(d => { const val=d[metrica], p=d.motorLigado; if(val!=null&&!isNaN(val)&&p>0){sv+=val*p;sp+=p;} });
-        return sp > 0 ? sv/sp : 0;
+        let sv = 0, sp = 0;
+        lista.forEach(d => { const val = d[metrica], p = d.motorLigado; if (val != null && !isNaN(val) && p > 0) { sv += val * p; sp += p; } });
+        return sp > 0 ? sv / sp : 0;
       }
 
       // ── Render cards: modo comparativo (2 unidades lado a lado) ──
       if (modoComparativo) {
         const [u1, u2] = unidadesPresentes;
-        const d1 = dadosFiltradosStats.filter(d => (d.unidade||'SAJB') === u1);
-        const d2 = dadosFiltradosStats.filter(d => (d.unidade||'SAJB') === u2);
+        const d1 = dadosFiltradosStats.filter(d => (d.unidade || 'SAJB') === u1);
+        const d2 = dadosFiltradosStats.filter(d => (d.unidade || 'SAJB') === u2);
 
         // Helper delta
         function delta(a, b) {
@@ -2521,13 +2954,13 @@
           const pct = ((a - b) / b) * 100;
           if (Math.abs(pct) < 0.5) return `<span class="delta-zero">≈0%</span>`;
           const sign = pct > 0 ? '+' : '';
-          const cls  = pct > 0 ? 'delta-pos' : 'delta-neg';
+          const cls = pct > 0 ? 'delta-pos' : 'delta-neg';
           return `<span class="${cls}">${sign}${pct.toFixed(0)}%</span>`;
         }
 
         // Totais no badge do card
-        const u1cls = u1==='SAJB'?'unit-sajb':u1==='SAPB'?'unit-sapb':'unit-other';
-        const u2cls = u2==='SAJB'?'unit-sajb':u2==='SAPB'?'unit-sapb':'unit-other';
+        const u1cls = u1 === 'SAJB' ? 'unit-sajb' : u1 === 'SAPB' ? 'unit-sapb' : 'unit-other';
+        const u2cls = u2 === 'SAJB' ? 'unit-sajb' : u2 === 'SAPB' ? 'unit-sapb' : 'unit-other';
 
         function obterOrdemComparativaMotor(grupo) {
           const somas = {};
@@ -2535,11 +2968,11 @@
             const k = d[grupo] || "(sem info)";
             somas[k] = (somas[k] || 0) + (d.motorLigado || 0);
           });
-          return Object.entries(somas).sort((a,b) => b[1]-a[1]).map(entry => entry[0]);
+          return Object.entries(somas).sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
         }
 
         // Função genérica para renderizar tabela comparativa por grupo
-        function renderComparativo(idEl, fn1, fn2, sufixo, dec=1) {
+        function renderComparativo(idEl, fn1, fn2, sufixo, dec = 1) {
           const ul = document.getElementById(idEl);
           if (!ul) return;
           const g1 = Object.fromEntries(fn1(d1));
@@ -2563,45 +2996,45 @@
             <table class="comp-table">
               <thead><tr>
                 <th>Operação/Grupo</th>
-                <th class="${u1==='SAJB'?'sajb-header':'sapb-header'}">${u1}</th>
-                <th class="${u2==='SAJB'?'sajb-header':'sapb-header'}">${u2}</th>
+                <th class="${u1 === 'SAJB' ? 'sajb-header' : 'sapb-header'}">${u1}</th>
+                <th class="${u2 === 'SAJB' ? 'sajb-header' : 'sapb-header'}">${u2}</th>
                 <th style="color:var(--clr-muted)">Δ</th>
               </tr></thead>
               <tbody>
                 ${chaves.map(k => {
-                  const v1 = g1[k] ?? null, v2 = g2[k] ?? null;
-                  const meta = (idEl === "rpmEquipamento") ? obterMetaRPM(k) : null;
-                  
-                  let cellV1 = v1 != null ? fmt(v1, dec) + sufixo : '—';
-                  if (meta && v1 != null) {
-                    const atingida = v1 <= meta;
-                    const cor = atingida ? "color: var(--clr-success); font-weight: 500;" : "color: var(--clr-danger); font-weight: 500;";
-                    cellV1 = `<span style="${cor}">${fmt(v1, dec)}${sufixo} ${atingida ? '✓' : '⚠️'}</span>`;
-                  }
+            const v1 = g1[k] ?? null, v2 = g2[k] ?? null;
+            const meta = (idEl === "rpmEquipamento") ? obterMetaRPM(k) : null;
 
-                  let cellV2 = v2 != null ? fmt(v2, dec) + sufixo : '—';
-                  if (meta && v2 != null) {
-                    const atingida = v2 <= meta;
-                    const cor = atingida ? "color: var(--clr-success); font-weight: 500;" : "color: var(--clr-danger); font-weight: 500;";
-                    cellV2 = `<span style="${cor}">${fmt(v2, dec)}${sufixo} ${atingida ? '✓' : '⚠️'}</span>`;
-                  }
+            let cellV1 = v1 != null ? fmt(v1, dec) + sufixo : '—';
+            if (meta && v1 != null) {
+              const atingida = v1 <= meta;
+              const cor = atingida ? "color: var(--clr-success); font-weight: 500;" : "color: var(--clr-danger); font-weight: 500;";
+              cellV1 = `<span style="${cor}">${fmt(v1, dec)}${sufixo} ${atingida ? '✓' : '⚠️'}</span>`;
+            }
 
-                  const metaText = meta ? `<br><span style="font-size: 0.7rem; color: var(--clr-muted); font-weight: normal;">Meta: ${meta} rpm</span>` : "";
+            let cellV2 = v2 != null ? fmt(v2, dec) + sufixo : '—';
+            if (meta && v2 != null) {
+              const atingida = v2 <= meta;
+              const cor = atingida ? "color: var(--clr-success); font-weight: 500;" : "color: var(--clr-danger); font-weight: 500;";
+              cellV2 = `<span style="${cor}">${fmt(v2, dec)}${sufixo} ${atingida ? '✓' : '⚠️'}</span>`;
+            }
 
-                  return `<tr>
+            const metaText = meta ? `<br><span style="font-size: 0.7rem; color: var(--clr-muted); font-weight: normal;">Meta: ${meta} rpm</span>` : "";
+
+            return `<tr>
                     <td title="${k}">${k}${metaText}</td>
                     <td class="val-sajb">${cellV1}</td>
                     <td class="val-sapb">${cellV2}</td>
-                    <td class="val-delta">${(v1!=null&&v2!=null)?delta(v1,v2):''}</td>
+                    <td class="val-delta">${(v1 != null && v2 != null) ? delta(v1, v2) : ''}</td>
                   </tr>`;
-                }).join('')}
+          }).join('')}
               </tbody>
             </table>`;
         }
 
         // Totais gerais nos badges
-        const setTotal = (id, txt) => { const el=document.getElementById(id); if(el) el.textContent=""; }; // Retirado a pedido do usuário
-        
+        const setTotal = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = ""; }; // Retirado a pedido do usuário
+
         const mot1 = somaGeralDe(d1, "motorLigado");
         const mot2 = somaGeralDe(d2, "motorLigado");
         const med1 = mot1 / obterTotalEquipDias(d1);
@@ -2609,12 +3042,12 @@
 
         // setTotal("totalMotor",   `Média: ${fmt(med1)} vs ${fmt(med2)} h/dia`);
 
-        const mOp1 = somaAgrupadaDe(d1,"motorLigado","processo");
-        const mOp2 = somaAgrupadaDe(d2,"motorLigado","processo");
-        const mEq1 = somaAgrupadaDe(d1,"motorLigado","equipamento");
-        const mEq2 = somaAgrupadaDe(d2,"motorLigado","equipamento");
-        const mMo1 = somaAgrupadaDe(d1,"motorLigado","modelo");
-        const mMo2 = somaAgrupadaDe(d2,"motorLigado","modelo");
+        const mOp1 = somaAgrupadaDe(d1, "motorLigado", "processo");
+        const mOp2 = somaAgrupadaDe(d2, "motorLigado", "processo");
+        const mEq1 = somaAgrupadaDe(d1, "motorLigado", "equipamento");
+        const mEq2 = somaAgrupadaDe(d2, "motorLigado", "equipamento");
+        const mMo1 = somaAgrupadaDe(d1, "motorLigado", "modelo");
+        const mMo2 = somaAgrupadaDe(d2, "motorLigado", "modelo");
 
         const medOp1 = mOp1.length ? (mOp1.reduce((s, x) => s + x[1], 0) / mOp1.length) : 0;
         const medOp2 = mOp2.length ? (mOp2.reduce((s, x) => s + x[1], 0) / mOp2.length) : 0;
@@ -2626,69 +3059,21 @@
         const ulOp = document.getElementById("motorOperacao");
         const ulEq = document.getElementById("motorEquipamento");
         const ulMo = document.getElementById("motorModelo");
-        if(ulOp) ulOp.dataset.badge = ""; // `Média: ${fmt(medOp1)} vs ${fmt(medOp2)} h/dia`;
-        if(ulEq) ulEq.dataset.badge = ""; // `Média: ${fmt(medEq1)} vs ${fmt(medEq2)} h/dia`;
-        if(ulMo) ulMo.dataset.badge = ""; // `Média: ${fmt(medMo1)} vs ${fmt(medMo2)} h/dia`;
+        if (ulOp) ulOp.dataset.badge = ""; // `Média: ${fmt(medOp1)} vs ${fmt(medOp2)} h/dia`;
+        if (ulEq) ulEq.dataset.badge = ""; // `Média: ${fmt(medEq1)} vs ${fmt(medEq2)} h/dia`;
+        if (ulMo) ulMo.dataset.badge = ""; // `Média: ${fmt(medMo1)} vs ${fmt(medMo2)} h/dia`;
 
         // setTotal("totalRPM",     `${fmt(mediaPonderadaGeralDe(d1,"rpmMedio"),0)} vs ${fmt(mediaPonderadaGeralDe(d2,"rpmMedio"),0)} rpm`);
         // setTotal("totalVel",     `${fmt(mediaPonderadaGeralDe(d1,"velocidadeMedia"))} vs ${fmt(mediaPonderadaGeralDe(d2,"velocidadeMedia"))} km/h`);
         // setTotal("totalConsumo", `${fmt(mediaPonderadaGeralDe(d1,"consumoMedio"))} vs ${fmt(mediaPonderadaGeralDe(d2,"consumoMedio"))} l/h`);
 
-        // Motor Ligado
-        const numDiasD1 = [...new Set(d1.map(d => d.data || d.mes).filter(Boolean))].length || 1;
-        const numDiasD2 = [...new Set(d2.map(d => d.data || d.mes).filter(Boolean))].length || 1;
-        const sufixoMotor = (numDiasD1 > 1 || numDiasD2 > 1) ? " h/dia" : " h";
-
-        renderComparativo("motorOperacao",
-          d => somaAgrupadaDe(d,"motorLigado","processo"),
-          d => somaAgrupadaDe(d,"motorLigado","processo"), sufixoMotor, 1);
-        renderComparativo("motorEquipamento",
-          d => somaAgrupadaDe(d,"motorLigado","equipamento"),
-          d => somaAgrupadaDe(d,"motorLigado","equipamento"), sufixoMotor, 1);
-        renderComparativo("motorModelo",
-          d => somaAgrupadaDe(d,"motorLigado","modelo"),
-          d => somaAgrupadaDe(d,"motorLigado","modelo"), sufixoMotor, 1);
-
-        // RPM
-        renderComparativo("rpmOperacao",
-          d => mediaPonderadaAgrupadaDe(d,"rpmMedio","processo"),
-          d => mediaPonderadaAgrupadaDe(d,"rpmMedio","processo"), "", 0);
-        renderComparativo("rpmEquipamento",
-          d => mediaPonderadaAgrupadaDe(d,"rpmMedio","equipamento"),
-          d => mediaPonderadaAgrupadaDe(d,"rpmMedio","equipamento"), "", 0);
-        renderComparativo("rpmModelo",
-          d => mediaPonderadaAgrupadaDe(d,"rpmMedio","modelo"),
-          d => mediaPonderadaAgrupadaDe(d,"rpmMedio","modelo"), "", 0);
-
-        // Velocidade
-        renderComparativo("velOperacao",
-          d => mediaPonderadaAgrupadaDe(d,"velocidadeMedia","processo"),
-          d => mediaPonderadaAgrupadaDe(d,"velocidadeMedia","processo"), " km/h", 1);
-        renderComparativo("velEquipamento",
-          d => mediaPonderadaAgrupadaDe(d,"velocidadeMedia","equipamento"),
-          d => mediaPonderadaAgrupadaDe(d,"velocidadeMedia","equipamento"), " km/h", 1);
-        renderComparativo("velModelo",
-          d => mediaPonderadaAgrupadaDe(d,"velocidadeMedia","modelo"),
-          d => mediaPonderadaAgrupadaDe(d,"velocidadeMedia","modelo"), " km/h", 1);
-
-        // Consumo
-        renderComparativo("consumoOperacao",
-          d => mediaPonderadaAgrupadaDe(d,"consumoMedio","processo"),
-          d => mediaPonderadaAgrupadaDe(d,"consumoMedio","processo"), " l/h", 1);
-        renderComparativo("consumoEquipamento",
-          d => mediaPonderadaAgrupadaDe(d,"consumoMedio","equipamento"),
-          d => mediaPonderadaAgrupadaDe(d,"consumoMedio","equipamento"), " l/h", 1);
-        renderComparativo("consumoModelo",
-          d => mediaPonderadaAgrupadaDe(d,"consumoMedio","modelo"),
-          d => mediaPonderadaAgrupadaDe(d,"consumoMedio","modelo"), " l/h", 1);
-
-        // L/t Acumulado
-        renderLtAcumulado(unidadesPresentes, modoComparativo, mesSel);
+        // ===== RENDERIZAÇÃO DAS TABELAS CONSOLIDADAS =====
+        renderTabelasConsolidadas(true, [u1, u2], d1, d2, mesSel);
 
       } else {
         // ── Modo normal (1 unidade) ──
-        function somaAgrupada(metrica, grupo)         { return somaAgrupadaDe(dadosFiltradosStats, metrica, grupo); }
-        function mediaPonderadaAgrupada(metrica, grupo){ return mediaPonderadaAgrupadaDe(dadosFiltradosStats, metrica, grupo); }
+        function somaAgrupada(metrica, grupo) { return somaAgrupadaDe(dadosFiltradosStats, metrica, grupo); }
+        function mediaPonderadaAgrupada(metrica, grupo) { return mediaPonderadaAgrupadaDe(dadosFiltradosStats, metrica, grupo); }
 
         function renderListaMedia(idEl, grupos, sufixo, dec = 1, badgeClass = "") {
           const ul = document.getElementById(idEl);
@@ -2710,7 +3095,7 @@
             return `
               <li>
                 <span class="sl-name" title="${nome}">${nome}</span>
-                <div class="sl-bar-wrap"><div class="sl-bar" style="width:${Math.round((val/max)*100)}%"></div></div>
+                <div class="sl-bar-wrap"><div class="sl-bar" style="width:${Math.round((val / max) * 100)}%"></div></div>
                 <span class="sl-badge ${badgeClass}" ${badgeStyle}>${fmt(val, dec)}${sufixo}</span>
                 ${metaHtml}
               </li>
@@ -2728,58 +3113,458 @@
           });
         }
 
-        const somaGeral     = campo   => somaGeralDe(dadosFiltradosStats, campo);
-        const mediaPonderada= metrica => mediaPonderadaGeralDe(dadosFiltradosStats, metrica);
+        const somaGeral = campo => somaGeralDe(dadosFiltradosStats, campo);
+        const mediaPonderada = metrica => mediaPonderadaGeralDe(dadosFiltradosStats, metrica);
 
-        const motorOps    = somaAgrupada("motorLigado","processo");
-        const motorEquips = somaAgrupada("motorLigado","equipamento");
-        const motorModels = somaAgrupada("motorLigado","modelo");
+        const motorOps = somaAgrupada("motorLigado", "processo");
+        const motorEquips = somaAgrupada("motorLigado", "equipamento");
+        const motorModels = somaAgrupada("motorLigado", "modelo");
 
-        const setTotal = (id, txt) => { const el=document.getElementById(id); if(el) el.textContent=txt; };
-        
+        const setTotal = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+
         const medOp = motorOps.length ? (motorOps.reduce((s, x) => s + x[1], 0) / motorOps.length) : 0;
         const medEq = motorEquips.length ? (motorEquips.reduce((s, x) => s + x[1], 0) / motorEquips.length) : 0;
         const medMo = motorModels.length ? (motorModels.reduce((s, x) => s + x[1], 0) / motorModels.length) : 0;
-        
+
         const ulOp = document.getElementById("motorOperacao");
         const ulEq = document.getElementById("motorEquipamento");
         const ulMo = document.getElementById("motorModelo");
-        if(ulOp) ulOp.dataset.badge = ""; // `${fmt(medOp)} h/dia`;
-        if(ulEq) ulEq.dataset.badge = ""; // `${fmt(medEq)} h/dia`;
-        if(ulMo) ulMo.dataset.badge = ""; // `${fmt(medMo)} h/dia`;
+        if (ulOp) ulOp.dataset.badge = ""; // `${fmt(medOp)} h/dia`;
+        if (ulEq) ulEq.dataset.badge = ""; // `${fmt(medEq)} h/dia`;
+        if (ulMo) ulMo.dataset.badge = ""; // `${fmt(medMo)} h/dia`;
 
         // setTotal("totalRPM",     fmt(mediaPonderada("rpmMedio"), 0) + " rpm");
         // setTotal("totalVel",     fmt(mediaPonderada("velocidadeMedia")) + " km/h");
         // setTotal("totalConsumo", fmt(mediaPonderada("consumoMedio")) + " l/h");
 
-        const ordemOperacao    = motorOps.map(x => x[0]);
+        const ordemOperacao = motorOps.map(x => x[0]);
         const ordemEquipamento = motorEquips.map(x => x[0]);
-        const ordemModelo      = motorModels.map(x => x[0]);
+        const ordemModelo = motorModels.map(x => x[0]);
 
         const numDias = [...new Set(dadosFiltradosStats.map(d => d.data || d.mes).filter(Boolean))].length || 1;
         const sufixoMotor = numDias > 1 ? " h/dia" : " h";
 
-        renderListaMedia("motorOperacao",   motorOps,     sufixoMotor,    1, "sl-badge-green");
-        renderListaMedia("motorEquipamento",motorEquips,  sufixoMotor,    1, "sl-badge-green");
-        renderListaMedia("motorModelo",     motorModels,  sufixoMotor,    1, "sl-badge-green");
-        renderListaMedia("rpmOperacao",     ordenarPorReferencia(mediaPonderadaAgrupada("rpmMedio","processo"), ordemOperacao),   "", 0);
-        renderListaMedia("rpmEquipamento",  ordenarPorReferencia(mediaPonderadaAgrupada("rpmMedio","equipamento"), ordemEquipamento),"", 0);
-        renderListaMedia("rpmModelo",       ordenarPorReferencia(mediaPonderadaAgrupada("rpmMedio","modelo"), ordemModelo),     "", 0);
-        renderListaMedia("velOperacao",     ordenarPorReferencia(mediaPonderadaAgrupada("velocidadeMedia","processo"), ordemOperacao),    " km/h",1,"sl-badge-orange");
-        renderListaMedia("velEquipamento",  ordenarPorReferencia(mediaPonderadaAgrupada("velocidadeMedia","equipamento"), ordemEquipamento), " km/h",1,"sl-badge-orange");
-        renderListaMedia("velModelo",       ordenarPorReferencia(mediaPonderadaAgrupada("velocidadeMedia","modelo"), ordemModelo),      " km/h",1,"sl-badge-orange");
-        renderListaMedia("consumoOperacao", ordenarPorReferencia(mediaPonderadaAgrupada("consumoMedio","processo"), ordemOperacao),  " l/h",1,"sl-badge-purple");
-        renderListaMedia("consumoEquipamento",ordenarPorReferencia(mediaPonderadaAgrupada("consumoMedio","equipamento"), ordemEquipamento)," l/h",1,"sl-badge-purple");
-        renderListaMedia("consumoModelo",   ordenarPorReferencia(mediaPonderadaAgrupada("consumoMedio","modelo"), ordemModelo),    " l/h",1,"sl-badge-purple");
-
-        // L/t Acumulado
-        renderLtAcumulado(unidadesPresentes, modoComparativo, mesSel);
+        // ===== RENDERIZAÇÃO DAS TABELAS CONSOLIDADAS =====
+        renderTabelasConsolidadas(false, unidadesPresentes, dadosFiltradosStats, null, mesSel);
       }
 
       // Renderiza os gráficos por processo
       renderizarGraficos(dadosFiltradosStats);
       filtrarTabela();
     }
+
+    // Controle de abas da Tabela de Detalhamento
+    let currentDetailTab = 'modelo';
+    function switchDetailTab(btn, tabType) {
+      const container = btn.closest('.stat-card');
+      if (container) {
+        container.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      currentDetailTab = tabType;
+      atualizarStats(); // re-render
+    }
+
+    // Função Principal que constrói as duas tabelas novas
+    function renderTabelasConsolidadas(modoComp, unidades, d1, d2, mesSel) {
+      const containerResumo = document.getElementById("tabelaResumoGeralContainer");
+      const containerDetalhe = document.getElementById("tabelaDetalhamentoContainer");
+      if (!containerResumo || !containerDetalhe) return;
+
+      const u1 = unidades[0] || 'SAJB';
+      const u2 = unidades[1] || 'SAPB';
+      const isColhedora = (categoriaAtiva === 'Colhedora');
+
+      // Helper para formatação
+      const formatCell = (val, dec, suf) => val != null ? fmt(val, dec) + suf : '—';
+      const deltaFn = (a, b, lowerIsBetter = false) => {
+        if (!b || b === 0) return '';
+        const pct = ((a - b) / b) * 100;
+        if (Math.abs(pct) < 0.5) return `<span class="delta-zero">≈0%</span>`;
+        const sign = pct > 0 ? '+' : '';
+        let cls = pct > 0 ? 'delta-pos' : 'delta-neg';
+        if (lowerIsBetter) {
+          cls = pct > 0 ? 'delta-neg' : 'delta-pos';
+        }
+        return `<span class="${cls}">${sign}${pct.toFixed(0)}%</span>`;
+      };
+
+      // == 1. VALORES PARA RESUMO GERAL ==
+      // Litros/Ton
+      const obterMediaAcum = (u) => {
+        const mesTarget = mesSel === "todos" ? "Acumulado" : mesSel;
+        const regAcum = dadosLitrosToneladas.find(x => x.unidade === u && x.mes === "Acumulado" && x.categoria === categoriaAtiva);
+        if (regAcum) return regAcum.valor;
+        if (mesTarget === "Acumulado") {
+          const dadosMensais = dadosLitrosToneladas.filter(x => x.unidade === u && x.mes !== "Acumulado" && x.categoria === categoriaAtiva);
+          if (!dadosMensais.length) return null;
+          return dadosMensais.reduce((s, x) => s + x.valor, 0) / dadosMensais.length;
+        }
+        const regMes = dadosLitrosToneladas.find(x => x.unidade === u && x.mes === mesTarget && x.categoria === categoriaAtiva);
+        return regMes ? regMes.valor : null;
+      };
+      let lt1 = obterMediaAcum(u1), lt2 = null;
+      if (modoComp) lt2 = obterMediaAcum(u2);
+
+      // Tempo Manobra (apenas Colhedora)
+      let manobra1 = null, manobra2 = null;
+      if (isColhedora) {
+        let aggregated = { [u1]: { w: 0, sw: 0 }, [u2]: { w: 0, sw: 0 } };
+        dadosManobra.forEach(r => {
+          const uni = (r.unidade || '').toUpperCase();
+          if (aggregated[uni]) {
+            const weight = r.somaCD || 0;
+            aggregated[uni].w += (r.tempo || 0) * weight;
+            aggregated[uni].sw += weight;
+          }
+        });
+        manobra1 = aggregated[u1].sw > 0 ? aggregated[u1].w / aggregated[u1].sw : null;
+        manobra2 = aggregated[u2].sw > 0 ? aggregated[u2].w / aggregated[u2].sw : null;
+      }
+
+      // Tonelada / Viagem (apenas Canavieiro, separado por RODO e TREMINHÃO)
+      let tcvRodo1 = null, tcvRodo2 = null;
+      let tcvTremi1 = null, tcvTremi2 = null;
+      if (categoriaAtiva === 'Canavieiro') {
+        const isRodo = (d) => String(d.compartimento || '').toUpperCase().includes('RODO');
+        const isTremi = (d) => String(d.compartimento || '').toUpperCase().includes('TREMI');
+
+        const sumValRodo = (lista, col) => lista.filter(isRodo).reduce((s, x) => s + (x[col] || 0), 0);
+        const sumValTremi = (lista, col) => lista.filter(isTremi).reduce((s, x) => s + (x[col] || 0), 0);
+
+        const tcRodo1 = sumValRodo(d1, 'tc');
+        const vRodo1 = sumValRodo(d1, 'viagens');
+        if (vRodo1 > 0) tcvRodo1 = tcRodo1 / vRodo1;
+
+        const tcTremi1 = sumValTremi(d1, 'tc');
+        const vTremi1 = sumValTremi(d1, 'viagens');
+        if (vTremi1 > 0) tcvTremi1 = tcTremi1 / vTremi1;
+
+        if (modoComp) {
+          const tcRodo2 = sumValRodo(d2, 'tc');
+          const vRodo2 = sumValRodo(d2, 'viagens');
+          if (vRodo2 > 0) tcvRodo2 = tcRodo2 / vRodo2;
+
+          const tcTremi2 = sumValTremi(d2, 'tc');
+          const vTremi2 = sumValTremi(d2, 'viagens');
+          if (vTremi2 > 0) tcvTremi2 = tcTremi2 / vTremi2;
+        }
+      }
+
+      // Raio Médio (apenas Canavieiro, média ponderada de Distância por TC)
+      let raio1 = null, raio2 = null;
+      if (categoriaAtiva === 'Canavieiro') {
+        const calcRaio = (lista) => {
+          let sumDistTc = 0, sumTc = 0;
+          lista.forEach(d => {
+            const dist = d.dist || 0;
+            const tc = d.tc || 0;
+            if (dist > 0 && tc > 0) {
+              sumDistTc += dist * tc;
+              sumTc += tc;
+            }
+          });
+          return sumTc > 0 ? sumDistTc / sumTc : null;
+        };
+
+        raio1 = calcRaio(d1);
+        if (modoComp) raio2 = calcRaio(d2);
+      }
+
+      // Outras métricas globais
+      const helperMediaPonderada = (lista, metrica) => {
+        let sv = 0, sp = 0;
+        lista.forEach(d => { const val = d[metrica], p = d.motorLigado; if (val != null && !isNaN(val) && p > 0) { sv += val * p; sp += p; } });
+        return sp > 0 ? sv / sp : null;
+      };
+
+      // Helper para Média Diária por Equipamento (Motor Ligado)
+      const helperMediaMotorDia = (lista) => {
+        if (!lista || !lista.length) return null;
+        const somaTotal = lista.reduce((s, d) => s + (d.motorLigado || 0), 0);
+        const eqDias = new Set();
+        lista.forEach(d => {
+          if ((d.motorLigado || 0) > 0) {
+            const eq = d.equipamento || "(sem equip)";
+            const dt = d.data || d.mes || "(sem data)";
+            eqDias.add(`${eq}|${dt}`);
+          }
+        });
+        const nDias = eqDias.size || 1;
+        return somaTotal > 0 ? somaTotal / nDias : null;
+      };
+
+      const motor1 = helperMediaMotorDia(d1);
+      const rpm1 = helperMediaPonderada(d1, "rpmMedio");
+      const vel1 = helperMediaPonderada(d1, "velocidadeMedia");
+      let cons1 = helperMediaPonderada(d1, "consumoMedio");
+
+      let motor2 = null, rpm2 = null, vel2 = null, cons2 = null;
+      if (modoComp) {
+        motor2 = helperMediaMotorDia(d2);
+        rpm2 = helperMediaPonderada(d2, "rpmMedio");
+        vel2 = helperMediaPonderada(d2, "velocidadeMedia");
+        cons2 = helperMediaPonderada(d2, "consumoMedio");
+      }
+
+      // Cálculo específico de Consumo Médio para Canavieiros (Abastec / Km/H) usando a aba KM/Litros
+      if (categoriaAtiva === 'Canavieiro') {
+        const equipsD1 = new Set(d1.map(d => String(d.equipamento || '').trim()));
+        const equipsD2 = new Set(d2.map(d => String(d.equipamento || '').trim()));
+
+        const calcConsKmLitros = (equipsSet, compartimentoTarget) => {
+          let sumAbast = 0, sumKmh = 0;
+          dadosKmLitros.forEach(r => {
+            const cod = String(r.codigo || '').trim();
+            const comp = String(r.compartimento || '').toUpperCase();
+            if (equipsSet.has(cod)) {
+              if (compartimentoTarget === 'RODO' && !comp.includes('RODO')) return;
+              if (compartimentoTarget === 'TREMI' && !comp.includes('TREMI')) return;
+
+              sumAbast += (r.abastes || 0);
+              sumKmh += (r.kml || 0);
+            }
+          });
+          return sumAbast > 0 ? sumKmh / sumAbast : null;
+        };
+
+        // Vamos criar variáveis globais no escopo para usar lá embaixo
+        var cons1Rodo = calcConsKmLitros(equipsD1, 'RODO');
+        var cons1Tremi = calcConsKmLitros(equipsD1, 'TREMI');
+        var cons2Rodo = null, cons2Tremi = null;
+        if (modoComp) {
+          cons2Rodo = calcConsKmLitros(equipsD2, 'RODO');
+          cons2Tremi = calcConsKmLitros(equipsD2, 'TREMI');
+        }
+      }
+
+      const theadHtml = `
+        <thead>
+          <tr>
+            <th style="text-align: left;">Indicador</th>
+            <th class="${u1 === 'SAJB' ? 'sajb-header' : (u1 === 'SAPB' ? 'sapb-header' : '')}" style="text-align: center;">${u1}</th>
+            ${modoComp ? `<th class="${u2 === 'SAJB' ? 'sajb-header' : (u2 === 'SAPB' ? 'sapb-header' : '')}" style="text-align: center;">${u2}</th>` : ''}
+            ${modoComp ? `<th style="color:var(--clr-muted); text-align: center;">Δ</th>` : ''}
+          </tr>
+        </thead>
+      `;
+
+      const rowHtml = (nome, icone, v1, v2, dec, suf, lowerIsBetter = false, extraClass = "") => {
+        return `
+          <tr class="${extraClass}">
+            <td style="text-align: left;"><strong>${icone} ${nome}</strong></td>
+            <td class="val-sajb" style="text-align: center;">${formatCell(v1, dec, suf)}</td>
+            ${modoComp ? `<td class="val-sapb" style="text-align: center;">${formatCell(v2, dec, suf)}</td>` : ''}
+            ${modoComp ? `<td class="val-delta" style="text-align: center;">${(v1 != null && v2 != null && v1 !== 0 && v2 !== 0) ? deltaFn(v1, v2, lowerIsBetter) : ''}</td>` : ''}
+          </tr>
+        `;
+      };
+
+      containerResumo.innerHTML = `
+        <table class="comp-table">
+          ${theadHtml}
+          <tbody>
+            ${(isColhedora || categoriaAtiva === 'Canavieiro') ? rowHtml("Litros por Tonelada", "⛽", lt1, lt2, 3, " L/t", true) : ''}
+            ${isColhedora ? rowHtml("Tempo de Manobra", "🔄", manobra1, manobra2, 0, " seg", true) : ''}
+            ${categoriaAtiva === 'Canavieiro' ? rowHtml("Raio Médio", "📍", raio1, raio2, 1, " km", true) : ''}
+            ${categoriaAtiva === 'Canavieiro' ? rowHtml("Tonelada / Viagem (RODO)", "⚖️", tcvRodo1, tcvRodo2, 2, " t/v") : ''}
+            ${categoriaAtiva === 'Canavieiro' ? rowHtml("Tonelada / Viagem (TREMINHÃO)", "⚖️", tcvTremi1, tcvTremi2, 2, " t/v") : ''}
+            ${isColhedora ? rowHtml("Motor Ligado (Média)", "⏱️", motor1, motor2, 1, " h", false) : ''}
+            ${isColhedora ? rowHtml("RPM Médio Geral", "⚙️", rpm1, rpm2, 0, " rpm", false) : ''}
+            ${isColhedora ? rowHtml("Vel. Média Efetiva", "💨", vel1, vel2, 1, " km/h", false) : ''}
+            ${categoriaAtiva === 'Canavieiro' ? rowHtml("KM / Litros (RODO)", "⛽", cons1Rodo, cons2Rodo, 2, " km/l", false) : ''}
+            ${categoriaAtiva === 'Canavieiro' ? rowHtml("KM / Litros (TREMINHÃO)", "⛽", cons1Tremi, cons2Tremi, 2, " km/l", false) : ''}
+            ${isColhedora ? rowHtml("Consumo Médio", "⛽", cons1, cons2, 1, " l/h", true) : ''}
+          </tbody>
+        </table>
+      `;
+
+      // == 2. VALORES PARA DETALHAMENTO (Operação, Equipamento ou Modelo) ==
+      const gp = currentDetailTab; // 'processo', 'equipamento', ou 'modelo'
+
+      const isCanavieiro = (categoriaAtiva === 'Canavieiro');
+
+      const helperAgrupar = (lista) => {
+        const ag = {};
+        lista.forEach(d => {
+          const k = d[gp] || "(sem info)";
+          if (!ag[k]) ag[k] = { m: 0, rpmW: 0, velW: 0, consW: 0, tcRodo: 0, vRodo: 0, tcTremi: 0, vTremi: 0, distW: 0, tcTot: 0, eqDias: new Set() };
+          const p = d.motorLigado || 0;
+          ag[k].m += p;
+          if (p > 0) {
+            ag[k].rpmW += (d.rpmMedio || 0) * p;
+            ag[k].velW += (d.velocidadeMedia || 0) * p;
+            ag[k].consW += (d.consumoMedio || 0) * p;
+            const eq = d.equipamento || "(sem equip)";
+            const dt = d.data || d.mes || "(sem data)";
+            ag[k].eqDias.add(`${eq}|${dt}`);
+          }
+          if (isCanavieiro) {
+            const comp = String(d.compartimento || '').toUpperCase();
+            const tc = d.tc || 0;
+            const viag = d.viagens || 0;
+            const dist = d.dist || 0;
+
+            if (comp.includes('RODO')) {
+              ag[k].tcRodo += tc;
+              ag[k].vRodo += viag;
+            }
+            if (comp.includes('TREMI')) {
+              ag[k].tcTremi += tc;
+              ag[k].vTremi += viag;
+            }
+            if (dist > 0 && tc > 0) {
+              ag[k].distW += dist * tc;
+              ag[k].tcTot += tc;
+            }
+          }
+        });
+        return ag;
+      };
+
+      const g1 = helperAgrupar(d1);
+      const g2 = modoComp ? helperAgrupar(d2) : {};
+
+      const chaves = [...new Set([...Object.keys(g1), ...Object.keys(g2)])].sort((a, b) => {
+        const m1A = g1[a] ? g1[a].m : 0; const m2A = g2[a] ? g2[a].m : 0;
+        const m1B = g1[b] ? g1[b].m : 0; const m2B = g2[b] ? g2[b].m : 0;
+        return (m1B + m2B) - (m1A + m2A); // Sort by total motor
+      });
+
+      if (!chaves.length) {
+        containerDetalhe.innerHTML = `<p style="text-align:center; color:var(--clr-muted); padding:20px;">Sem dados para detalhamento.</p>`;
+        return;
+      }
+
+      const obterManobraParaChave = (chave, unidadeTarget) => {
+        if (!isColhedora) return null;
+        const equipsDaChave = new Set();
+        if (gp === 'equipamento') {
+          equipsDaChave.add(String(chave).trim());
+        } else {
+          d1.forEach(d => { if (d[gp] === chave && d.equipamento) equipsDaChave.add(String(d.equipamento).trim()); });
+          if (modoComp) {
+            d2.forEach(d => { if (d[gp] === chave && d.equipamento) equipsDaChave.add(String(d.equipamento).trim()); });
+          }
+        }
+
+        let w = 0, sw = 0;
+        dadosManobra.forEach(r => {
+          const uni = (r.unidade || '').toUpperCase();
+          const codEq = String(r.codEquip).trim();
+          if (uni === unidadeTarget && equipsDaChave.has(codEq)) {
+            const weight = r.somaCD || 0;
+            w += (r.tempo || 0) * weight;
+            sw += weight;
+          }
+        });
+        return sw > 0 ? w / sw : null;
+      };
+
+      let groupIndex = 0;
+      let tBodyDet = "";
+      chaves.forEach(k => {
+        groupIndex++;
+        const a1 = g1[k], a2 = g2[k];
+
+        // Calcular médias (agora por eqDia)
+        const nDias1 = (a1 && a1.eqDias.size > 0) ? a1.eqDias.size : 1;
+        const nDias2 = (a2 && a2.eqDias.size > 0) ? a2.eqDias.size : 1;
+
+        const m1 = a1 ? (a1.m / nDias1) : null;
+        const m2 = a2 ? (a2.m / nDias2) : null;
+
+        const rpm1 = (a1 && a1.m > 0) ? (a1.rpmW / a1.m) : null;
+        const rpm2 = (a2 && a2.m > 0) ? (a2.rpmW / a2.m) : null;
+
+        const vel1 = (a1 && a1.m > 0) ? (a1.velW / a1.m) : null;
+        const vel2 = (a2 && a2.m > 0) ? (a2.velW / a2.m) : null;
+
+        let cons1 = (a1 && a1.m > 0) ? (a1.consW / a1.m) : null;
+        let cons2 = (a2 && a2.m > 0) ? (a2.consW / a2.m) : null;
+
+        if (isCanavieiro) {
+          const obterConsumoKmLitrosPorChave = (chave, dList) => {
+            const equipsDaChave = new Set();
+            if (gp === 'equipamento') {
+              equipsDaChave.add(String(chave).trim());
+            } else {
+              dList.forEach(d => { if (d[gp] === chave && d.equipamento) equipsDaChave.add(String(d.equipamento).trim()); });
+            }
+            let sA = 0, sK = 0;
+            dadosKmLitros.forEach(r => {
+              const cod = String(r.codigo || '').trim();
+              if (equipsDaChave.has(cod)) {
+                sA += (r.abastes || 0);
+                sK += (r.kml || 0);
+              }
+            });
+            return sA > 0 ? sK / sA : null;
+          };
+          cons1 = obterConsumoKmLitrosPorChave(k, d1);
+          if (modoComp) cons2 = obterConsumoKmLitrosPorChave(k, d2);
+        }
+
+        const manDet1 = obterManobraParaChave(k, u1);
+        const manDet2 = modoComp ? obterManobraParaChave(k, u2) : null;
+
+        const tcvRodoDet1 = (isCanavieiro && a1 && a1.vRodo > 0) ? (a1.tcRodo / a1.vRodo) : null;
+        const tcvRodoDet2 = (isCanavieiro && a2 && a2.vRodo > 0) ? (a2.tcRodo / a2.vRodo) : null;
+
+        const tcvTremiDet1 = (isCanavieiro && a1 && a1.vTremi > 0) ? (a1.tcTremi / a1.vTremi) : null;
+        const tcvTremiDet2 = (isCanavieiro && a2 && a2.vTremi > 0) ? (a2.tcTremi / a2.vTremi) : null;
+
+        const raioDet1 = (isCanavieiro && a1 && a1.tcTot > 0) ? (a1.distW / a1.tcTot) : null;
+        const raioDet2 = (isCanavieiro && a2 && a2.tcTot > 0) ? (a2.distW / a2.tcTot) : null;
+
+        const cls = `detalhe-group-${groupIndex}`;
+        tBodyDet += `
+          <tr class="detalhe-header" onclick="toggleDetalheGroup('${groupIndex}', this)" style="cursor: pointer; user-select: none;">
+            <td colspan="${modoComp ? 4 : 2}" style="background:var(--clr-bg-page); color:var(--clr-text); font-weight:600; text-align:left; padding-top: 15px; padding-bottom: 10px;">
+              <span class="toggle-btn" style="display:inline-block; width:20px; text-align:center;">➖</span> 🔹 ${k}
+            </td>
+          </tr>
+          ${isColhedora ? rowHtml("Tempo de Manobra", "🔄", manDet1, manDet2, 0, " seg", true, cls) : ""}
+          ${isCanavieiro ? rowHtml("Raio Médio", "📍", raioDet1, raioDet2, 1, " km", true, cls) : ""}
+          ${isCanavieiro ? rowHtml("Tonelada / Viagem (RODO)", "⚖️", tcvRodoDet1, tcvRodoDet2, 2, " t/v", false, cls) : ""}
+          ${isCanavieiro ? rowHtml("Tonelada / Viagem (TREMINHÃO)", "⚖️", tcvTremiDet1, tcvTremiDet2, 2, " t/v", false, cls) : ""}
+          ${isColhedora ? rowHtml("Motor", "⏱️", m1, m2, 1, " h", false, cls) : ""}
+          ${isColhedora ? rowHtml("RPM", "⚙️", rpm1, rpm2, 0, "", false, cls) : ""}
+          ${isColhedora ? rowHtml("Velocidade", "💨", vel1, vel2, 1, " km/h", false, cls) : ""}
+          ${isCanavieiro ? rowHtml("KM / Litros", "⛽", cons1, cons2, 2, " km/l", false, cls) : ""}
+          ${isColhedora ? rowHtml("Consumo", "⛽", cons1, cons2, 2, " l/h", true, cls) : ""}
+        `;
+      });
+
+      containerDetalhe.innerHTML = `
+        <table class="comp-table">
+          ${theadHtml}
+          <tbody>
+            ${tBodyDet}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Função global para expandir/recolher grupos no detalhamento
+    window.toggleDetalheGroup = function(groupId, headerTr) {
+      const rows = document.querySelectorAll('.detalhe-group-' + groupId);
+      const btn = headerTr.querySelector('.toggle-btn');
+      let isHidden = false;
+      rows.forEach(r => {
+        if (r.style.display === 'none') {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+          isHidden = true;
+        }
+      });
+      if (isHidden) {
+        btn.textContent = '➕';
+      } else {
+        btn.textContent = '➖';
+      }
+    };
 
     // Registra o plugin de rótulos de dados globalmente para Chart.js
     Chart.register(ChartDataLabels);
@@ -2819,7 +3604,7 @@
             },
             tooltip: {
               callbacks: {
-                label: function(context) {
+                label: function (context) {
                   return ` ${tipoLabel}: ${context.parsed.x.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec })}${sufixo}`;
                 }
               }
@@ -2834,7 +3619,7 @@
                 size: 10,
                 family: "'Inter', sans-serif"
               },
-              formatter: function(value) {
+              formatter: function (value) {
                 return value.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + sufixo;
               }
             }
@@ -2889,7 +3674,7 @@
             },
             tooltip: {
               callbacks: {
-                label: function(context) {
+                label: function (context) {
                   return ` ${context.dataset.label}: ${context.parsed.y.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec })}${sufixo}`;
                 }
               }
@@ -2900,8 +3685,8 @@
               offset: -2,
               color: '#475569',
               font: { weight: 'bold', size: 9, family: "'Inter', sans-serif" },
-              formatter: function(value) {
-                if(!value || value === 0) return "";
+              formatter: function (value) {
+                if (!value || value === 0) return "";
                 return value.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + sufixo;
               },
               display: true
@@ -3006,7 +3791,7 @@
       if (!containerMensal) return;
 
       const selectM = document.getElementById("filterMes");
-      const mesSel  = selectM ? selectM.value : "todos";
+      const mesSel = selectM ? selectM.value : "todos";
       const isMensal = (mesSel === "todos");
 
       const evolucaoTitle = document.getElementById("evolucaoTitle");
@@ -3018,10 +3803,10 @@
         if (!matchCategory(d, categoriaAtiva)) return false;
         if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
         if ((d.motorLigado ?? 0) < MOT_MIN) return false;
-        
+
         const matchUnidade = (unidadesSelecionadas.length === 0) || unidadesSelecionadas.includes(d.unidade || 'SAJB');
         const matchProcesso = (processosSelecionados.length === 0) || processosSelecionados.includes(d.processo);
-        const matchModelo  = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
+        const matchModelo = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
         const matchFrenteLocal = (frentesGraficosSelecionadas.length === 0) || frentesGraficosSelecionadas.includes(d.frente);
         const matchMes = (mesSel === "todos") || (d.mes === mesSel);
         return matchUnidade && matchProcesso && matchModelo && matchFrenteLocal && matchMes;
@@ -3046,9 +3831,9 @@
 
       // Cores fixas por unidade
       const getUnidadeColor = (u) => {
-        if (u === 'SAJB') return { bg: "rgba(2, 132, 199, 0.8)",  border: "rgba(2, 132, 199, 1)"  };
+        if (u === 'SAJB') return { bg: "rgba(2, 132, 199, 0.8)", border: "rgba(2, 132, 199, 1)" };
         if (u === 'SAPB') return { bg: "rgba(245, 158, 11, 0.8)", border: "rgba(245, 158, 11, 1)" };
-        return                   { bg: "rgba(124, 58, 237, 0.8)", border: "rgba(124, 58, 237, 1)" };
+        return { bg: "rgba(124, 58, 237, 0.8)", border: "rgba(124, 58, 237, 1)" };
       };
 
       const calcularValorMetrica = (lista, metrica) => {
@@ -3081,10 +3866,10 @@
       };
 
       const metricas = [
-        { id: "Motor",   titulo: isMensal ? "📅 Motor Ligado Mensal (h/dia)"  : "📅 Motor Ligado Diário (h/dia)",  campo: "motorLigado",    tipo: "mediaDia",   sufixo: " h/dia", dec: 1 },
-        { id: "RPM",     titulo: isMensal ? "📅 RPM Médio Mensal"            : "📅 RPM Médio Diário",            campo: "rpmMedio",       tipo: "ponderada", sufixo: "",      dec: 0 },
-        { id: "Vel",     titulo: isMensal ? "📅 Vel. Média Mensal (km/h)"    : "📅 Vel. Média Diária (km/h)",    campo: "velocidadeMedia", tipo: "ponderada", sufixo: " km/h", dec: 1 },
-        { id: "Consumo", titulo: isMensal ? "📅 Consumo Médio Mensal (l/h)"  : "📅 Consumo Médio Diário (l/h)",  campo: "consumoMedio",   tipo: "ponderada", sufixo: " l/h",  dec: 1 }
+        { id: "Motor", titulo: isMensal ? "📅 Motor Ligado Mensal (h/dia)" : "📅 Motor Ligado Diário (h/dia)", campo: "motorLigado", tipo: "mediaDia", sufixo: " h/dia", dec: 1 },
+        { id: "RPM", titulo: isMensal ? "📅 RPM Médio Mensal" : "📅 RPM Médio Diário", campo: "rpmMedio", tipo: "ponderada", sufixo: "", dec: 0 },
+        { id: "Vel", titulo: isMensal ? "📅 Vel. Média Mensal (km/h)" : "📅 Vel. Média Diária (km/h)", campo: "velocidadeMedia", tipo: "ponderada", sufixo: " km/h", dec: 1 },
+        { id: "Consumo", titulo: isMensal ? "📅 Consumo Médio Mensal (l/h)" : "📅 Consumo Médio Diário (l/h)", campo: "consumoMedio", tipo: "ponderada", sufixo: " l/h", dec: 1 }
       ];
 
       // ── Um único grid de 4 gráficos, com um dataset por unidade ──
@@ -3116,10 +3901,10 @@
           };
         });
 
-        const statCard    = document.createElement("div");
+        const statCard = document.createElement("div");
         statCard.className = "stat-card";
 
-        const statLabel   = document.createElement("div");
+        const statLabel = document.createElement("div");
         statLabel.className = "stat-label";
         statLabel.textContent = metrica.titulo;
 
@@ -3175,6 +3960,10 @@
         document.getElementById("tab-manobra").classList.add("active");
         document.getElementById("content-manobra").classList.remove("sl-hidden");
         renderizarTabelaManobra();
+      } else if (tabId === 'kmlitros') {
+        document.getElementById("tab-kmlitros").classList.add("active");
+        document.getElementById("content-kmlitros").classList.remove("sl-hidden");
+        renderizarTabelaKmLitros();
       }
     }
 
@@ -3184,30 +3973,34 @@
     function filtrarTabela() {
       const q = document.getElementById("searchInput").value.toLowerCase().trim();
       const selectM = document.getElementById("filterMes");
-      const mesSel  = selectM ? selectM.value : "todos";
+      const mesSel = selectM ? selectM.value : "todos";
 
       dadosFiltrados = dados.filter(d => {
         // Filtro de Categoria Principal
         if (!matchCategory(d, categoriaAtiva)) return false;
 
-        // 1. Regras de qualidade mínima
-        if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
-        if ((d.motorLigado ?? 0) < MOT_MIN) return false;
+        // Regras de qualidade mínima baseada em categoria
+        if (categoriaAtiva === 'Colhedora' || d.motorLigado > 1) { // para não quebrar compatibilidade
+          if (categoriaAtiva !== 'Canavieiro') {
+            if ((d.velocidadeMedia ?? 0) < VEL_MIN) return false;
+            if ((d.motorLigado ?? 0) < MOT_MIN) return false;
+          }
+        }
 
         // 2. Filtro de Unidade
         const matchUnidade = (unidadesSelecionadas.length === 0) || unidadesSelecionadas.includes(d.unidade || 'SAJB');
         if (!matchUnidade) return false;
 
-        // 3. Filtro de Frente
-        const matchFrente = (frentesSelecionadas.length === 0) || frentesSelecionadas.includes(d.frente);
+        // 3. Filtro de Frente (ignora para canavieiro que não tem frente)
+        const matchFrente = (frentesSelecionadas.length === 0) || frentesSelecionadas.includes(d.frente) || (categoriaAtiva === 'Canavieiro');
         if (!matchFrente) return false;
 
         // 4. Filtro de Modelo de Equipamento
-        const matchModelo = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento);
+        const matchModelo = (modeloEquipSelecionados.length === 0) || modeloEquipSelecionados.includes(d.modeloEquipamento) || (categoriaAtiva === 'Canavieiro');
         if (!matchModelo) return false;
 
         // 5. Filtro de Processo
-        const matchProcesso = (processosSelecionados.length === 0) || processosSelecionados.includes(d.processo);
+        const matchProcesso = (processosSelecionados.length === 0) || processosSelecionados.includes(d.processo) || (categoriaAtiva === 'Canavieiro');
         if (!matchProcesso) return false;
 
         // 6. Filtro de Mês/Data
@@ -3216,7 +4009,11 @@
 
         // 7. Filtro de busca (q)
         if (q) {
-          return CAMPOS.some(c => String(d[c] ?? "").toLowerCase().includes(q));
+          if (categoriaAtiva === 'Canavieiro') {
+            return [d.unidade, d.equipamento, d.modelo, d.compartimento, d.data, d.mes].some(c => String(c ?? "").toLowerCase().includes(q));
+          } else {
+            return CAMPOS.some(c => String(d[c] ?? "").toLowerCase().includes(q));
+          }
         }
 
         return true;
@@ -3224,6 +4021,7 @@
 
       sortCol = -1;
       limparSortHeaders();
+      paginaAtual = 1; // Reseta para a primeira página ao filtrar
       renderizarTabela();
     }
 
@@ -3292,6 +4090,12 @@
     /* ──────────────────────────────────────────────
        IMPORTAR EXCEL
     ────────────────────────────────────────────── */
+    let categoriaImportacaoTarget = null;
+    function abrirImportacaoCategoria() {
+      categoriaImportacaoTarget = categoriaAtiva; // Usa a categoria atual como fallback
+      document.getElementById('fileInputExcel').click();
+    }
+
     function processarArquivoExcel(event) {
       const arquivo = event.target.files[0];
       if (!arquivo) return;
@@ -3302,11 +4106,11 @@
       }
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         try {
-          const workbook  = XLSX.read(e.target.result, { type: "array" });
-          const planilha  = workbook.Sheets[workbook.SheetNames[0]];
-          const linhas    = XLSX.utils.sheet_to_json(planilha, { header: 1, defval: "" });
+          const workbook = XLSX.read(e.target.result, { type: "array" });
+          const planilha = workbook.Sheets[workbook.SheetNames[0]];
+          const linhas = XLSX.utils.sheet_to_json(planilha, { header: 1, defval: "" });
 
           if (linhas.length < 2) {
             mostrarToast("⚠️ Planilha vazia ou sem dados.");
@@ -3321,7 +4125,7 @@
               let matches = 0;
               row.forEach(c => {
                 const str = String(c).toLowerCase();
-                if (str.includes("frente") || str.includes("equipamento") || str.includes("motor") || str.includes("rpm") || str.includes("consumo")) {
+                if (str.includes("frente") || str.includes("equipamento") || str.includes("motor") || str.includes("rpm") || str.includes("consumo") || str.includes("viagens") || str.includes("cargas") || str.includes("tc/c") || str.includes("moedlo")) {
                   matches++;
                 }
               });
@@ -3340,12 +4144,14 @@
             h => h.toLowerCase() === campo.toLowerCase()
           );
 
-          const iFrente    = idx("frente");
-          let iMes         = idx("mês");
+          let isCanavieiroImport = (categoriaImportacaoTarget === 'Canavieiro');
+
+          const iFrente = idx("frente");
+          let iMes = idx("mês");
           if (iMes === -1) iMes = idx("mes");
-          const iProcesso  = idx("processo");
-          const iModEq     = idx("modelo equip");
-          // Equipamento: tenta exato "equipamento", senão a coluna que contenha "equip" mas não "modelo"
+          if (iMes === -1) iMes = idx("data");
+          const iProcesso = idx("processo");
+          const iModEq = idx("modelo equip");
           let iEquip = idxExato("equipamento");
           if (iEquip === -1) iEquip = cabecalho.findIndex(h => h.toLowerCase().includes("equip") && !h.toLowerCase().includes("modelo"));
 
@@ -3353,57 +4159,28 @@
           if (iMotor === -1) iMotor = idx("motor");
           if (iMotor === -1) iMotor = 6;
 
-          const iRPM     = idx("rpm");
-          const iVel     = idx("velocidade");
+          const iRPM = idx("rpm");
+          const iVel = idx("velocidade");
           const iConsumo = idx("consumo");
 
-          // ── Mapeamento robusto do campo 'Modelo' (ex: "JOHN DEERE CH570") ──
-          // O campo "Modelo Equipamento" (tipo: Colhedora, Trator…) fica em iModEq.
-          // O campo "Modelo" (marca/modelo específico) é mapeado abaixo com várias tentativas:
           let iModelo = -1;
-
-          // 1. Coluna exata "Modelo" (case-insensitive)
-          iModelo = cabecalho.findIndex(h => h.toLowerCase().trim() === "modelo");
-
-          // 2. Coluna com "modelo" que NÃO seja a do iModEq
-          if (iModelo === -1)
-            iModelo = cabecalho.findIndex((h, i) => h.toLowerCase().includes("modelo") && i !== iModEq);
-
-          // 3. Coluna "Descrição" / "Descrição Equipamento" / "Desc."
-          if (iModelo === -1)
-            iModelo = cabecalho.findIndex(h => /descri/i.test(h));
-
-          // 4. Coluna com nome do fabricante típico (John Deere, Case, New Holland…)
-          //    Se alguma célula da PRIMEIRA linha de dados contiver marcas conhecidas
-          //    use esse índice como fallback.
+          iModelo = cabecalho.findIndex(h => h.toLowerCase().trim() === "modelo" || h.toLowerCase().trim() === "moedlo");
+          if (iModelo === -1) iModelo = cabecalho.findIndex((h, i) => h.toLowerCase().includes("modelo") && i !== iModEq);
+          if (iModelo === -1) iModelo = cabecalho.findIndex(h => /descri/i.test(h));
           if (iModelo === -1 && linhas.length > headerRowIndex + 1) {
             const primeiraLinhaDados = linhas[headerRowIndex + 1] || [];
             const marcas = /john|deere|case|new holland|valtra|massey|caterpillar|komatsu|volvo|agco|fendt/i;
             iModelo = primeiraLinhaDados.findIndex(c => marcas.test(String(c)));
           }
 
-          // ── Diagnóstico visual (exibido como toast detalhado) ──
-          const mapCol = i => i >= 0 ? `"${cabecalho[i]}" [col ${i+1}]` : "❌ NÃO ENCONTRADA";
-          const diagMsg =
-            `Colunas detectadas:\n` +
-            `• Frente: ${mapCol(iFrente)}\n` +
-            `• Processo: ${mapCol(iProcesso)}\n` +
-            `• Modelo Equip.: ${mapCol(iModEq)}\n` +
-            `• Equipamento: ${mapCol(iEquip)}\n` +
-            `• Motor Ligado: ${mapCol(iMotor)}\n` +
-            `• RPM: ${mapCol(iRPM)}\n` +
-            `• Velocidade: ${mapCol(iVel)}\n` +
-            `• Consumo: ${mapCol(iConsumo)}\n` +
-            `• Modelo (descr.): ${mapCol(iModelo)}\n` +
-            `• Mês: ${mapCol(iMes)}\n\n` +
-            `Colunas do arquivo:\n${cabecalho.map((h,i)=>`[${i+1}] ${h}`).join(', ')}`;
-          console.log("Mapeamento de colunas do Excel:", diagMsg);
-          // Exibe toast de diagnóstico se colunas vitais ou Modelo não foram encontrados
-          const vitaisFaltando = [iFrente, iProcesso, iModEq, iEquip, iMotor, iMes].some(i => i === -1);
-          if (iModelo === -1 || vitaisFaltando) {
-            console.warn("⚠️ DIAGNÓSTICO - Algumas colunas importantes ou o MODELO não foram encontrados!", diagMsg);
-            mostrarToast("⚠️ Algumas colunas não foram detectadas. Verifique o console (F12) para detalhes.");
-          }
+          // Colunas específicas Canavieiro
+          const iTc = idxExato("tc");
+          const iCargas = idx("cargas");
+          const iViagens = idx("viagens");
+          const iTcC = idx("tc/c");
+          const iTcV = idx("tc/v");
+          const iDist = idx("dist");
+          const iComp = idx("compartimento");
 
           const safeGet = (row, index, def = "") => (index >= 0 && index < row.length) ? (row[index] ?? def) : def;
 
@@ -3465,19 +4242,31 @@
 
               // ── Separação automática do campo Equipamento ──
               const rawEquip = String(safeGet(l, iEquip, "")).trim();
-              const sepIdx   = rawEquip.indexOf(" - ");
-              const equipNum  = sepIdx >= 0 ? rawEquip.slice(0, sepIdx).trim() : rawEquip;
+              const sepIdx = rawEquip.indexOf(" - ");
+              const equipNum = sepIdx >= 0 ? rawEquip.slice(0, sepIdx).trim() : rawEquip;
               const equipDesc = sepIdx >= 0 ? rawEquip.slice(sepIdx + 3).trim() : "";
 
               // Modelo: prioridade para coluna SEPARADA do Excel
               const modeloColuna = (iModelo >= 0 && iModelo !== iEquip)
                 ? String(safeGet(l, iModelo, "")).trim()
                 : "";
-              const modeloFinal  = modeloColuna || equipDesc;
+              const modeloFinal = modeloColuna || equipDesc;
+
+              // Se não identificou nem equipamento nem modelo, usa a aba que fez a importação (Apenas se não tiver nem processo nem modelo detectável)
+              let modEqFinal = String(safeGet(l, iModEq, "")).trim();
+              if (!modEqFinal && categoriaImportacaoTarget) {
+                // Apenas força a categoria se não houver dicas óbvias nas outras colunas
+                const pUpper = String(safeGet(l, iProcesso, "")).toUpperCase();
+                const mUpper = modeloFinal.toUpperCase();
+                const hasDica = pUpper.includes("COLHEITA") || pUpper.includes("TRANSPORTE") || pUpper.includes("TRANSBORDO") || mUpper.includes("CH570") || mUpper.includes("TRATOR");
+                if (!hasDica) {
+                  modEqFinal = categoriaImportacaoTarget;
+                }
+              }
 
               // ── Regra de Unidade ──
               let unidadeFinal = unidadeSel;
-              
+
               // 1. Tenta obter da coluna específica de Unidade
               if (iUnidade >= 0) {
                 const rawUnit = String(safeGet(l, iUnidade, "")).trim().toUpperCase();
@@ -3500,19 +4289,41 @@
 
               const parsedDate = formatExcelDate(safeGet(l, iMes, ""));
 
+              if (isCanavieiroImport) {
+                return {
+                  unidade: unidadeFinal,
+                  mes: parsedDate.mes,
+                  data: parsedDate.data,
+                  frente: "",
+                  processo: "Canavieiro",
+                  modeloEquipamento: "Canavieiro",
+                  equipamento: equipNum,
+                  modelo: modeloFinal,
+                  tc: safeParseFloat(safeGet(l, iTc, 0)),
+                  cargas: safeParseFloat(safeGet(l, iCargas, 0)),
+                  viagens: safeParseFloat(safeGet(l, iViagens, 0)),
+                  tc_c: safeParseFloat(safeGet(l, iTcC, 0)),
+                  tc_v: safeParseFloat(safeGet(l, iTcV, 0)),
+                  dist: safeParseFloat(safeGet(l, iDist, 0)),
+                  compartimento: String(safeGet(l, iComp, "")).trim(),
+                  categoria: "Canavieiro",
+                  motorLigado: 2 // dummy to pass generic filters
+                };
+              }
+
               return {
-                unidade:           unidadeFinal,
-                mes:               parsedDate.mes,
-                data:              parsedDate.data,
-                frente:            safeGet(l, iFrente, ""),
-                processo:          safeGet(l, iProcesso, ""),
-                modeloEquipamento: safeGet(l, iModEq, ""),
-                equipamento:       equipNum,
-                motorLigado:       motorLigadoVal,
-                rpmMedio:          safeParseFloat(safeGet(l, iRPM, 0)),
-                velocidadeMedia:   safeParseFloat(safeGet(l, iVel, 0)),
-                consumoMedio:      safeParseFloat(safeGet(l, iConsumo, 0)),
-                modelo:            modeloFinal
+                unidade: unidadeFinal,
+                mes: parsedDate.mes,
+                data: parsedDate.data,
+                frente: safeGet(l, iFrente, ""),
+                processo: safeGet(l, iProcesso, ""),
+                modeloEquipamento: modEqFinal,
+                equipamento: equipNum,
+                motorLigado: motorLigadoVal,
+                rpmMedio: safeParseFloat(safeGet(l, iRPM, 0)),
+                velocidadeMedia: safeParseFloat(safeGet(l, iVel, 0)),
+                consumoMedio: safeParseFloat(safeGet(l, iConsumo, 0)),
+                modelo: modeloFinal
               };
             })
             .filter(d => {
@@ -3530,13 +4341,13 @@
           // Acrescenta os dados novos à tabela
           novos.forEach(r => dados.push(r));
           salvarDados();
-          
+
           document.getElementById("searchInput").value = "";
           popularFiltros();
           atualizarStats(); // Isso vai recalcular estatísticas e atualizar a tabela respeitando filtros
           mostrarToast(`✅ ${novos.length} registro(s) importado(s) com sucesso!`);
 
-        } catch(err) {
+        } catch (err) {
           console.error(err);
           mostrarToast("❌ Erro ao ler o arquivo Excel.");
         }
@@ -3580,20 +4391,20 @@
       // Filtra apenas os registros que não correspondem à categoria ativa para mantê-los
       const registrosManter = dados.filter(d => !matchCategory(d, categoriaAtiva));
       const registrosDeletados = dados.length - registrosManter.length;
-      
+
       const nomeCategoriaFormatado = categoriaAtiva === "Colhedora" ? "Colhedoras" : categoriaAtiva === "Canavieiro" ? "Canavieiros" : "Transbordos";
-      
+
       if (registrosDeletados === 0) {
         mostrarToast(`ℹ️ A tabela já não possui registros de ${nomeCategoriaFormatado}.`);
         return;
       }
-      
+
       if (!confirm(`Deseja realmente limpar todos os dados de ${nomeCategoriaFormatado} (${registrosDeletados} registros)?`)) return;
 
       dados.length = 0;
       registrosManter.forEach(r => dados.push(r));
       salvarDados();
-      
+
       dadosFiltrados = [];
       frentesSelecionadas = [];
       unidadesSelecionadas = [];
@@ -3639,25 +4450,25 @@
 
     function lancarLitrosToneladas(event) {
       event.preventDefault();
-      
+
       const unidade = document.getElementById("ltUnidade").value;
       const mes = document.getElementById("ltMes").value;
       const selectCat = document.getElementById("ltCategoria").value;
       const customCat = document.getElementById("ltCategoriaCustom").value.trim();
       const valor = parseFloat(document.getElementById("ltValor").value);
-      
+
       if (isNaN(valor) || valor <= 0) {
         mostrarToast("⚠️ Insira um valor numérico válido maior que zero.");
         return;
       }
-      
+
       const categoriaFinal = selectCat === "Outros" ? (customCat || "Outros") : selectCat;
-      
+
       // Verifica se já existe um lançamento com a mesma combinação e atualiza, senão cria um novo
       const indexExistente = dadosLitrosToneladas.findIndex(
         d => d.unidade === unidade && d.mes === mes && d.categoria === categoriaFinal
       );
-      
+
       if (indexExistente >= 0) {
         dadosLitrosToneladas[indexExistente].valor = valor;
         mostrarToast("📝 Lançamento existente atualizado!");
@@ -3665,13 +4476,13 @@
         dadosLitrosToneladas.push({ unidade, mes, categoria: categoriaFinal, valor });
         mostrarToast("✅ Lançamento efetuado com sucesso!");
       }
-      
+
       salvarDadosLitrosToneladas();
-      
+
       // Limpa os campos
       document.getElementById("ltValor").value = "";
       document.getElementById("ltCategoriaCustom").value = "";
-      
+
       renderizarTabelaLitrosToneladas();
       renderizarGraficosLitrosToneladas();
     }
@@ -3688,10 +4499,10 @@
     function renderizarTabelaLitrosToneladas() {
       const tbody = document.getElementById("tableBodyLitrosTon");
       if (!tbody) return;
-      
+
       tbody.innerHTML = "";
       const dadosFiltrados = dadosLitrosToneladas.filter(d => d.categoria === categoriaAtiva);
-      
+
       if (dadosFiltrados.length === 0) {
         tbody.innerHTML = `
           <tr>
@@ -3701,7 +4512,7 @@
           </tr>`;
         return;
       }
-      
+
       // Ordena lançamentos por mês, depois categoria
       const mesesOrdem = { "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4, "Maio": 5, "Junho": 6, "Julho": 7, "Agosto": 8, "Setembro": 9, "Outubro": 10, "Novembro": 11, "Dezembro": 12 };
       const dadosOrdenados = [...dadosLitrosToneladas].sort((a, b) => {
@@ -3709,15 +4520,15 @@
         if (diffMes !== 0) return diffMes;
         return a.categoria.localeCompare(b.categoria);
       });
-      
+
       dadosOrdenados.forEach((item, index) => {
         const originalIndex = dadosLitrosToneladas.findIndex(
           d => d.unidade === item.unidade && d.mes === item.mes && d.categoria === item.categoria
         );
         const tr = document.createElement("tr");
-        
+
         const badgeCls = item.unidade === 'SAJB' ? 'unit-sajb' : 'unit-sapb';
-        
+
         tr.innerHTML = `
           <td><span class="unit-badge ${badgeCls}">${esc(item.unidade)}</span></td>
           <td>${esc(item.mes)}</td>
@@ -3741,22 +4552,22 @@
       const renderChart = (canvasId, filterId, instanceRef) => {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return instanceRef;
-        
+
         if (instanceRef) {
           instanceRef.destroy();
         }
-        
+
         const filterSelect = document.getElementById(filterId);
         const catFiltro = filterSelect ? filterSelect.value : "todas";
 
-        const dadosFiltradosLT = catFiltro === "todas" 
-          ? dadosLitrosToneladas 
+        const dadosFiltradosLT = catFiltro === "todas"
+          ? dadosLitrosToneladas
           : dadosLitrosToneladas.filter(d => d.categoria === catFiltro);
-        
+
         const mesesSet = new Set();
         dadosFiltradosLT.forEach(d => mesesSet.add(d.mes));
         const labelsMeses = sortMeses([...mesesSet]);
-        
+
         const obterValoresLtPorUnidade = (unidadeTarget) => {
           return labelsMeses.map(mes => {
             const registros = dadosFiltradosLT.filter(d => d.mes === mes && d.unidade === unidadeTarget);
@@ -3765,10 +4576,10 @@
             return parseFloat((somaValor / registros.length).toFixed(3));
           });
         };
-        
+
         const vSAJB = obterValoresLtPorUnidade("SAJB");
         const vSAPB = obterValoresLtPorUnidade("SAPB");
-        
+
         const ctx = canvas.getContext("2d");
         return new Chart(ctx, {
           type: "bar",
@@ -3809,7 +4620,7 @@
               },
               tooltip: {
                 callbacks: {
-                  label: function(context) {
+                  label: function (context) {
                     return ` ${context.dataset.label}: ${context.parsed.y.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 })} L/t`;
                   }
                 }
@@ -3820,7 +4631,7 @@
                 offset: -2,
                 color: '#475569',
                 font: { weight: 'bold', size: 9, family: "'Inter', sans-serif" },
-                formatter: function(value) {
+                formatter: function (value) {
                   if (!value || value === 0) return "";
                   return value.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + " L/t";
                 },
@@ -3848,77 +4659,7 @@
        GRÁFICO TEMPO DE MANOBRA (DASHBOARD)
     ────────────────────────────────────────────── */
     function renderizarCardManobraTop() {
-      const lista = document.getElementById("listaTempoManobra");
-      const badge = document.getElementById("totalTempoManobra");
-      if (!lista || !badge) return;
-
-      if (dadosManobra.length === 0) {
-        lista.innerHTML = `<li class="stat-item"><span class="stat-name">Sem dados</span><span class="stat-value">—</span></li>`;
-        badge.textContent = "";
-        return;
-      }
-
-      let totalGlobalWeighted = 0;
-      let totalGlobalWeight = 0;
-      const aggregated = { SAJB: { w: 0, sw: 0 }, SAPB: { w: 0, sw: 0 } };
-
-      dadosManobra.forEach(r => {
-        const uni = (r.unidade || '').toUpperCase();
-        const weight = r.somaCD || 0;
-        const weighted = (r.tempo || 0) * weight;
-
-        totalGlobalWeighted += weighted;
-        totalGlobalWeight += weight;
-
-        if (aggregated[uni]) {
-          aggregated[uni].w += weighted;
-          aggregated[uni].sw += weight;
-        }
-      });
-
-      const avgSAJB = aggregated['SAJB'].sw > 0 ? aggregated['SAJB'].w / aggregated['SAJB'].sw : null;
-      const avgSAPB = aggregated['SAPB'].sw > 0 ? aggregated['SAPB'].w / aggregated['SAPB'].sw : null;
-
-      if (avgSAJB === null && avgSAPB === null) {
-        lista.innerHTML = `<li class="stat-item"><span class="stat-name">Sem dados</span><span class="stat-value">—</span></li>`;
-      } else {
-        const delta = (a, b) => {
-          if (!b || b === 0) return '';
-          const pct = ((a - b) / b) * 100;
-          if (Math.abs(pct) < 0.5) return `<span class="delta-zero">≈0%</span>`;
-          const sign = pct > 0 ? '+' : '';
-          const cls  = pct > 0 ? 'delta-pos' : 'delta-neg';
-          return `<span class="${cls}">${sign}${pct.toFixed(0)}%</span>`;
-        };
-
-        const formatMin = (v) => v !== null ? v.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1}) : '—';
-
-        lista.innerHTML = `
-          <table class="comp-table">
-            <thead><tr>
-              <th>Operação/Grupo</th>
-              <th class="sajb-header">SAJB</th>
-              <th class="sapb-header">SAPB</th>
-              <th style="color:var(--clr-muted)">Δ</th>
-            </tr></thead>
-            <tbody>
-              <tr>
-                <td title="Colhedora">Colhedora</td>
-                <td class="val-sajb">${formatMin(avgSAJB)}</td>
-                <td class="val-sapb">${formatMin(avgSAPB)}</td>
-                <td class="val-delta">${(avgSAJB !== null && avgSAPB !== null) ? delta(avgSAJB, avgSAPB) : ''}</td>
-              </tr>
-            </tbody>
-          </table>
-        `;
-      }
-
-      if (totalGlobalWeight > 0) {
-         const globalAvg = totalGlobalWeighted / totalGlobalWeight;
-         badge.textContent = `${globalAvg.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} min`;
-      } else {
-         badge.textContent = "";
-      }
+      // Substituído pelas Tabelas Consolidadas
     }
 
     let chartInstanceManobraDash = null;
@@ -3929,55 +4670,55 @@
       const unidadesTarget = ['SAJB', 'SAPB'];
       const aggregated = {};
       const mesesLabels = new Set();
-      
+
       const parseMes = (dataStr) => {
-         if (!dataStr) return null;
-         const parts = dataStr.split('/'); // dd/mm/yyyy
-         if (parts.length === 3) {
-            const mesNum = parseInt(parts[1], 10);
-            const nomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-            return nomes[mesNum - 1];
-         }
-         return null;
+        if (!dataStr) return null;
+        const parts = dataStr.split('/'); // dd/mm/yyyy
+        if (parts.length === 3) {
+          const mesNum = parseInt(parts[1], 10);
+          const nomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+          return nomes[mesNum - 1];
+        }
+        return null;
       };
 
       dadosManobra.forEach(r => {
         const m = parseMes(r.dataHora);
         const uni = (r.unidade || '').toUpperCase();
         if (!m || !unidadesTarget.includes(uni)) return;
-        
+
         mesesLabels.add(m);
         if (!aggregated[uni]) aggregated[uni] = {};
         if (!aggregated[uni][m]) aggregated[uni][m] = { totalWeighted: 0, sumWeight: 0 };
-        
+
         const weight = r.somaCD || 0;
         aggregated[uni][m].totalWeighted += (r.tempo || 0) * weight;
         aggregated[uni][m].sumWeight += weight;
       });
-      
-      const ordemMeses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-      let mesesList = Array.from(mesesLabels).sort((a,b) => ordemMeses.indexOf(a) - ordemMeses.indexOf(b));
-      
+
+      const ordemMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      let mesesList = Array.from(mesesLabels).sort((a, b) => ordemMeses.indexOf(a) - ordemMeses.indexOf(b));
+
       if (mesesList.length === 0) mesesList = ["Sem dados"];
 
       const datasets = unidadesTarget.map((uni, idx) => {
-         const color = idx === 0 ? 'rgba(37, 99, 235, 1)' : 'rgba(124, 58, 237, 1)';
-         const bg = idx === 0 ? 'rgba(37, 99, 235, 0.8)' : 'rgba(124, 58, 237, 0.8)';
-         
-         const data = mesesList.map(m => {
-            if (m === "Sem dados" || !aggregated[uni] || !aggregated[uni][m]) return 0;
-            const agg = aggregated[uni][m];
-            return agg.sumWeight > 0 ? (agg.totalWeighted / agg.sumWeight) : 0;
-         });
-         
-         return {
-            label: uni,
-            data: data,
-            backgroundColor: bg,
-            borderColor: color,
-            borderWidth: 1,
-            borderRadius: 4
-         };
+        const color = idx === 0 ? 'rgba(37, 99, 235, 1)' : 'rgba(124, 58, 237, 1)';
+        const bg = idx === 0 ? 'rgba(37, 99, 235, 0.8)' : 'rgba(124, 58, 237, 0.8)';
+
+        const data = mesesList.map(m => {
+          if (m === "Sem dados" || !aggregated[uni] || !aggregated[uni][m]) return 0;
+          const agg = aggregated[uni][m];
+          return agg.sumWeight > 0 ? (agg.totalWeighted / agg.sumWeight) : 0;
+        });
+
+        return {
+          label: uni,
+          data: data,
+          backgroundColor: bg,
+          borderColor: color,
+          borderWidth: 1,
+          borderRadius: 4
+        };
       });
 
       if (chartInstanceManobraDash) chartInstanceManobraDash.destroy();
@@ -3993,8 +4734,8 @@
             legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10, family: "'Inter', sans-serif" } } },
             tooltip: {
               callbacks: {
-                label: function(context) {
-                  return ` ${context.dataset.label}: ${context.parsed.y.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} min`;
+                label: function (context) {
+                  return ` ${context.dataset.label}: ${context.parsed.y.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} seg`;
                 }
               }
             },
@@ -4004,9 +4745,9 @@
               offset: -2,
               color: '#475569',
               font: { weight: 'bold', size: 9, family: "'Inter', sans-serif" },
-              formatter: function(value) {
+              formatter: function (value) {
                 if (!value || value === 0) return "";
-                return value.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+                return value.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
               },
               display: true
             }
@@ -4015,7 +4756,7 @@
             x: { grid: { display: false }, ticks: { font: { size: 10, family: "'Inter', sans-serif" } } },
             y: {
               beginAtZero: true,
-              title: { display: true, text: "Tempo Médio (min)", font: { size: 10, family: "'Inter', sans-serif" } },
+              title: { display: true, text: "Tempo Médio (seg)", font: { size: 10, family: "'Inter', sans-serif" } },
               grid: { color: 'rgba(0,0,0,0.05)' },
               ticks: { font: { size: 10, family: "'Inter', sans-serif" } }
             }
@@ -4063,12 +4804,12 @@
       if (nomeEl) nomeEl.textContent = '⏳ Lendo: ' + file.name;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         try {
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: 'array', cellDates: true });
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const rows  = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+          const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
           if (!rows.length) {
             mostrarToast('⚠️ Planilha vazia ou sem dados reconhecidos.');
@@ -4104,14 +4845,14 @@
 
               if (val instanceof Date && !isNaN(val)) {
                 // SheetJS retornou Date nativo (cellDates:true)
-                dataHoraRaw = `${pad(val.getDate())}/${pad(val.getMonth()+1)}/${val.getFullYear()}`;
+                dataHoraRaw = `${pad(val.getDate())}/${pad(val.getMonth() + 1)}/${val.getFullYear()}`;
 
               } else if (typeof val === 'number' && val > 0) {
                 // Serial numérico do Excel — converte para Date local
                 // Usa UTC para evitar problemas de fuso: serial 1 = 01/01/1900
                 const ms = Math.round((val - 25569) * 86400 * 1000);
                 const jsDate = new Date(ms);
-                dataHoraRaw = `${pad(jsDate.getUTCDate())}/${pad(jsDate.getUTCMonth()+1)}/${jsDate.getUTCFullYear()}`;
+                dataHoraRaw = `${pad(jsDate.getUTCDate())}/${pad(jsDate.getUTCMonth() + 1)}/${jsDate.getUTCFullYear()}`;
 
               } else {
                 // Texto: tenta extrair apenas a parte da data
@@ -4164,12 +4905,12 @@
           };
 
           let importados = 0;
-          let ignorados  = 0;
+          let ignorados = 0;
           rows.forEach(row => {
             const { dataHoraRaw, codEquip, somaCD, quantCD, tempo, unidade } = mapColunas(row);
-            const sNum = parseFloat(String(somaCD).replace(',','.'));
-            const qNum = parseFloat(String(quantCD).replace(',','.'));
-            const tNum = parseFloat(String(tempo).replace(',','.'));
+            const sNum = parseFloat(String(somaCD).replace(',', '.'));
+            const qNum = parseFloat(String(quantCD).replace(',', '.'));
+            const tNum = parseFloat(String(tempo).replace(',', '.'));
 
             if (!codEquip || isNaN(qNum) || isNaN(tNum)) {
               ignorados++;
@@ -4281,7 +5022,7 @@
           </td>
         </tr>
       `).join('');
-      
+
       // Sempre que renderizar a tabela (houve update de dados), atualiza o gráfico se estiver visível
       if (categoriaAtiva === 'Colhedora') {
         renderizarGraficoManobraDash();
@@ -4292,18 +5033,13 @@
     function atualizarVisibilidadeAbaManobra() {
       const tabBtn = document.getElementById('tab-manobra');
       const cardDash = document.getElementById('manobraDashboardCard');
-      const cardTop = document.getElementById('cardTopTempoManobra');
-      
+
       if (categoriaAtiva === 'Colhedora') {
         if (tabBtn) tabBtn.style.display = '';
         if (cardDash) {
           cardDash.style.display = '';
           cardDash.classList.remove('sl-hidden');
           renderizarGraficoManobraDash();
-        }
-        if (cardTop) {
-          cardTop.classList.remove('sl-hidden');
-          renderizarCardManobraTop();
         }
       } else {
         if (tabBtn) {
@@ -4313,9 +5049,6 @@
         if (cardDash) {
           cardDash.style.display = 'none';
           cardDash.classList.add('sl-hidden');
-        }
-        if (cardTop) {
-          cardTop.classList.add('sl-hidden');
         }
       }
     }
@@ -4331,27 +5064,359 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
     }
-  </script>
+    /* ──────────────────────────────────────────────
+       ABA KM/LITROS (CANAVIEIROS/ETC)
+    ────────────────────────────────────────────── */
+    function formatDataHoraKmLitros(dh) {
+      if (!dh || String(dh).trim() === '') return '—';
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(String(dh).trim())) return String(dh).trim();
+      const isoMatch = String(dh).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+      return String(dh).split('T')[0].split(' ')[0];
+    }
 
+    function limparKmLitros() {
+      if (!confirm('Deseja limpar TODOS os registros de KM/Litros?')) return;
+      dadosKmLitros = [];
+      salvarDadosKmLitros();
+      renderizarTabelaKmLitros();
+      mostrarToast('🗑️ Todos os registros foram removidos.');
+    }
+
+    function excluirKmLitros(idx) {
+      if (!confirm('Deseja excluir este registro?')) return;
+      dadosKmLitros.splice(idx, 1);
+      salvarDadosKmLitros();
+      renderizarTabelaKmLitros();
+      mostrarToast('🗑️ Registro removido.');
+    }
+
+    // Tenta salvar e avisa se a memória estiver cheia
+    const salvarKmLitrosComTratamento = () => {
+      try {
+        localStorage.setItem('dadosKmLitros', JSON.stringify(dadosKmLitros));
+      } catch (e) {
+        if (e.name === 'QuotaExceededError' || e.message.includes('exceeded the quota')) {
+          alert('❌ MEMÓRIA DO NAVEGADOR CHEIA! ❌\n\nPor favor, clique no botão "Limpar Tudo" (ícone de lixeira) para liberar espaço e então importe a planilha novamente.');
+          throw e; // Interrompe para não mostrar mensagem de sucesso falsa
+        } else {
+          console.error(e);
+          alert('Erro ao salvar os dados: ' + e.message);
+        }
+      }
+    };
+
+    function renderizarTabelaKmLitros() {
+      const tbody = document.getElementById('tableBodyKmLitros');
+      if (!tbody) return;
+      if (dadosKmLitros.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--clr-muted);">Nenhum registro encontrado. Importe um arquivo Excel acima.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = dadosKmLitros.map((r, i) => `
+        <tr>
+          <td style="text-align:center; font-family:'Courier New',monospace; color:#7c3aed; font-weight:600;">${esc(r.codigo || '—')}</td>
+          <td style="text-align:left; font-weight:500;">${esc(r.descricao || '—')}</td>
+          <td style="text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap;">${formatDataHoraKmLitros(r.data)}</td>
+          <td style="text-align:center; color:var(--clr-text);">${r.abastes != null ? Number(r.abastes).toLocaleString('pt-BR') : '—'}</td>
+          <td style="text-align:center; font-weight:600; color:#16a34a;">${r.kml != null ? Number(r.kml).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}</td>
+          <td style="text-align:center;">
+            <span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:700;background:${r.unidade === 'SAPB' ? '#fef3c7' : '#e0f2fe'};color:${r.unidade === 'SAPB' ? '#b45309' : '#0369a1'};border:1px solid ${r.unidade === 'SAPB' ? '#fde68a' : '#bae6fd'};">${esc(r.unidade || '—')}</span>
+          </td>
+          <td style="text-align:center; font-size:0.85rem; color:var(--clr-text-muted);">${esc(r.compartimento || '—')}</td>
+          <td style="text-align:center;">
+            <button onclick="excluirKmLitros(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;padding:4px;border-radius:4px;" title="Excluir">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:15px;height:15px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function importarKmLitrosExcel(event) {
+      if (event.target.files && event.target.files.length > 0) {
+        processarArquivoKmLitros(event.target.files[0]);
+      }
+    }
+
+    function processarArquivoKmLitros(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array', cellDates: true, dateNF: 'dd/mm/yyyy' });
+          let targetSheetName = null;
+          let headerRowIdx = -1;
+          let headers = [];
+          let worksheet = null;
+          let rawRows = [];
+
+          // Tentar primeiro abas que contenham a palavra 'LITRO' no nome
+          const sheetNamesSorted = workbook.SheetNames.slice().sort((a, b) => {
+            const aLitro = a.toUpperCase().includes('LITRO') ? -1 : 1;
+            const bLitro = b.toUpperCase().includes('LITRO') ? -1 : 1;
+            return aLitro - bLitro;
+          });
+
+          for (let s = 0; s < sheetNamesSorted.length; s++) {
+            const sheetName = sheetNamesSorted[s];
+            const tempWorksheet = workbook.Sheets[sheetName];
+            const tempRawRows = XLSX.utils.sheet_to_json(tempWorksheet, { header: 1, defval: null, raw: false, dateNF: 'dd/mm/yyyy' });
+
+            for (let i = 0; i < Math.min(tempRawRows.length, 20); i++) {
+              const row = tempRawRows[i];
+              if (!row || !Array.isArray(row)) continue;
+              // Remove TODOS os acentos, espaços e pontuações (ex: "DATA:" -> "data", "Cód." -> "cod", "Km / h" -> "kmh")
+              const rowStrs = row.map(c => c != null ? String(c).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "") : '');
+              const temCodigo = rowStrs.some(c => c.includes('codigo') || c.includes('cod') || c.includes('equipamento'));
+              const temDesc = rowStrs.some(c => c.includes('descri') || c.includes('nome'));
+
+              if (temCodigo && temDesc) {
+                headerRowIdx = i;
+                headers = rowStrs;
+                targetSheetName = sheetName;
+                worksheet = tempWorksheet;
+                rawRows = tempRawRows;
+                break;
+              }
+            }
+            if (targetSheetName) break;
+          }
+
+          if (!targetSheetName || headerRowIdx === -1) {
+            mostrarToast('❌ Não foi possível encontrar o cabeçalho (Código, Descrição) em nenhuma aba da planilha.');
+            const nomeEl = document.getElementById('kmArquivoNome');
+            if (nomeEl) nomeEl.textContent = '';
+            return;
+          }
+
+          let importados = 0;
+          let ignorados = 0;
+          const nomeEl = document.getElementById('kmArquivoNome');
+          if (nomeEl) nomeEl.textContent = 'Processando...';
+
+          const getColIdx = (...keys) => {
+            // Tentar correspondência EXATA primeiro
+            for (let key of keys) {
+              const searchKey = key.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+              const idx = headers.findIndex(h => h === searchKey);
+              if (idx !== -1) return idx;
+            }
+            // Tentar correspondência startsWith
+            for (let key of keys) {
+              const searchKey = key.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+              const idx = headers.findIndex(h => h && h.startsWith(searchKey));
+              if (idx !== -1) return idx;
+            }
+            // Tentar correspondência includes (último caso)
+            for (let key of keys) {
+              const searchKey = key.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+              const idx = headers.findIndex(h => h && h.includes(searchKey));
+              if (idx !== -1) return idx;
+            }
+            return -1;
+          };
+
+          const idxCodigo = getColIdx('codigo', 'cod', 'equipamento');
+          const idxDescricao = getColIdx('descricao', 'descri', 'nome');
+          const idxDataReg = getColIdx('data');
+          const idxAbastes = getColIdx('abastes', 'abastec');
+          const idxKml = getColIdx('kmh', 'kml');
+
+          // Lidar com a possibilidade de duas colunas chamadas "Unidade" (Pegar sempre a última, ou a única)
+          let idxUnidadeNova = -1;
+          const undIndices = [];
+          headers.forEach((h, idx) => {
+            if (h === 'unidade' || h === 'und') {
+              undIndices.push(idx);
+            }
+          });
+          if (undIndices.length === 0) {
+            headers.forEach((h, idx) => {
+              if (h && (h.includes('unidade') || h.includes('und'))) {
+                undIndices.push(idx);
+              }
+            });
+          }
+          if (undIndices.length > 0) {
+            idxUnidadeNova = undIndices[undIndices.length - 1]; // Pegar sempre a última encontrada
+          }
+
+          const idxCompartimento = getColIdx('compartimento', 'comp', 'tipo');
+
+          // Tratamento de número
+          const parseNum = (val) => {
+            if (typeof val === 'number') return val;
+            if (typeof val === 'string') return parseFloat(val.replace(',', '.')) || 0;
+            return 0;
+          };
+
+          // Mapeamento de unidade a partir da base histórica (dados)
+          const mapUnidade = {};
+          const mapCompartimento = {};
+          if (typeof dados !== 'undefined') {
+            dados.forEach(d => {
+              const eq = String(d.equipamento || '').trim();
+              if (eq) {
+                if (d.unidade) mapUnidade[eq] = String(d.unidade).trim();
+                if (d.compartimento) mapCompartimento[eq] = String(d.compartimento).trim();
+              }
+            });
+          }
+
+          for (let i = headerRowIdx + 1; i < rawRows.length; i++) {
+            const row = rawRows[i];
+            if (!row || row.length === 0) continue;
+
+            const codigo = idxCodigo !== -1 ? row[idxCodigo] : null;
+            const codStr = codigo != null ? String(codigo).trim() : '';
+            const descricao = idxDescricao !== -1 ? row[idxDescricao] : null;
+            const dataReg = idxDataReg !== -1 ? row[idxDataReg] : null;
+            const abastes = parseNum(idxAbastes !== -1 ? row[idxAbastes] : 0);
+            const kml = parseNum(idxKml !== -1 ? row[idxKml] : 0);
+
+            let unidade = idxUnidadeNova !== -1 && row[idxUnidadeNova] != null ? String(row[idxUnidadeNova]).trim() : (mapUnidade[codStr] || '—');
+            let compartimento = idxCompartimento !== -1 && row[idxCompartimento] != null ? String(row[idxCompartimento]).trim() : (mapCompartimento[codStr] || '—');
+
+            // Ignorar se a linha estiver totalmente vazia nas chaves principais
+            if (codigo != null || descricao != null) {
+              dadosKmLitros.push({
+                codigo: codigo,
+                descricao: descricao,
+                unidade: unidade,
+                compartimento: compartimento,
+                data: dataReg,
+                abastes: abastes,
+                kml: kml
+              });
+              importados++;
+            } else {
+              ignorados++;
+            }
+          }
+
+          if (importados === 0) {
+            let sampleRow = rawRows.length > headerRowIdx + 1 ? rawRows[headerRowIdx + 1] : "Nenhuma linha";
+            alert("⚠️ DEBUG INFO (Tire um print disso para a IA):\n\n" +
+              "Aba: " + targetSheetName + "\n" +
+              "Cabeçalhos Mapeados: " + headers.join(" | ") + "\n\n" +
+              "Posições encontradas:\n" +
+              "Cod: " + idxCodigo + " | Desc: " + idxDescricao + " | KML: " + idxKml + "\n\n" +
+              "Linha 1 da planilha:\n" + JSON.stringify(sampleRow) + "\n\n" +
+              "Ignorados: " + ignorados);
+          }
+
+          salvarKmLitrosComTratamento(); // Usar o com tratamento de limite
+          renderizarTabelaKmLitros();
+
+          const msg = ignorados > 0
+            ? `✅ ${importados} registro(s) importado(s). ${ignorados} linha(s) ignorada(s).`
+            : `✅ ${importados} registro(s) importado(s) com sucesso!`;
+          mostrarToast(msg);
+          if (nomeEl) nomeEl.textContent = '✅ ' + file.name + ` (${importados} registros)`;
+
+        } catch (err) {
+          console.error('Erro ao processar Excel de KM/Litros:', err);
+          mostrarToast('❌ Erro: ' + (err.message || 'Verifique o formato.'));
+          const nomeEl = document.getElementById('kmArquivoNome');
+          if (nomeEl) nomeEl.textContent = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  </script>
   <!-- ===== ESTILOS DE IMPRESSÃO ===== -->
   <style media="print">
-    body { background: #fff; color: #000; font-size: 10pt; }
-    .page-header { position: static; background: #fff; border-bottom: 2px solid #000; padding: 10px; box-shadow: none; }
-    .logo-badge, .toolbar, .search-bar-wrapper, .stats-grid, #toast, .chart-container-card, .category-tabs-container, .main-tabs-container, .filter-wrapper { display: none !important; }
-    .header-titles h1 { color: #000; font-size: 14pt; }
-    .header-titles p  { color: #444; }
-    .table-container { border: 1px solid #ccc; box-shadow: none; }
-    .table-header-bar { background: #f0f0f0; border-bottom: 1px solid #ccc; }
-    .table-title { color: #000; }
-    .badge-blue { background: #e0e0e0; color: #333; border: 1px solid #999; }
-    table { font-size: 9pt; }
-    th { background: #e8e8e8; color: #333; border-bottom: 2px solid #999; }
-    tbody tr:nth-child(even) { background: #f9f9f9; }
-    .td-processo { color: #1a56db; }
-    .td-equip    { color: #7c3aed; }
-    .td-frente   { color: #555; }
-    .page-footer { color: #555; border-top: 1px solid #ccc; }
+    body {
+      background: #fff;
+      color: #000;
+      font-size: 10pt;
+    }
+
+    .page-header {
+      position: static;
+      background: #fff;
+      border-bottom: 2px solid #000;
+      padding: 10px;
+      box-shadow: none;
+    }
+
+    .logo-badge,
+    .toolbar,
+    .search-bar-wrapper,
+    .stats-grid,
+    #toast,
+    .chart-container-card,
+    .category-tabs-container,
+    .main-tabs-container,
+    .filter-wrapper {
+      display: none !important;
+    }
+
+    .header-titles h1 {
+      color: #000;
+      font-size: 14pt;
+    }
+
+    .header-titles p {
+      color: #444;
+    }
+
+    .table-container {
+      border: 1px solid #ccc;
+      box-shadow: none;
+    }
+
+    .table-header-bar {
+      background: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .table-title {
+      color: #000;
+    }
+
+    .badge-blue {
+      background: #e0e0e0;
+      color: #333;
+      border: 1px solid #999;
+    }
+
+    table {
+      font-size: 9pt;
+    }
+
+    th {
+      background: #e8e8e8;
+      color: #333;
+      border-bottom: 2px solid #999;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    .td-processo {
+      color: #1a56db;
+    }
+
+    .td-equip {
+      color: #7c3aed;
+    }
+
+    .td-frente {
+      color: #555;
+    }
+
+    .page-footer {
+      color: #555;
+      border-top: 1px solid #ccc;
+    }
   </style>
 
 </body>
+
 </html>
